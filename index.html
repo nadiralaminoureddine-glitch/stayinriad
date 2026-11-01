@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>StayInRiad — La plateforme 100 % marocaine des riads</title>
+<meta name="description" content="StayInRiad : la plateforme de réservation 100 % marocaine dédiée uniquement aux riads. Ouverture prochaine. Propriétaires de riads, inscrivez-vous dès maintenant.">
+<meta property="og:title" content="StayInRiad — La plateforme 100 % marocaine des riads">
+<meta property="og:description" content="Réservez votre riad au Maroc, du cœur des médinas aux portes du désert. Ouverture prochaine.">
+<meta property="og:url" content="https://stayinriad.com/">
+<meta name="theme-color" content="#0f5a4a">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Cpath d='M6 38V18Q6 4 20 4T34 18v20z' fill='%23d9a441'/%3E%3Cpath d='M12 38V20q0-8 8-8t8 8v18z' fill='%230f5a4a'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=Inter:wght@400;500;600;700&family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--terra:#b5472b;--terra-d:#8e3420;--green:#0f5a4a;--green-d:#0a3f34;--sand:#f7efe3;--sand-d:#eadcc6;--ink:#1f1a17;--muted:#6b625a;--line:#e3d7c5;--gold:#d9a441;--ok:#1d7a46;--bad:#b3261e}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Inter,system-ui,sans-serif;color:var(--ink);background-color:#fbf8f3;background-image:var(--zelSand);background-size:72px;line-height:1.5}
+button,input,select,textarea{font:inherit}
+.wrap{max-width:1120px;margin:0 auto;padding:0 16px}
+header{background-color:var(--green);background-image:var(--zelLine);background-size:64px;color:#fff;position:relative;overflow:hidden}
+.topbar{display:flex;align-items:center;justify-content:space-between;padding:14px 0;gap:10px;flex-wrap:wrap}
+.logo{display:flex;align-items:center;gap:10px;font-family:Fraunces,serif;font-size:25px;font-weight:700;direction:ltr}
+.nav{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.nav select,.nav a{background:transparent;color:#fff;border:1px solid rgba(255,255,255,.35);border-radius:8px;padding:8px 10px;cursor:pointer;text-decoration:none;font-size:14px}
+.nav select option{color:var(--ink)}
+.nav a.solid{background:#fff;color:var(--green);border-color:#fff;font-weight:600}
+.hero{padding:34px 0 64px;position:relative}
+.badge100{display:inline-flex;align-items:center;gap:8px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.35);padding:6px 12px;border-radius:999px;font-weight:600;font-size:14px;margin-bottom:14px}
+.hero h1{font-family:Fraunces,serif;font-size:clamp(30px,5.4vw,52px);line-height:1.1;max-width:760px}
+.hero p{margin-top:12px;font-size:18px;opacity:.92;max-width:660px}
+.soon{display:inline-block;margin-top:18px;background:var(--gold);color:var(--ink);font-weight:700;padding:8px 14px;border-radius:999px}
+.ctas{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;border:0;border-radius:8px;padding:0 20px;min-height:48px;font-weight:600;font-size:15px;cursor:pointer;text-decoration:none}
+.btn.terra{background:var(--terra);color:#fff}.btn.terra:hover{background:var(--terra-d)}
+.btn.light{background:#fff;color:var(--green)}
+.btn.green{background:var(--green);color:#fff}.btn.green:hover{background:var(--green-d)}
+.btn.wa{background:#1f9d55;color:#fff}
+.btn.ghost{background:#fff;color:var(--green);border:1px solid var(--green)}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.trust{display:flex;flex-wrap:wrap;gap:8px 18px;margin-top:18px;font-size:14px;opacity:.95}
+.trust span::before{content:"✦ ";color:var(--gold)}
+.langnote{margin-top:14px;font-size:13px;opacity:.85}
+.pattern{position:absolute;right:-40px;top:10px;opacity:.12;pointer-events:none}
+.zband{height:16px;background-image:var(--zel);background-size:32px;border-top:2px solid var(--gold);border-bottom:2px solid var(--gold)}
+section{padding:46px 0 0}
+h2{font-family:Fraunces,serif;font-size:28px;margin-bottom:6px}
+h2::before{content:"";display:inline-block;width:18px;height:18px;margin-inline-end:9px;vertical-align:-1px;background:var(--terra);clip-path:polygon(50% 0,61% 26%,85% 15%,74% 39%,100% 50%,74% 61%,85% 85%,61% 74%,50% 100%,39% 74%,15% 85%,26% 61%,0 50%,26% 39%,15% 15%,39% 26%)}
+.sub{color:var(--muted);margin-bottom:18px}
+.cities{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.city{border-radius:90px 90px 12px 12px;overflow:hidden;position:relative;height:160px;border:3px solid #fff;box-shadow:0 0 0 2px var(--gold);color:#fff}
+.city svg{width:100%;height:100%;display:block}
+.city:after{content:"";position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,.55),transparent 60%)}
+.city b{position:absolute;inset-inline-start:14px;bottom:12px;z-index:1;font-family:Fraunces,serif;font-size:21px;text-shadow:0 1px 6px rgba(0,0,0,.4)}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.cardx{background:#fff;border:1px solid var(--line);border-radius:12px;padding:18px;border-top:5px solid transparent;border-image:var(--zel) 30 / 5px / 0 round}
+.cardx .ic{font-size:26px}.cardx b{display:block;margin:6px 0 4px;font-size:16px}.cardx span{font-size:14px;color:var(--muted)}
+.partner{background-color:var(--green);background-image:var(--zelLine);background-size:56px;color:#fff;border-radius:16px;padding:24px;display:grid;grid-template-columns:1fr 1.1fr;gap:24px;margin-top:8px}
+.partner h2{color:#fff}.partner h2::before{background:var(--gold)}
+.partner .sub{color:#d8eae4}
+.partner ul{list-style:none;display:grid;gap:10px}
+.partner li{display:flex;gap:10px;font-size:15px}.partner li::before{content:"✦";color:var(--gold)}
+.form{background:#fff;color:var(--ink);border-radius:12px;padding:18px}
+.form h3{font-size:18px;margin-bottom:10px}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.inp{display:block;margin-bottom:10px}
+.inp span{display:block;font-size:13px;font-weight:600;margin-bottom:4px}
+.inp input,.inp select,.inp textarea{width:100%;border:1px solid #cdbfa9;border-radius:8px;padding:10px;background:#fff}
+.inp input:focus,.inp select:focus,.inp textarea:focus{outline:2px solid var(--green);border-color:transparent}
+.err{color:var(--bad);font-size:13px;min-height:18px}
+.note{font-size:12.5px;color:var(--muted)}
+.sendrow{display:flex;gap:8px;flex-wrap:wrap}
+.wait{background:#fff;border:1px solid var(--line);border-radius:14px;padding:22px;display:flex;gap:16px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+.wait form{display:flex;gap:8px;flex:1;min-width:260px;max-width:480px}
+.wait input{flex:1;border:1px solid #cdbfa9;border-radius:8px;padding:10px;min-width:0}
+.made{display:flex;align-items:center;gap:14px;background:#fff;border:1px solid var(--line);border-radius:14px;padding:16px;position:relative;overflow:hidden}
+.made .flag{font-size:34px}.made b{font-family:Fraunces,serif;font-size:19px;color:var(--green);display:block}
+footer{margin-top:50px;background-color:var(--green-d);background-image:var(--zelLine);background-size:64px;color:#d9e8e2;padding:28px 0;font-size:14px}
+footer .cols{display:grid;grid-template-columns:2fr 1fr 1fr;gap:20px}
+footer h4{color:#fff;margin-bottom:8px}footer a{color:#fff}
+.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(120px);background:var(--ink);color:#fff;padding:12px 18px;border-radius:10px;z-index:99;transition:transform .3s;font-size:14px;max-width:90vw;text-align:center}
+.toast.show{transform:translateX(-50%) translateY(0)}
+html[lang=ar] body,html[lang=ar] button,html[lang=ar] input,html[lang=ar] select,html[lang=ar] textarea,html[lang=ar] h1,html[lang=ar] h2,html[lang=ar] h3,html[lang=ar] .made b,html[lang=ar] .city b{font-family:Cairo,Inter,sans-serif}
+html[lang=ar] .hero h1{line-height:1.35}
+html[dir=rtl] .pattern{right:auto;left:-40px}
+@media (max-width:860px){.cities{grid-template-columns:repeat(2,1fr)}.grid3{grid-template-columns:1fr}.partner{grid-template-columns:1fr}footer .cols{grid-template-columns:1fr}}
+@media (max-width:520px){.g2{grid-template-columns:1fr}.city{height:140px}}
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap">
+    <div class="topbar">
+      <div class="logo"><svg width="34" height="34" viewBox="0 0 40 40"><path d="M6 38V18Q6 4 20 4T34 18v20z" fill="#d9a441"/><path d="M12 38V20q0-8 8-8t8 8v18z" fill="#0f5a4a"/><circle cx="20" cy="8" r="2" fill="#fff"/></svg>StayInRiad</div>
+      <nav class="nav">
+        <select id="langSel" aria-label="Langue / Language / اللغة"><option value="fr">🌐 FR · Français</option><option value="en">🌐 EN · English</option><option value="ar">🌐 ع · العربية</option><option value="es">🌐 ES · Español</option></select>
+        <a href="#partenaires" class="solid" data-i18n="nav_partner"></a>
+      </nav>
+    </div>
+    <div class="hero">
+      <div class="badge100">🇲🇦 <span data-i18n="badge"></span></div>
+      <h1 data-i18n="h1"></h1>
+      <p data-i18n="lead"></p>
+      <div class="soon" data-i18n="soon"></div>
+      <div class="ctas"><a class="btn terra" href="#partenaires" data-i18n="cta_riad"></a><a class="btn light" href="#prevenir" data-i18n="cta_trav"></a></div>
+      <div class="trust"><span data-i18n="tr1"></span><span data-i18n="tr2"></span><span data-i18n="tr3"></span></div>
+      <div class="langnote" id="langNote"></div>
+      <svg class="pattern" width="380" height="380" viewBox="0 0 100 100"><g fill="none" stroke="#fff" stroke-width="1.2"><path d="M50 5L61 39 95 50 61 61 50 95 39 61 5 50 39 39z"/><path d="M50 20L57 43 80 50 57 57 50 80 43 57 20 50 43 43z"/><rect x="25" y="25" width="50" height="50" transform="rotate(45 50 50)"/><rect x="25" y="25" width="50" height="50"/></g></svg>
+    </div>
+  </div>
+</header>
+<div class="zband"></div>
+
+<main class="wrap">
+  <section>
+    <h2 data-i18n="dest_h"></h2><p class="sub" data-i18n="dest_sub"></p>
+    <div class="cities" id="cities"></div>
+  </section>
+
+  <section>
+    <h2 data-i18n="why_h"></h2><p class="sub" data-i18n="why_sub"></p>
+    <div class="grid3">
+      <div class="cardx"><div class="ic">🕌</div><b data-i18n="w1b"></b><span data-i18n="w1s"></span></div>
+      <div class="cardx"><div class="ic">🗺️</div><b data-i18n="w2b"></b><span data-i18n="w2s"></span></div>
+      <div class="cardx"><div class="ic">🌐</div><b data-i18n="w3b"></b><span data-i18n="w3s"></span></div>
+    </div>
+  </section>
+
+  <section id="partenaires">
+    <div class="partner">
+      <div>
+        <h2 data-i18n="p_h"></h2><p class="sub" data-i18n="p_sub"></p>
+        <ul><li data-i18n="p1"></li><li data-i18n="p2"></li><li data-i18n="p3"></li><li data-i18n="p4"></li><li data-i18n="p5"></li></ul>
+      </div>
+      <form class="form" id="pForm" novalidate>
+        <h3 data-i18n="f_h"></h3>
+        <div class="g2"><label class="inp"><span data-i18n="f_riad"></span><input id="fRiad" required autocomplete="organization"></label>
+          <label class="inp"><span data-i18n="f_city"></span><select id="fCity"></select></label></div>
+        <div class="g2"><label class="inp"><span data-i18n="f_name"></span><input id="fName" required autocomplete="name"></label>
+          <label class="inp"><span data-i18n="f_rooms"></span><input id="fRooms" type="number" min="1" max="200" inputmode="numeric"></label></div>
+        <div class="g2"><label class="inp"><span data-i18n="f_phone"></span><input id="fPhone" type="tel" required autocomplete="tel" dir="ltr" placeholder="+212 6 ..."></label>
+          <label class="inp"><span data-i18n="f_email"></span><input id="fEmail" type="email" autocomplete="email" dir="ltr"></label></div>
+        <label class="inp"><span data-i18n="f_msg"></span><textarea id="fMsg" rows="2"></textarea></label>
+        <div class="err" id="fErr"></div>
+        <div class="sendrow"><button type="button" class="btn wa" id="sendWa" data-i18n="send_wa"></button><button type="button" class="btn green" id="sendMail" data-i18n="send_mail"></button></div>
+        <p class="note" style="margin-top:8px" data-i18n="f_note"></p>
+      </form>
+    </div>
+  </section>
+
+  <section id="prevenir">
+    <div class="wait">
+      <div><h2 data-i18n="t_h"></h2><p class="sub" style="margin:0" data-i18n="t_sub"></p></div>
+      <form id="tForm" novalidate><input id="tEmail" type="email" dir="ltr" placeholder="email@exemple.com" autocomplete="email"><button class="btn terra" data-i18n="t_btn"></button></form>
+    </div>
+  </section>
+
+  <section>
+    <div class="made"><div class="flag">🇲🇦</div><div><b data-i18n="m_b"></b><span class="note" style="font-size:14px" data-i18n="m_s"></span></div></div>
+  </section>
+</main>
+
+<div class="zband" style="margin-top:50px"></div>
+<footer style="margin-top:0">
+  <div class="wrap cols">
+    <div><h4>StayInRiad</h4><p data-i18n="ft_tag"></p><p style="margin-top:8px;opacity:.7">© <span id="yr"></span> StayInRiad</p></div>
+    <div><h4 data-i18n="ft_contact"></h4><p id="ftContact"></p></div>
+    <div><h4 data-i18n="ft_part"></h4><p><a href="#partenaires" data-i18n="cta_riad"></a></p></div>
+  </div>
+</footer>
+<div class="toast" id="toast"></div>
+
+<script>
+/* ==== À COMPLÉTER : coordonnées de contact ==== */
+const CONFIG={email:"",whatsapp:""}; // ex. email:"contact@stayinriad.com", whatsapp:"212600000000" (format international, sans + ni espaces)
+
+/* ==== Zellige ==== */
+(function(){
+  const star=(cx,cy,r,f)=>`<rect x="${cx-r}" y="${cy-r}" width="${2*r}" height="${2*r}" fill="${f}"/><rect x="${cx-r}" y="${cy-r}" width="${2*r}" height="${2*r}" fill="${f}" transform="rotate(45 ${cx} ${cy})"/>`;
+  const tile=(bg,a,b,c,d)=>`<svg xmlns="http://www.w3.org/2000/svg" width="60" height="60" viewBox="0 0 60 60"><rect width="60" height="60" fill="${bg}"/>${star(30,30,13,a)}${star(30,30,7,b)}${[[0,0],[60,0],[0,60],[60,60]].map(([x,y])=>star(x,y,9,c)).join("")}${[[30,0],[0,30],[60,30],[30,60]].map(([x,y])=>`<rect x="${x-3.5}" y="${y-3.5}" width="7" height="7" fill="${d}" transform="rotate(45 ${x} ${y})"/>`).join("")}<circle cx="30" cy="30" r="2.6" fill="${bg}"/></svg>`;
+  const line=col=>`<svg xmlns="http://www.w3.org/2000/svg" width="60" height="60" viewBox="0 0 60 60"><g fill="none" stroke="${col}" stroke-width="1.1">${[[30,30,13],[0,0,9],[60,0,9],[0,60,9],[60,60,9]].map(([x,y,r])=>`<rect x="${x-r}" y="${y-r}" width="${2*r}" height="${2*r}"/><rect x="${x-r}" y="${y-r}" width="${2*r}" height="${2*r}" transform="rotate(45 ${x} ${y})"/>`).join("")}<circle cx="30" cy="30" r="5"/></g></svg>`;
+  const url=svg=>`url("data:image/svg+xml,${encodeURIComponent(svg)}")`;const R=document.documentElement.style;
+  R.setProperty("--zel",url(tile("#fbf3e4","#0f5a4a","#d9a441","#b5472b","#1f5f8b")));R.setProperty("--zelLine",url(line("rgba(255,255,255,.11)")));R.setProperty("--zelSand",url(line("rgba(181,71,43,.07)")));
+})();
+const PAL=[["#c2603e","#f2d0a4","#2f7a5f","#e8b04b"],["#6c4a2f","#e6d3b3","#1d4e7a","#c8973a"],["#e8e4dc","#ffffff","#2a6aa8","#d9a441"],["#4a78b8","#dfe9f6","#2c5c99","#e6c46a"],["#c9b79c","#f4ede2","#2a6e86","#d1a046"],["#b8754f","#f1e1ca","#2f6b5b","#d7a548"],["#c17a48","#f3dcbc","#3b6e5a","#e1a94e"],["#d38d4f","#f7e2c2","#7a5a2e","#eab25a"]];
+function patio(p){const [w,l,t,a]=PAL[p];let z="";for(let i=0;i<10;i++)z+=`<rect x="${i*30}" y="168" width="30" height="32" fill="${i%2?t:l}"/><path d="M${i*30+15} 172 l9 12 -9 12 -9 -12z" fill="${a}" opacity=".8"/>`;
+  return `<svg viewBox="0 0 300 200" preserveAspectRatio="xMidYMid slice"><rect width="300" height="200" fill="${w}"/>${[0,1,2].map(i=>`<path d="M${20+i*95} 168 V70 Q${55+i*95} 25 ${90+i*95} 70 V168z" fill="${l}"/><path d="M${30+i*95} 168 V78 Q${55+i*95} 42 ${80+i*95} 78 V168z" fill="${i===1?t:"#6b4a33"}" opacity="${i===1?.25:.18}"/>`).join("")}${z}<ellipse cx="150" cy="160" rx="38" ry="8" fill="${t}"/><ellipse cx="150" cy="157" rx="30" ry="5" fill="#9fd3e0"/><rect x="146" y="132" width="8" height="24" fill="${l}"/><ellipse cx="150" cy="132" rx="14" ry="4" fill="${a}"/><g fill="#3d7a3a"><circle cx="40" cy="140" r="14"/><circle cx="260" cy="140" r="14"/></g></svg>`;}
+
+/* ==== Textes ==== */
+const CITIES=["Marrakech","Fès","Essaouira","Chefchaouen","Tanger","Rabat","Ouarzazate","Merzouga"];
+const CITY_TR={"Fès":{en:"Fez",es:"Fez",ar:"فاس"},"Marrakech":{ar:"مراكش"},"Essaouira":{ar:"الصويرة"},"Chefchaouen":{ar:"شفشاون"},"Tanger":{en:"Tangier",es:"Tánger",ar:"طنجة"},"Rabat":{ar:"الرباط"},"Ouarzazate":{ar:"ورزازات"},"Merzouga":{ar:"مرزوكة"},"Meknès":{en:"Meknes",es:"Mequinez",ar:"مكناس"},"Agadir":{ar:"أكادير"},"Tétouan":{en:"Tetouan",es:"Tetuán",ar:"تطوان"},"Autre":{en:"Other",es:"Otra",ar:"أخرى"}};
+const T={
+fr:{nav_partner:"Inscrire mon riad",badge:"Plateforme de réservation 100 % marocaine",h1:"Trouvez le riad parfait, du cœur des médinas aux portes du désert",lead:"StayInRiad est la plateforme 100 % marocaine dédiée uniquement aux riads. Patios fleuris, hammams, terrasses sur les toits : bientôt, réservez en direct, du nord au sud du Royaume.",
+soon:"✦ Ouverture prochaine",cta_riad:"🏡 J'ai un riad : m'inscrire",cta_trav:"✉️ Me prévenir de l'ouverture",tr1:"Plateforme 100 % marocaine",tr2:"Prix en dirhams",tr3:"Uniquement des riads",
+dest_h:"Bientôt disponibles",dest_sub:"Les premières villes où vous pourrez réserver votre riad",why_h:"Pourquoi StayInRiad ?",why_sub:"Des riads, rien que des riads.",
+w1b:"100 % riads authentiques",w1s:"Uniquement des demeures traditionnelles organisées autour d'un patio intérieur.",w2b:"Recherche par carte",w2s:"Trouvez un riad au bon endroit, avec la distance jusqu'aux lieux incontournables de chaque médina.",w3b:"En 4 langues",w3s:"Français, anglais, arabe et espagnol, avec la langue choisie selon votre pays.",
+p_h:"Propriétaires de riads, rejoignez-nous",p_sub:"Inscrivez votre riad dès maintenant pour faire partie des premiers établissements en ligne à l'ouverture.",
+p1:"Un espace partenaire pour gérer vos chambres, vos prix et votre calendrier",p2:"Une commission claire, calculée uniquement sur l'hébergement",p3:"Des virements après le départ de chaque client",p4:"Votre fiche en 4 langues pour attirer les voyageurs du monde entier",p5:"Synchronisation avec les autres plateformes de réservation (prévue pour éviter les doubles réservations)",
+f_h:"Pré-inscription de votre riad",f_riad:"Nom du riad *",f_city:"Ville *",f_name:"Votre nom *",f_rooms:"Nombre de chambres",f_phone:"Téléphone / WhatsApp *",f_email:"E-mail",f_msg:"Message (facultatif)",
+send_wa:"Envoyer par WhatsApp",send_mail:"Envoyer par e-mail",f_note:"Votre demande s'ouvre dans WhatsApp ou dans votre messagerie, prête à être envoyée. Nous vous recontactons pour finaliser l'inscription.",
+f_err:"Merci de remplir le nom du riad, la ville, votre nom et votre téléphone.",no_contact:"Les coordonnées de contact seront bientôt disponibles.",
+t_h:"Voyageurs : soyez prévenus",t_sub:"Laissez votre e-mail, nous vous écrirons dès l'ouverture des réservations.",t_btn:"Me prévenir",t_err:"Adresse e-mail invalide.",
+m_b:"Conçue au Maroc, pour les riads du Maroc",m_s:"StayInRiad est une plateforme 100 % marocaine, avec des prix en dirhams et des riads partenaires de tout le Royaume.",
+ft_tag:"🇲🇦 La plateforme de réservation 100 % marocaine dédiée aux riads.",ft_contact:"Contact",ft_part:"Partenaires",
+lang_auto:"Langue choisie selon votre localisation",lang_change:"Changer",
+wa_intro:"Bonjour StayInRiad, je souhaite inscrire mon riad.",mail_subj:"Pré-inscription riad",wait_subj:"Prévenez-moi de l'ouverture de StayInRiad",wait_body:"Bonjour, merci de me prévenir à l'ouverture des réservations. Mon e-mail :",
+l_riad:"Riad",l_city:"Ville",l_name:"Nom",l_rooms:"Chambres",l_phone:"Téléphone",l_email:"E-mail",l_msg:"Message"},
+en:{nav_partner:"List my riad",badge:"100% Moroccan booking platform",h1:"Find the perfect riad, from the heart of the medinas to the edge of the desert",lead:"StayInRiad is the 100% Moroccan platform dedicated exclusively to riads. Flower-filled patios, hammams, rooftop terraces: soon you'll book direct, from the north to the south of the Kingdom.",
+soon:"✦ Opening soon",cta_riad:"🏡 I own a riad: sign up",cta_trav:"✉️ Notify me at launch",tr1:"100% Moroccan platform",tr2:"Prices in dirhams",tr3:"Riads only",
+dest_h:"Coming soon",dest_sub:"The first cities where you'll be able to book your riad",why_h:"Why StayInRiad?",why_sub:"Riads, nothing but riads.",
+w1b:"100% authentic riads",w1s:"Only traditional houses built around an inner courtyard.",w2b:"Map search",w2s:"Find a riad in the right spot, with the distance to each medina's must-see places.",w3b:"In 4 languages",w3s:"French, English, Arabic and Spanish, with the language picked based on your country.",
+p_h:"Riad owners, join us",p_sub:"Sign up your riad now to be among the first properties online at launch.",
+p1:"A partner area to manage your rooms, prices and calendar",p2:"A clear commission, charged on accommodation only",p3:"Bank transfers after each guest checks out",p4:"Your listing in 4 languages to attract travellers worldwide",p5:"Sync with other booking platforms (planned, to prevent double bookings)",
+f_h:"Pre-register your riad",f_riad:"Riad name *",f_city:"City *",f_name:"Your name *",f_rooms:"Number of rooms",f_phone:"Phone / WhatsApp *",f_email:"Email",f_msg:"Message (optional)",
+send_wa:"Send via WhatsApp",send_mail:"Send by email",f_note:"Your request opens in WhatsApp or your email app, ready to send. We'll get back to you to complete your registration.",
+f_err:"Please fill in the riad name, city, your name and your phone.",no_contact:"Contact details will be available soon.",
+t_h:"Travellers: get notified",t_sub:"Leave your email and we'll write to you as soon as bookings open.",t_btn:"Notify me",t_err:"Invalid email address.",
+m_b:"Built in Morocco, for Morocco's riads",m_s:"StayInRiad is a 100% Moroccan platform, with prices in dirhams and partner riads across the Kingdom.",
+ft_tag:"🇲🇦 The 100% Moroccan booking platform dedicated to riads.",ft_contact:"Contact",ft_part:"Partners",
+lang_auto:"Language chosen based on your location",lang_change:"Change",
+wa_intro:"Hello StayInRiad, I'd like to list my riad.",mail_subj:"Riad pre-registration",wait_subj:"Notify me when StayInRiad opens",wait_body:"Hello, please let me know when bookings open. My email:",
+l_riad:"Riad",l_city:"City",l_name:"Name",l_rooms:"Rooms",l_phone:"Phone",l_email:"Email",l_msg:"Message"},
+ar:{nav_partner:"سجّل رياضك",badge:"منصة حجز مغربية 100%",h1:"اعثر على الرياض المثالي، من قلب المدن العتيقة إلى أبواب الصحراء",lead:"StayInRiad منصة مغربية 100% مخصصة للرياضات فقط. أفنية مزهرة، حمّامات، وأسطح مطلّة: قريبًا يمكنك الحجز مباشرة من شمال المملكة إلى جنوبها.",
+soon:"✦ الافتتاح قريبًا",cta_riad:"🏡 أملك رياضًا: سجّلني",cta_trav:"✉️ أخبروني عند الافتتاح",tr1:"منصة مغربية 100%",tr2:"الأسعار بالدرهم",tr3:"رياضات فقط",
+dest_h:"قريبًا",dest_sub:"أولى المدن التي ستتمكن فيها من حجز رياضك",why_h:"لماذا StayInRiad؟",why_sub:"رياضات، ولا شيء غير الرياضات.",
+w1b:"رياضات أصيلة 100%",w1s:"منازل تقليدية فقط مبنية حول فناء داخلي.",w2b:"البحث على الخريطة",w2s:"اعثر على رياض في المكان المناسب، مع المسافة إلى أهم معالم كل مدينة عتيقة.",w3b:"بأربع لغات",w3s:"الفرنسية والإنجليزية والعربية والإسبانية، مع اختيار اللغة حسب بلدك.",
+p_h:"أصحاب الرياضات، انضموا إلينا",p_sub:"سجّل رياضك الآن لتكون من أوائل المؤسسات المعروضة عند الافتتاح.",
+p1:"فضاء للشركاء لإدارة غرفك وأسعارك وتقويمك",p2:"عمولة واضحة تُحتسب على المبيت فقط",p3:"تحويلات بنكية بعد مغادرة كل زبون",p4:"صفحتك بأربع لغات لجذب المسافرين من كل العالم",p5:"مزامنة مع منصات الحجز الأخرى (مبرمجة لتفادي الحجوزات المزدوجة)",
+f_h:"التسجيل المسبق لرياضك",f_riad:"اسم الرياض *",f_city:"المدينة *",f_name:"اسمك *",f_rooms:"عدد الغرف",f_phone:"الهاتف / واتساب *",f_email:"البريد الإلكتروني",f_msg:"رسالة (اختياري)",
+send_wa:"إرسال عبر واتساب",send_mail:"إرسال بالبريد",f_note:"يُفتح طلبك في واتساب أو في بريدك جاهزًا للإرسال. سنتواصل معك لإتمام التسجيل.",
+f_err:"يرجى ملء اسم الرياض والمدينة واسمك ورقم هاتفك.",no_contact:"ستتوفر معلومات الاتصال قريبًا.",
+t_h:"أيها المسافرون: كونوا أول من يعلم",t_sub:"اترك بريدك الإلكتروني وسنراسلك فور فتح الحجوزات.",t_btn:"أخبروني",t_err:"بريد إلكتروني غير صالح.",
+m_b:"صُمِّمت في المغرب، لرياضات المغرب",m_s:"StayInRiad منصة مغربية 100%، بأسعار بالدرهم ورياضات شريكة في كل أنحاء المملكة.",
+ft_tag:"🇲🇦 منصة الحجز المغربية 100% المخصصة للرياضات.",ft_contact:"اتصل بنا",ft_part:"الشركاء",
+lang_auto:"تم اختيار اللغة حسب موقعك",lang_change:"تغيير",
+wa_intro:"مرحبًا StayInRiad، أرغب في تسجيل رياضي.",mail_subj:"تسجيل مسبق لرياض",wait_subj:"أخبروني عند افتتاح StayInRiad",wait_body:"مرحبًا، أرجو إخباري عند فتح الحجوزات. بريدي:",
+l_riad:"الرياض",l_city:"المدينة",l_name:"الاسم",l_rooms:"الغرف",l_phone:"الهاتف",l_email:"البريد",l_msg:"الرسالة"},
+es:{nav_partner:"Registrar mi riad",badge:"Plataforma de reservas 100 % marroquí",h1:"Encuentra el riad perfecto, del corazón de las medinas a las puertas del desierto",lead:"StayInRiad es la plataforma 100 % marroquí dedicada solo a los riads. Patios en flor, hammams, terrazas en las azoteas: muy pronto podrás reservar directamente, del norte al sur del Reino.",
+soon:"✦ Apertura próximamente",cta_riad:"🏡 Tengo un riad: registrarme",cta_trav:"✉️ Avisadme en la apertura",tr1:"Plataforma 100 % marroquí",tr2:"Precios en dírhams",tr3:"Solo riads",
+dest_h:"Muy pronto",dest_sub:"Las primeras ciudades donde podrás reservar tu riad",why_h:"¿Por qué StayInRiad?",why_sub:"Riads y nada más que riads.",
+w1b:"Riads 100 % auténticos",w1s:"Solo casas tradicionales construidas en torno a un patio interior.",w2b:"Búsqueda en el mapa",w2s:"Encuentra un riad en el lugar ideal, con la distancia a los lugares imprescindibles de cada medina.",w3b:"En 4 idiomas",w3s:"Francés, inglés, árabe y español, con el idioma elegido según tu país.",
+p_h:"Propietarios de riads, uníos",p_sub:"Registra tu riad ahora para estar entre los primeros alojamientos en línea en la apertura.",
+p1:"Un área de socios para gestionar habitaciones, precios y calendario",p2:"Una comisión clara, solo sobre el alojamiento",p3:"Transferencias tras la salida de cada cliente",p4:"Tu ficha en 4 idiomas para atraer viajeros de todo el mundo",p5:"Sincronización con otras plataformas de reserva (prevista, para evitar reservas dobles)",
+f_h:"Prerregistro de tu riad",f_riad:"Nombre del riad *",f_city:"Ciudad *",f_name:"Tu nombre *",f_rooms:"Número de habitaciones",f_phone:"Teléfono / WhatsApp *",f_email:"Correo electrónico",f_msg:"Mensaje (opcional)",
+send_wa:"Enviar por WhatsApp",send_mail:"Enviar por correo",f_note:"Tu solicitud se abre en WhatsApp o en tu correo, lista para enviar. Te contactaremos para completar el registro.",
+f_err:"Rellena el nombre del riad, la ciudad, tu nombre y tu teléfono.",no_contact:"Los datos de contacto estarán disponibles muy pronto.",
+t_h:"Viajeros: recibid el aviso",t_sub:"Déjanos tu correo y te escribiremos en cuanto abran las reservas.",t_btn:"Avisadme",t_err:"Correo electrónico no válido.",
+m_b:"Creada en Marruecos, para los riads de Marruecos",m_s:"StayInRiad es una plataforma 100 % marroquí, con precios en dírhams y riads asociados en todo el Reino.",
+ft_tag:"🇲🇦 La plataforma de reservas 100 % marroquí dedicada a los riads.",ft_contact:"Contacto",ft_part:"Socios",
+lang_auto:"Idioma elegido según tu ubicación",lang_change:"Cambiar",
+wa_intro:"Hola StayInRiad, quiero registrar mi riad.",mail_subj:"Prerregistro de riad",wait_subj:"Avisadme cuando abra StayInRiad",wait_body:"Hola, avisadme cuando abran las reservas. Mi correo:",
+l_riad:"Riad",l_city:"Ciudad",l_name:"Nombre",l_rooms:"Habitaciones",l_phone:"Teléfono",l_email:"Correo",l_msg:"Mensaje"}};
+let LANG="fr";
+const $=id=>document.getElementById(id);
+const t=k=>(T[LANG]&&T[LANG][k])||T.fr[k]||k;
+const cityName=c=>(CITY_TR[c]&&CITY_TR[c][LANG])||c;
+function toast(m){const e=$("toast");e.textContent=m;e.classList.add("show");clearTimeout(e._t);e._t=setTimeout(()=>e.classList.remove("show"),3200);}
+
+/* ==== Langue selon la localisation (fuseau horaire + langue du téléphone) ==== */
+const TZ={"Africa/Casablanca":"MA","Africa/El_Aaiun":"MA","Europe/Paris":"fr","Europe/Brussels":"fr","Europe/Luxembourg":"fr","Europe/Monaco":"fr","Europe/Zurich":"fr","America/Montreal":"fr","Africa/Algiers":"fr","Africa/Tunis":"fr","Africa/Dakar":"fr","Africa/Abidjan":"fr",
+ "Europe/Madrid":"es","Atlantic/Canary":"es","Africa/Ceuta":"es","America/Mexico_City":"es","America/Bogota":"es","America/Lima":"es","America/Santiago":"es","America/Argentina/Buenos_Aires":"es","America/Caracas":"es","America/Montevideo":"es",
+ "Asia/Riyadh":"ar","Asia/Dubai":"ar","Asia/Qatar":"ar","Asia/Kuwait":"ar","Asia/Bahrain":"ar","Asia/Muscat":"ar","Africa/Cairo":"ar","Asia/Amman":"ar","Asia/Beirut":"ar","Asia/Baghdad":"ar","Africa/Tripoli":"ar","Africa/Nouakchott":"ar"};
+function detect(){let s=null;try{s=localStorage.getItem("sir_lang");}catch(e){}if(s&&T[s])return{l:s,auto:false};
+  const nav=(navigator.languages&&navigator.languages[0]||navigator.language||"fr").slice(0,2).toLowerCase();let tz="";try{tz=Intl.DateTimeFormat().resolvedOptions().timeZone||"";}catch(e){}
+  const z=TZ[tz];const l=z==="MA"?(["ar","en","es"].includes(nav)?nav:"fr"):z?z:(T[nav]?nav:"en");return{l,auto:true};}
+function setLang(l,manual){LANG=T[l]?l:"fr";if(manual){try{localStorage.setItem("sir_lang",LANG);}catch(e){}$("langNote").innerHTML="";}
+  document.documentElement.lang=LANG;document.documentElement.dir=LANG==="ar"?"rtl":"ltr";$("langSel").value=LANG;
+  document.querySelectorAll("[data-i18n]").forEach(e=>e.textContent=t(e.dataset.i18n));
+  $("cities").innerHTML=CITIES.map((c,i)=>`<div class="city">${patio(i)}<b>${cityName(c)}</b></div>`).join("");
+  const v=$("fCity").value;$("fCity").innerHTML=["Marrakech","Fès","Essaouira","Chefchaouen","Tanger","Tétouan","Rabat","Meknès","Agadir","Ouarzazate","Merzouga","Autre"].map(c=>`<option value="${c}">${cityName(c)}</option>`).join("");if(v)$("fCity").value=v;
+  $("ftContact").innerHTML=[CONFIG.email?`✉️ <a href="mailto:${CONFIG.email}" dir="ltr">${CONFIG.email}</a>`:"",CONFIG.whatsapp?`💬 <a href="https://wa.me/${CONFIG.whatsapp}" dir="ltr">+${CONFIG.whatsapp}</a>`:""].filter(Boolean).join("<br>")||t("no_contact");
+  $("sendWa").style.display=CONFIG.whatsapp?"":"none";$("sendMail").style.display=CONFIG.email?"":"none";
+  if(!CONFIG.whatsapp&&!CONFIG.email)$("fErr").textContent=t("no_contact");
+  document.title="StayInRiad — "+t("badge");}
+$("langSel").onchange=e=>setLang(e.target.value,true);
+
+/* ==== Formulaires (sans serveur : ouvre WhatsApp ou la messagerie) ==== */
+function partnerText(){const f={riad:$("fRiad").value.trim(),city:$("fCity").value,name:$("fName").value.trim(),rooms:$("fRooms").value.trim(),phone:$("fPhone").value.trim(),email:$("fEmail").value.trim(),msg:$("fMsg").value.trim()};
+  if(!f.riad||!f.name||!f.phone){$("fErr").textContent=t("f_err");return null;}$("fErr").textContent="";
+  return [t("wa_intro"),"",`${t("l_riad")} : ${f.riad}`,`${t("l_city")} : ${cityName(f.city)}`,`${t("l_name")} : ${f.name}`,f.rooms?`${t("l_rooms")} : ${f.rooms}`:"",`${t("l_phone")} : ${f.phone}`,f.email?`${t("l_email")} : ${f.email}`:"",f.msg?`${t("l_msg")} : ${f.msg}`:""].filter((x,i)=>i===1||x).join("\n");}
+$("sendWa").onclick=()=>{const txt=partnerText();if(!txt)return;location.href=`https://wa.me/${CONFIG.whatsapp}?text=${encodeURIComponent(txt)}`;};
+$("sendMail").onclick=()=>{const txt=partnerText();if(!txt)return;location.href=`mailto:${CONFIG.email}?subject=${encodeURIComponent(t("mail_subj")+" — "+$("fRiad").value.trim())}&body=${encodeURIComponent(txt)}`;};
+$("tForm").onsubmit=e=>{e.preventDefault();const m=$("tEmail").value.trim();if(!/^\S+@\S+\.\S+$/.test(m)){toast(t("t_err"));return;}
+  if(!CONFIG.email){toast(t("no_contact"));return;}location.href=`mailto:${CONFIG.email}?subject=${encodeURIComponent(t("wait_subj"))}&body=${encodeURIComponent(t("wait_body")+" "+m)}`;};
+
+/* ==== Démarrage ==== */
+$("yr").textContent=new Date().getFullYear();
+const D=detect();setLang(D.l,false);
+if(D.auto)$("langNote").innerHTML=`🌐 ${t("lang_auto")} · <a href="#" style="color:var(--gold)" onclick="$('langSel').focus();if($('langSel').showPicker)$('langSel').showPicker();return false">${t("lang_change")}</a>`;
+</script>
+</body>
+</html>
