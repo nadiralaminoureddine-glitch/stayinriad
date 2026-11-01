@@ -8,14 +8,14 @@
 <meta property="og:title" content="StayInRiad — La plateforme 100 % marocaine des riads">
 <meta property="og:description" content="Réservez votre riad au Maroc, du cœur des médinas aux portes du désert. Ouverture prochaine.">
 <meta property="og:url" content="https://stayinriad.com/">
-<meta name="theme-color" content="#0f5a4a">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Cpath d='M6 38V18Q6 4 20 4T34 18v20z' fill='%23d9a441'/%3E%3Cpath d='M12 38V20q0-8 8-8t8 8v18z' fill='%230f5a4a'/%3E%3C/svg%3E">
+<meta name="theme-color" content="#3f3fb0">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Cpath d='M6 38V18Q6 4 20 4T34 18v20z' fill='%23f2c230'/%3E%3Cpath d='M12 38V20q0-8 8-8t8 8v18z' fill='%233f3fb0'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=Inter:wght@400;500;600;700&family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
-:root{--terra:#b5472b;--terra-d:#8e3420;--green:#0f5a4a;--green-d:#0a3f34;--sand:#f7efe3;--sand-d:#eadcc6;--ink:#1f1a17;--muted:#6b625a;--line:#e3d7c5;--gold:#d9a441;--ok:#1d7a46;--bad:#b3261e}
+:root{--terra:#2f6b4f;--terra-d:#24533d;--green:#3f3fb0;--green-d:#2e2e8a;--sand:#f6f2e8;--sand-d:#e8e2d4;--ink:#1f1a17;--muted:#6b625a;--line:#e2ddd0;--gold:#f2c230;--ok:#1d7a46;--bad:#b3261e}
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:Inter,system-ui,sans-serif;color:var(--ink);background-color:#fbf8f3;background-image:var(--zelSand);background-size:72px;line-height:1.5}
+body{font-family:Inter,system-ui,sans-serif;color:var(--ink);background-color:#faf7f0;background-image:var(--zelSand);background-size:72px;line-height:1.5}
 button,input,select,textarea{font:inherit}
 .wrap{max-width:1120px;margin:0 auto;padding:0 16px}
 header{background-color:var(--green);background-image:var(--zelLine);background-size:64px;color:#fff;position:relative;overflow:hidden}
@@ -29,10 +29,10 @@ header{background-color:var(--green);background-image:var(--zelLine);background-
 .badge100{display:inline-flex;align-items:center;gap:8px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.35);padding:6px 12px;border-radius:999px;font-weight:600;font-size:14px;margin-bottom:14px}
 .hero h1{font-family:Fraunces,serif;font-size:clamp(30px,5.4vw,52px);line-height:1.1;max-width:760px}
 .hero p{margin-top:12px;font-size:18px;opacity:.92;max-width:660px}
-.soon{display:inline-block;margin-top:18px;background:var(--gold);color:var(--ink);font-weight:700;padding:8px 14px;border-radius:999px}
+.soon{display:inline-block;margin-top:18px;background:transparent;border:1.5px solid var(--gold);color:var(--gold);font-weight:700;padding:7px 14px;border-radius:999px}
 .ctas{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;border:0;border-radius:8px;padding:0 20px;min-height:48px;font-weight:600;font-size:15px;cursor:pointer;text-decoration:none}
-.btn.terra{background:var(--terra);color:#fff}.btn.terra:hover{background:var(--terra-d)}
+.btn.terra{background:var(--gold);color:#2a2410}.btn.terra:hover{background:#e0b020}
 .btn.light{background:#fff;color:var(--green)}
 .btn.green{background:var(--green);color:#fff}.btn.green:hover{background:var(--green-d)}
 .btn.wa{background:#1f9d55;color:#fff}
@@ -57,7 +57,7 @@ h2::before{content:"";display:inline-block;width:18px;height:18px;margin-inline-
 .cardx .ic{font-size:26px}.cardx b{display:block;margin:6px 0 4px;font-size:16px}.cardx span{font-size:14px;color:var(--muted)}
 .partner{background-color:var(--green);background-image:var(--zelLine);background-size:56px;color:#fff;border-radius:16px;padding:24px;display:grid;grid-template-columns:1fr 1.1fr;gap:24px;margin-top:8px}
 .partner h2{color:#fff}.partner h2::before{background:var(--gold)}
-.partner .sub{color:#d8eae4}
+.partner .sub{color:#dcdff7}
 .partner ul{list-style:none;display:grid;gap:10px}
 .partner li{display:flex;gap:10px;font-size:15px}.partner li::before{content:"✦";color:var(--gold)}
 .form{background:#fff;color:var(--ink);border-radius:12px;padding:18px}
@@ -75,7 +75,7 @@ h2::before{content:"";display:inline-block;width:18px;height:18px;margin-inline-
 .wait input{flex:1;border:1px solid #cdbfa9;border-radius:8px;padding:10px;min-width:0}
 .made{display:flex;align-items:center;gap:14px;background:#fff;border:1px solid var(--line);border-radius:14px;padding:16px;position:relative;overflow:hidden}
 .made .flag{font-size:34px}.made b{font-family:Fraunces,serif;font-size:19px;color:var(--green);display:block}
-footer{margin-top:50px;background-color:var(--green-d);background-image:var(--zelLine);background-size:64px;color:#d9e8e2;padding:28px 0;font-size:14px}
+footer{margin-top:50px;background-color:var(--green-d);background-image:var(--zelLine);background-size:64px;color:#dcdff5;padding:28px 0;font-size:14px}
 footer .cols{display:grid;grid-template-columns:2fr 1fr 1fr;gap:20px}
 footer h4{color:#fff;margin-bottom:8px}footer a{color:#fff}
 .toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(120px);background:var(--ink);color:#fff;padding:12px 18px;border-radius:10px;z-index:99;transition:transform .3s;font-size:14px;max-width:90vw;text-align:center}
@@ -91,7 +91,7 @@ html[dir=rtl] .pattern{right:auto;left:-40px}
 <header>
   <div class="wrap">
     <div class="topbar">
-      <div class="logo"><svg width="34" height="34" viewBox="0 0 40 40"><path d="M6 38V18Q6 4 20 4T34 18v20z" fill="#d9a441"/><path d="M12 38V20q0-8 8-8t8 8v18z" fill="#0f5a4a"/><circle cx="20" cy="8" r="2" fill="#fff"/></svg>StayInRiad</div>
+      <div class="logo"><svg width="34" height="34" viewBox="0 0 40 40"><path d="M6 38V18Q6 4 20 4T34 18v20z" fill="#f2c230"/><path d="M12 38V20q0-8 8-8t8 8v18z" fill="#3f3fb0"/><circle cx="20" cy="8" r="2" fill="#fff"/></svg>StayInRiad</div>
       <nav class="nav">
         <select id="langSel" aria-label="Langue / Language / اللغة"><option value="fr">🌐 FR · Français</option><option value="en">🌐 EN · English</option><option value="ar">🌐 ع · العربية</option><option value="es">🌐 ES · Español</option></select>
         <a href="#partenaires" class="solid" data-i18n="nav_partner"></a>
@@ -180,9 +180,9 @@ const CONFIG={email:"",whatsapp:""}; // ex. email:"contact@stayinriad.com", what
   const tile=(bg,a,b,c,d)=>`<svg xmlns="http://www.w3.org/2000/svg" width="60" height="60" viewBox="0 0 60 60"><rect width="60" height="60" fill="${bg}"/>${star(30,30,13,a)}${star(30,30,7,b)}${[[0,0],[60,0],[0,60],[60,60]].map(([x,y])=>star(x,y,9,c)).join("")}${[[30,0],[0,30],[60,30],[30,60]].map(([x,y])=>`<rect x="${x-3.5}" y="${y-3.5}" width="7" height="7" fill="${d}" transform="rotate(45 ${x} ${y})"/>`).join("")}<circle cx="30" cy="30" r="2.6" fill="${bg}"/></svg>`;
   const line=col=>`<svg xmlns="http://www.w3.org/2000/svg" width="60" height="60" viewBox="0 0 60 60"><g fill="none" stroke="${col}" stroke-width="1.1">${[[30,30,13],[0,0,9],[60,0,9],[0,60,9],[60,60,9]].map(([x,y,r])=>`<rect x="${x-r}" y="${y-r}" width="${2*r}" height="${2*r}"/><rect x="${x-r}" y="${y-r}" width="${2*r}" height="${2*r}" transform="rotate(45 ${x} ${y})"/>`).join("")}<circle cx="30" cy="30" r="5"/></g></svg>`;
   const url=svg=>`url("data:image/svg+xml,${encodeURIComponent(svg)}")`;const R=document.documentElement.style;
-  R.setProperty("--zel",url(tile("#fbf3e4","#0f5a4a","#d9a441","#b5472b","#1f5f8b")));R.setProperty("--zelLine",url(line("rgba(255,255,255,.11)")));R.setProperty("--zelSand",url(line("rgba(181,71,43,.07)")));
+  R.setProperty("--zel",url(tile("#faf7f0","#3f3fb0","#f2c230","#2f6b4f","#1f2f7a")));R.setProperty("--zelLine",url(line("rgba(255,255,255,.11)")));R.setProperty("--zelSand",url(line("rgba(63,63,176,.07)")));
 })();
-const PAL=[["#c2603e","#f2d0a4","#2f7a5f","#e8b04b"],["#6c4a2f","#e6d3b3","#1d4e7a","#c8973a"],["#e8e4dc","#ffffff","#2a6aa8","#d9a441"],["#4a78b8","#dfe9f6","#2c5c99","#e6c46a"],["#c9b79c","#f4ede2","#2a6e86","#d1a046"],["#b8754f","#f1e1ca","#2f6b5b","#d7a548"],["#c17a48","#f3dcbc","#3b6e5a","#e1a94e"],["#d38d4f","#f7e2c2","#7a5a2e","#eab25a"]];
+const PAL=[["#c2603e","#f2d0a4","#2f7a5f","#e8b04b"],["#6c4a2f","#e6d3b3","#1d4e7a","#c8973a"],["#e8e4dc","#ffffff","#2a6aa8","#f2c230"],["#4a78b8","#dfe9f6","#2c5c99","#e6c46a"],["#c9b79c","#f4ede2","#2a6e86","#d1a046"],["#b8754f","#f1e1ca","#2f6b5b","#d7a548"],["#c17a48","#f3dcbc","#3b6e5a","#e1a94e"],["#d38d4f","#f7e2c2","#7a5a2e","#eab25a"]];
 function patio(p){const [w,l,t,a]=PAL[p];let z="";for(let i=0;i<10;i++)z+=`<rect x="${i*30}" y="168" width="30" height="32" fill="${i%2?t:l}"/><path d="M${i*30+15} 172 l9 12 -9 12 -9 -12z" fill="${a}" opacity=".8"/>`;
   return `<svg viewBox="0 0 300 200" preserveAspectRatio="xMidYMid slice"><rect width="300" height="200" fill="${w}"/>${[0,1,2].map(i=>`<path d="M${20+i*95} 168 V70 Q${55+i*95} 25 ${90+i*95} 70 V168z" fill="${l}"/><path d="M${30+i*95} 168 V78 Q${55+i*95} 42 ${80+i*95} 78 V168z" fill="${i===1?t:"#6b4a33"}" opacity="${i===1?.25:.18}"/>`).join("")}${z}<ellipse cx="150" cy="160" rx="38" ry="8" fill="${t}"/><ellipse cx="150" cy="157" rx="30" ry="5" fill="#9fd3e0"/><rect x="146" y="132" width="8" height="24" fill="${l}"/><ellipse cx="150" cy="132" rx="14" ry="4" fill="${a}"/><g fill="#3d7a3a"><circle cx="40" cy="140" r="14"/><circle cx="260" cy="140" r="14"/></g></svg>`;}
 
