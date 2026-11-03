@@ -23,7 +23,7 @@ function render_page(string $title, string $body): void {
     if ($u) {
         $nav = '<span class="who">' . e($u['first_name']) . ' · ' . e(ROLES[$u['role']] ?? '') . '</span>'
              . (site_open() || $u['role'] === 'admin' ? '<a href="riads.php">Les riads</a>' : '')
-             . ($u['role'] === 'admin' ? '<a href="admin.php">Comptes</a><a href="bookings.php">Réservations</a>' : '')
+             . ($u['role'] === 'admin' ? '<a href="admin.php">Comptes</a><a href="bookings.php">Réservations</a><a href="payouts.php">Versements</a>' : '')
              . '<a href="account.php">Mon espace</a>'
              . '<form method="post" action="logout.php" class="inline">' . csrf_field() . '<button class="link">Déconnexion</button></form>';
     } else {

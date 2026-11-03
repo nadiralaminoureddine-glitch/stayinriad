@@ -23,6 +23,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
         if ($id) {
             db()->commit();
+            if ($type === 'riad') send_mail(admin_email(), '[StayInRiad] Nouveau riad inscrit : ' . $p('riad_name'), mail_layout('Nouveau riad inscrit', mail_rows(['Riad' => e($p('riad_name')), 'Ville' => e($p('city')), 'Propriétaire' => e($p('first') . ' ' . $p('last')), 'Téléphone' => e($p('phone')), 'Email' => e($p('email'))]) . mail_button(base_url() . 'admin.php', 'Voir dans l\'administration')));
             attempt_login($p('email'), (string)$_POST['pass']);
             flash($type === 'riad' ? 'Bienvenue ! Votre riad est enregistré. Notre équipe va vous contacter pour finaliser votre fiche.' : 'Bienvenue sur StayInRiad !');
             redirect('account.php');

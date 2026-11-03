@@ -3,7 +3,7 @@
 declare(strict_types=1);
 if (!defined('SIR_APP')) exit;
 
-const SCHEMA_VERSION = 3;
+const SCHEMA_VERSION = 4;
 
 function run_migrations(): void {
     global $CONFIG;
@@ -64,6 +64,15 @@ function run_migrations(): void {
         )$tail");
         try { db()->exec("CREATE INDEX idx_book_room ON bookings (room_id, check_in, check_out)"); } catch (PDOException $e) {}
         db()->exec("CREATE TABLE IF NOT EXISTS closed_days (room_id $fk NOT NULL, day DATE NOT NULL, PRIMARY KEY (room_id, day))$tail");
+    }
+    if ($v < 4) {
+        foreach (["cancelled_at DATETIME NULL", "refund DECIMAL(10,2) NOT NULL DEFAULT 0", "penalty DECIMAL(10,2) NOT NULL DEFAULT 0",
+                  "refund_status VARCHAR(20) NOT NULL DEFAULT ''", "payout_id $fk NULL", "police_reminded TINYINT NOT NULL DEFAULT 0", "police_filled_at DATETIME NULL"] as $c) {
+            try { db()->exec("ALTER TABLE bookings ADD COLUMN $c"); } catch (PDOException $e) {}
+        }
+        db()->exec("CREATE TABLE IF NOT EXISTS police_forms (id $id, booking_id $fk NOT NULL, guest_no INT NOT NULL, data TEXT NOT NULL, created_at DATETIME NOT NULL, FOREIGN KEY (booking_id) REFERENCES bookings(id))$tail");
+        db()->exec("CREATE TABLE IF NOT EXISTS payouts (id $id, riad_id $fk NOT NULL, amount_eur DECIMAL(12,2) NOT NULL, amount_mad DECIMAL(12,2) NOT NULL, refs TEXT NOT NULL, bank_rib VARCHAR(24) NOT NULL, bank_ref VARCHAR(80) NOT NULL DEFAULT '', paid_at DATETIME NOT NULL, FOREIGN KEY (riad_id) REFERENCES riads(id))$tail");
+        db()->exec("CREATE TABLE IF NOT EXISTS email_log (id $id, to_addr VARCHAR(190) NOT NULL, subject VARCHAR(255) NOT NULL, status VARCHAR(20) NOT NULL, created_at DATETIME NOT NULL)$tail");
     }
     q("DELETE FROM settings WHERE k = 'schema_version'");
     q("INSERT INTO settings (k, v) VALUES ('schema_version', ?)", [(string)SCHEMA_VERSION]);

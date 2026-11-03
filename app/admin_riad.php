@@ -44,11 +44,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             elseif ($r['bank_status'] !== 'vérifié') flash('Vérifiez d\'abord le RIB.', 'bad');
             elseif ($pub < 3) flash('Validez au moins 3 photos avant la mise en ligne.', 'bad');
             elseif (photo_duplicates($rid)) flash('Une photo en double doit d\'abord être tranchée.', 'bad');
-            else { q("UPDATE riads SET status = 'en ligne', approved_at = ?, admin_note = NULL WHERE id = ?", [now(), $rid]); flash($r['name'] . ' est en ligne.'); }
+            else { q("UPDATE riads SET status = 'en ligne', approved_at = ?, admin_note = NULL WHERE id = ?", [now(), $rid]); flash($r['name'] . ' est en ligne. Le riad est prévenu par email.');
+                send_mail($r['email'], 'Votre riad est validé : ' . $r['name'], mail_layout('Bienvenue sur StayInRiad !', '<p>Bonjour ' . e($r['first_name']) . ',</p><p>Bonne nouvelle : la fiche de <b>' . e($r['name']) . '</b> est validée' . (site_open() ? ' et en ligne. Les voyageurs peuvent désormais réserver.' : '. Elle sera visible par les voyageurs dès l\'ouverture des réservations.') . '</p><p>Pensez à tenir votre calendrier à jour (dates fermées) pour éviter les doubles réservations.</p>' . mail_button(base_url() . 'account.php', 'Mon espace riad'))); }
             break;
         case 'refuse':
             $note = mb_substr(trim((string)($_POST['note'] ?? '')), 0, 500);
-            q("UPDATE riads SET status = 'refusé', admin_note = ? WHERE id = ?", [$note ?: 'Merci de compléter ou corriger votre fiche.', $rid]); flash('Fiche renvoyée au riad pour correction.');
+            q("UPDATE riads SET status = 'refusé', admin_note = ? WHERE id = ?", [$note ?: 'Merci de compléter ou corriger votre fiche.', $rid]); flash('Fiche renvoyée au riad pour correction. Le riad est prévenu par email.');
+            send_mail($r['email'], 'Votre fiche StayInRiad est à compléter', mail_layout('Encore un petit effort', '<p>Bonjour ' . e($r['first_name']) . ',</p><p>Notre équipe a relu la fiche de <b>' . e($r['name']) . '</b>. Avant la mise en ligne, merci de corriger :</p><p style="background:#fdf0dc;padding:12px;border-radius:8px">' . e($note ?: 'Merci de compléter ou corriger votre fiche.') . '</p>' . mail_button(base_url() . 'riad.php', 'Modifier ma fiche') . '<p style="font-size:14px">Besoin d\'aide ? Répondez simplement à cet email.</p>'));
             break;
         case 'offline':
             q("UPDATE riads SET status = 'brouillon' WHERE id = ?", [$rid]); flash('Riad retiré du site.');

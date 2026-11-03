@@ -132,6 +132,7 @@ function confirm_booking(array $b, string $paymentRef): bool {
         if (!$room || room_free($room, $b['check_in'], $b['check_out']) < 1) return false;
     }
     q("UPDATE bookings SET status = 'confirmée', paid_at = ?, payment_ref = ?, hold_until = NULL WHERE id = ?", [now(), $paymentRef, $b['id']]);
+    try { notify_confirmed(q('SELECT * FROM bookings WHERE id = ?', [$b['id']])->fetch()); } catch (Throwable $e) { error_log('[StayInRiad] email confirmation : ' . $e->getMessage()); }
     return true;
 }
 /** Marque comme expirés les paiements abandonnés. */
@@ -145,4 +146,97 @@ function test_payment_allowed(): bool { $u = current_user(); return $u && $u['ro
 function riad_photos(int $riadId, ?int $roomId = null): array {
     $sql = "SELECT public_file FROM photos WHERE riad_id = ? AND status = 'publiée'" . ($roomId !== null ? ' AND room_id = ?' : '') . ' ORDER BY room_id IS NOT NULL, sort, id';
     return array_column(q($sql, $roomId !== null ? [$riadId, $roomId] : [$riadId])->fetchAll(), 'public_file');
+}
+
+// =====================================================================
+//  Étape 4 : emails, annulation, versements, fiche de police
+// =====================================================================
+function booking_url(array $b, string $page = 'booking.php'): string { return base_url() . $page . '?ref=' . urlencode($b['ref']) . '&t=' . urlencode($b['token']); }
+function cancel_policy_text(array $r): string { return $r['free_cancel'] ? 'Annulation gratuite jusqu\'à 48 h avant l\'arrivée. Ensuite, la première nuit est due.' : 'Tarif non remboursable.'; }
+
+/** Conditions d'annulation à l'instant présent : [pénalité, remboursement, explication]. */
+function cancel_terms(array $b, array $r): array {
+    $total = (float)$b['total']; $night = min($total, (float)$b['price_night']);
+    $hours = (strtotime($b['check_in'] . ' 14:00:00') - time()) / 3600; // arrivée vers 14 h, heure du Maroc
+    if (!$r['free_cancel']) return [$total, 0.0, 'Tarif non remboursable : le montant total reste dû.'];
+    if ($hours >= 48) return [0.0, $total, 'Annulation gratuite : vous êtes remboursé intégralement.'];
+    return [$night, round($total - $night, 2), 'Moins de 48 h avant l\'arrivée : la première nuit reste due, le reste vous est remboursé.'];
+}
+
+/** Annule une réservation confirmée. $by = 'client' ou 'admin'. */
+function cancel_booking(array $b, string $by): ?string {
+    if ($b['status'] !== 'confirmée') return 'Cette réservation ne peut plus être annulée.';
+    if ($b['check_in'] <= today() && $by !== 'admin') return 'Le séjour a commencé : contactez-nous à contact@stayinriad.com.';
+    $r = q('SELECT * FROM riads WHERE id = ?', [$b['riad_id']])->fetch();
+    [$pen, $ref] = cancel_terms($b, $r);
+    if ($by === 'admin' && !empty($GLOBALS['FULL_REFUND'])) { $pen = 0.0; $ref = (float)$b['total']; }
+    $com = round($pen * (float)$b['commission_rate'] / 100, 2); $net = round($pen - $com, 2);
+    q("UPDATE bookings SET status = 'annulée', cancelled_at = ?, penalty = ?, refund = ?, commission = ?, net = ?, net_mad = ?, refund_status = ? WHERE id = ?",
+      [now(), $pen, $ref, $com, $net, round($net * (float)$b['eur_mad'], 2), $ref > 0 ? 'à rembourser' : '', $b['id']]);
+    $b = q('SELECT * FROM bookings WHERE id = ?', [$b['id']])->fetch();
+    notify_cancelled($b, $r, $by);
+    return null;
+}
+
+// ---------- Emails liés aux réservations ----------
+function notify_confirmed(array $b): void {
+    $r = q('SELECT r.*, u.email AS owner_email, u.first_name AS owner_first FROM riads r JOIN users u ON u.id = r.owner_id WHERE r.id = ?', [$b['riad_id']])->fetch();
+    $stay = e(fr_date($b['check_in'])) . ' → ' . e(fr_date($b['check_out'])) . ' (' . (int)$b['nights'] . ' nuit' . ($b['nights'] > 1 ? 's' : '') . ')';
+    $test = str_starts_with((string)$b['payment_ref'], 'TEST-') ? '<p style="background:#e7f1fb;padding:10px;border-radius:8px">Réservation de <b>TEST</b> : aucun paiement réel.</p>' : '';
+    // Client
+    send_mail($b['email'], 'Réservation confirmée ' . $b['ref'] . ' · ' . $r['name'], mail_layout('Votre réservation est confirmée', $test .
+        '<p>Bonjour ' . e($b['first_name']) . ',</p><p>Merci pour votre réservation : <b>' . e($r['name']) . '</b> vous attend.</p>' .
+        mail_rows(['N° de réservation' => e($b['ref']), 'Riad' => e($r['name']), 'Adresse' => e($r['address'] ?: $r['city']), 'Chambre' => e($b['room_name']), 'Séjour' => $stay,
+                   'Voyageurs' => (int)$b['guests'] . ' personne(s)', 'Montant payé' => e(eur((float)$b['total'])), 'Taxe de séjour' => 'à régler sur place, au riad']) .
+        '<p style="font-size:14px">' . e(cancel_policy_text($r)) . '</p>' .
+        '<p><b>Fiche de police :</b> la loi marocaine demande une fiche pour chaque voyageur. Remplissez-la en ligne avant votre arrivée, cela vous fera gagner du temps à l\'accueil.</p>' .
+        mail_button(booking_url($b, 'police.php'), 'Remplir la fiche de police') . '<p style="font-size:14px">Retrouvez ou annulez votre réservation : <a href="' . e(booking_url($b)) . '" style="color:#0f5a4a">voir ma réservation</a>.</p>'));
+    // Riad
+    send_mail($r['owner_email'], 'Nouvelle réservation ' . $b['ref'] . ' · ' . $b['first_name'] . ' ' . $b['last_name'], mail_layout('Nouvelle réservation', $test .
+        '<p>Bonjour ' . e($r['owner_first']) . ',</p><p>Vous avez une nouvelle réservation sur StayInRiad. La chambre est déjà bloquée sur votre calendrier StayInRiad : pensez à la fermer sur vos autres sites (Booking, Airbnb…) si ce n\'est pas automatique.</p>' .
+        mail_rows(['N°' => e($b['ref']), 'Client' => e($b['first_name'] . ' ' . $b['last_name']) . ' (' . e($b['country']) . ')', 'Téléphone' => e($b['phone']), 'Chambre' => e($b['room_name']), 'Séjour' => $stay,
+                   'Voyageurs' => (int)$b['guests'], 'Demande' => e($b['request'] ?: '—'), 'Votre revenu net' => e(eur((float)$b['net'])) . ' · ' . e(mad((float)$b['net_mad']))]) .
+        mail_button(base_url() . 'bookings.php', 'Voir dans mon espace')));
+    // Admin
+    send_mail(admin_email(), '[StayInRiad] Réservation ' . $b['ref'] . ' · ' . $r['name'] . ' · ' . eur((float)$b['total']), mail_layout('Nouvelle réservation', $test . mail_rows(['N°' => e($b['ref']), 'Riad' => e($r['name']), 'Séjour' => $stay, 'Payé' => e(eur((float)$b['total'])), 'Commission' => e(eur((float)$b['commission']))])));
+}
+function notify_cancelled(array $b, array $r, string $by): void {
+    $owner = q('SELECT email, first_name FROM users WHERE id = ?', [$r['owner_id']])->fetch();
+    $money = mail_rows(['N°' => e($b['ref']), 'Séjour' => e(fr_date($b['check_in'])) . ' → ' . e(fr_date($b['check_out'])), 'Montant payé' => e(eur((float)$b['total'])), 'Remboursé' => e(eur((float)$b['refund'])), 'Frais d\'annulation' => e(eur((float)$b['penalty']))]);
+    send_mail($b['email'], 'Annulation de votre réservation ' . $b['ref'], mail_layout('Réservation annulée', '<p>Bonjour ' . e($b['first_name']) . ',</p><p>Votre réservation chez <b>' . e($r['name']) . '</b> est annulée' . ($by === 'admin' ? ' par StayInRiad' : '') . '.</p>' . $money . ((float)$b['refund'] > 0 ? '<p>Le remboursement de <b>' . e(eur((float)$b['refund'])) . '</b> est effectué sur la carte utilisée. Selon votre banque, il apparaît sous 5 à 10 jours ouvrés.</p>' : '')));
+    if ($owner) send_mail($owner['email'], 'Réservation annulée ' . $b['ref'], mail_layout('Réservation annulée', '<p>Bonjour ' . e($owner['first_name']) . ',</p><p>La réservation <b>' . e($b['ref']) . '</b> de ' . e($b['first_name'] . ' ' . $b['last_name']) . ' (' . e($b['room_name']) . ', ' . e(fr_date($b['check_in'])) . ' → ' . e(fr_date($b['check_out'])) . ') est annulée. La chambre est de nouveau disponible sur StayInRiad.</p>' . ((float)$b['net'] > 0 ? '<p>Frais d\'annulation conservés : votre part nette de <b>' . e(eur((float)$b['net'])) . '</b> (' . e(mad((float)$b['net_mad'])) . ') vous sera versée.</p>' : '')));
+    send_mail(admin_email(), '[StayInRiad] Annulation ' . $b['ref'] . ((float)$b['refund'] > 0 ? ' · à rembourser ' . eur((float)$b['refund']) : ''), mail_layout('Annulation', $money));
+}
+
+// ---------- Versements (chaque lundi, pour les départs de la semaine précédente) ----------
+function pay_day(string $checkout): string { $dw = (int)date('N', strtotime($checkout)); return date('Y-m-d', strtotime($checkout . ' +' . (8 - $dw) . ' days')); }
+function next_pay_day(): string { return pay_day(date('Y-m-d', strtotime('-1 day'))); }
+/** Réservations dont le net est à verser aujourd'hui (séjour terminé la semaine précédente, pas encore versé). */
+function payable_bookings(?int $riadId = null, bool $dueOnly = true): array {
+    $rows = q("SELECT * FROM bookings WHERE payout_id IS NULL AND net > 0 AND (status = 'confirmée' OR (status = 'annulée' AND penalty > 0))" . ($riadId ? ' AND riad_id = ?' : '') . ' ORDER BY check_out', $riadId ? [$riadId] : [])->fetchAll();
+    return array_values(array_filter($rows, fn($b) => !$dueOnly || pay_day($b['check_out']) <= today()));
+}
+
+// ---------- Fiche de police : chiffrée (AES-256-GCM), clé privée hors du site ----------
+const POLICE_FIELDS = [
+    'last' => ['Nom', 'الاسم العائلي'], 'first' => ['Prénom', 'الاسم الشخصي'], 'birth_date' => ['Date de naissance', 'تاريخ الازدياد'],
+    'birth_place' => ['Lieu de naissance', 'مكان الازدياد'], 'nationality' => ['Nationalité', 'الجنسية'], 'profession' => ['Profession', 'المهنة'],
+    'address' => ['Adresse habituelle', 'العنوان الاعتيادي'], 'doc_type' => ['Pièce d\'identité', 'نوع الوثيقة'], 'doc_no' => ['N° de la pièce', 'رقم الوثيقة'],
+    'doc_date' => ['Délivrée le', 'تاريخ التسليم'], 'entry_date' => ['Date d\'entrée au Maroc', 'تاريخ الدخول إلى المغرب'],
+    'from' => ['Venant de', 'قادم من'], 'to' => ['Se rendant à', 'متوجه إلى'],
+];
+function police_key(): string {
+    $f = private_dir() . '/police.key';
+    if (!is_file($f)) { file_put_contents($f, random_bytes(32)); @chmod($f, 0600); }
+    return (string)file_get_contents($f);
+}
+function police_encrypt(array $data): string {
+    $iv = random_bytes(12); $tag = '';
+    $c = openssl_encrypt(json_encode($data, JSON_UNESCAPED_UNICODE), 'aes-256-gcm', police_key(), OPENSSL_RAW_DATA, $iv, $tag);
+    return base64_encode($iv . $tag . $c);
+}
+function police_decrypt(string $blob): array {
+    $raw = base64_decode($blob, true); if ($raw === false || strlen($raw) < 29) return [];
+    $p = openssl_decrypt(substr($raw, 28), 'aes-256-gcm', police_key(), OPENSSL_RAW_DATA, substr($raw, 0, 12), substr($raw, 12, 16));
+    return $p === false ? [] : (json_decode($p, true) ?: []);
 }

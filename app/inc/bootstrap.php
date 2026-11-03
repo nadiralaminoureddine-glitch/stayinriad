@@ -24,12 +24,15 @@ date_default_timezone_set($CONFIG['timezone'] ?? 'Africa/Casablanca');
 ini_set('display_errors', !empty($CONFIG['debug']) ? '1' : '0');
 error_reporting(E_ALL);
 
+define('SIR_CLI', PHP_SAPI === 'cli');
 // ---------- En-têtes de sécurité ----------
+if (!SIR_CLI) {
 header('X-Frame-Options: DENY');
 header('X-Content-Type-Options: nosniff');
 header('Referrer-Policy: strict-origin-when-cross-origin');
 header("Content-Security-Policy: default-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; script-src 'self'; form-action 'self'; frame-ancestors 'none'; base-uri 'self'");
 header('X-Robots-Tag: noindex, nofollow'); // espace privé : pas dans Google
+}
 
 // ---------- Session sécurisée ----------
 $https = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') || (($_SERVER['HTTP_X_FORWARDED_PROTO'] ?? '') === 'https');
@@ -39,7 +42,7 @@ session_set_cookie_params([
     'httponly' => true, 'samesite' => 'Lax',
 ]);
 ini_set('session.use_strict_mode', '1');
-session_start();
+if (!SIR_CLI) session_start(); else $_SESSION = [];
 // expiration après 2 h d'inactivité
 if (isset($_SESSION['last']) && time() - $_SESSION['last'] > 7200) { $_SESSION = []; session_regenerate_id(true); }
 $_SESSION['last'] = time();
@@ -80,7 +83,7 @@ function csrf_token(): string {
 }
 function csrf_field(): string { return '<input type="hidden" name="csrf" value="' . e(csrf_token()) . '">'; }
 function csrf_check(): void {
-    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') {
         $t = $_POST['csrf'] ?? '';
         if (!is_string($t) || !hash_equals($_SESSION['csrf'] ?? '', $t)) {
             http_response_code(400); exit('Formulaire expiré. Revenez en arrière et réessayez.');
@@ -89,7 +92,7 @@ function csrf_check(): void {
 }
 csrf_check();
 // Devise d'affichage : choix du visiteur (gardé 1 an), sinon détectée selon le pays (voir assets/cur.js)
-if (isset($_GET['cur']) && in_array($_GET['cur'], ['EUR', 'MAD', 'USD'], true)) {
+if (!SIR_CLI && isset($_GET['cur']) && in_array($_GET['cur'], ['EUR', 'MAD', 'USD'], true)) {
     $_SESSION['cur'] = $_GET['cur'];
     setcookie('sir_cur', $_GET['cur'], ['expires' => time() + 365 * 86400, 'path' => '/', 'secure' => $https, 'httponly' => false, 'samesite' => 'Lax']);
 } elseif (!isset($_SESSION['cur']) && in_array($_COOKIE['sir_cur'] ?? '', ['EUR', 'MAD', 'USD'], true)) {
@@ -98,4 +101,5 @@ if (isset($_GET['cur']) && in_array($_GET['cur'], ['EUR', 'MAD', 'USD'], true)) 
 
 require __DIR__ . '/migrate.php';
 require __DIR__ . '/auth.php';
+require __DIR__ . '/mail.php';
 require __DIR__ . '/layout.php';
