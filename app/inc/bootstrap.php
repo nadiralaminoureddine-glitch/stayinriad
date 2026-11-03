@@ -102,4 +102,5 @@ if (!SIR_CLI && isset($_GET['cur']) && in_array($_GET['cur'], ['EUR', 'MAD', 'US
 require __DIR__ . '/migrate.php';
 require __DIR__ . '/auth.php';
 require __DIR__ . '/mail.php';
+require __DIR__ . '/security.php';
 require __DIR__ . '/layout.php';

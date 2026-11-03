@@ -35,7 +35,7 @@ function send_mail(string $to, string $subject, string $html): bool {
     $ok = true;
     if ($mode !== 'log') {
         $headers = [
-            'From' => 'StayInRiad <' . $from . '>',
+            'From' => 'stayinriad.com <' . $from . '>',
             'Reply-To' => $from,
             'MIME-Version' => '1.0',
             'Content-Type' => 'text/html; charset=UTF-8',

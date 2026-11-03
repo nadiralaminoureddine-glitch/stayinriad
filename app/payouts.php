@@ -25,6 +25,7 @@ if ($adminAll) {
             db()->commit();
             $owner = q('SELECT email, first_name FROM users WHERE id = ?', [$r['owner_id']])->fetch();
             if ($owner) send_mail($owner['email'], 'Versement StayInRiad : ' . mad($madT), mail_layout('Votre versement est parti', '<p>Bonjour ' . e($owner['first_name']) . ',</p><p>Nous venons d\'effectuer un virement de <b>' . e(mad($madT)) . '</b> sur votre compte ' . e(mask_rib($r['bank_rib'])) . '.</p>' . mail_rows(['Réservations' => e(implode(', ', array_column($due, 'ref'))), 'Montant' => e(mad($madT)) . ' (' . e(eur($eurT)) . ')']) . '<p style="font-size:14px">Selon les banques, le virement apparaît sous 1 à 2 jours ouvrés. Le détail est dans votre espace, onglet « Versements ».</p>'));
+            log_action('versement', $r['name'] . ' · ' . mad($madT) . ' · ' . implode(' ', array_column($due, 'ref')));
             flash('Versement enregistré pour ' . $r['name'] . ' : ' . mad($madT) . '. Le riad est prévenu par email.');
         }
         redirect('payouts.php');

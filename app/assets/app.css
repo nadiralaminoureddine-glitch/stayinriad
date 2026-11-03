@@ -91,3 +91,4 @@ td.free{background:#e5f4e4;color:var(--ok)}td.part{background:#fdf0dc;color:var(
 .cur{display:inline-flex;border:1px solid rgba(255,255,255,.4);border-radius:8px;overflow:hidden}
 .cur a{padding:4px 9px;opacity:.8;text-decoration:none!important}.cur a.on{background:var(--gold);color:var(--green-d);opacity:1;font-weight:700}
 .paylogos{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:6px 0 12px}.paylogos span{font-size:13px;color:var(--muted)}.paylogos img{height:28px;width:auto;background:#fff;border:1px solid var(--line);border-radius:6px;padding:3px 6px}
+.hp{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden}

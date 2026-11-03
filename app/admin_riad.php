@@ -14,6 +14,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $act = $_POST['action'] ?? '';
     $pid = (int)($_POST['photo_id'] ?? 0);
     $ph = $pid ? q('SELECT * FROM photos WHERE id = ? AND riad_id = ?', [$pid, $rid])->fetch() : null;
+    log_action('riad_' . $act, $r['name'] . ($pid ? ' · photo ' . $pid : '') . (isset($_POST['commission']) ? ' · ' . $_POST['commission'] . ' %' : '') . (!empty($_POST['note']) ? ' · ' . $_POST['note'] : ''));
     switch ($act) {
         case 'photo_ok':
             if ($ph) { $pub = publish_photo($ph['file']); q("UPDATE photos SET status = 'publiée', public_file = ? WHERE id = ?", [$pub, $pid]); flash('Photo validée et publiée avec le logo.'); }

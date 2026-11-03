@@ -12,6 +12,8 @@ function current_user(): ?array {
     if ($u !== false) return $u;
     $id = $_SESSION['uid'] ?? null;
     $u = $id ? (q('SELECT * FROM users WHERE id = ? AND status = ?', [$id, 'active'])->fetch() ?: null) : null;
+    // mot de passe changé depuis l'ouverture de cette session : on déconnecte (protège en cas de vol)
+    if ($u && !empty($u['pw_changed_at']) && ($_SESSION['login_at'] ?? 0) < strtotime($u['pw_changed_at'] . ' UTC')) { $_SESSION = []; $u = null; }
     return $u;
 }
 function require_login(?string $role = null): array {
@@ -37,14 +39,28 @@ function log_attempt(string $email, bool $ok): void {
     q('INSERT INTO login_attempts (email, ip, ok, at) VALUES (?, ?, ?, ?)', [$email, client_ip(), $ok ? 1 : 0, now()]);
 }
 
-/** Retourne null si OK, sinon un message d'erreur (volontairement vague). */
+/** Ouvre la session d'un utilisateur (après mot de passe, et code si nécessaire). */
+function open_session(array $u): void {
+    session_regenerate_id(true);
+    unset($_SESSION['pending_uid'], $_SESSION['pending_purpose']);
+    $_SESSION['uid'] = (int)$u['id']; $_SESSION['login_at'] = time();
+    q('UPDATE users SET last_login = ? WHERE id = ?', [now(), $u['id']]);
+}
+/** Met l'utilisateur en attente d'un code (vérification d'email ou connexion). */
+function pend_code(array $u, string $purpose): ?string {
+    session_regenerate_id(true);
+    $_SESSION['pending_uid'] = (int)$u['id']; $_SESSION['pending_purpose'] = $purpose;
+    return send_code($u, $purpose);
+}
+
+/** Retourne null si connecté, 'CODE' si un code est demandé, sinon un message d'erreur (volontairement vague). */
 function attempt_login(string $email, string $pass): ?string {
     $email = strtolower(trim($email));
     if (too_many_fails($email)) return 'Trop de tentatives. Réessayez dans ' . FAIL_WINDOW_MIN . ' minutes.';
     $u = q('SELECT * FROM users WHERE email = ?', [$email])->fetch();
     // on vérifie toujours un hash pour ne pas révéler si l'email existe
     $hash = $u['password_hash'] ?? '$2y$10$usesomesillystringfore7hnbRJHxXVLeakoG8K30oukPsA.ztMG';
-    if (!password_verify($pass, $hash) || !$u || $u['status'] !== 'active') {
+    if (!password_verify($pass, $hash) || !$u || !in_array($u['status'], ['active', 'unverified'], true)) {
         log_attempt($email, false);
         return 'Email ou mot de passe incorrect.';
     }
@@ -52,9 +68,9 @@ function attempt_login(string $email, string $pass): ?string {
         q('UPDATE users SET password_hash = ? WHERE id = ?', [password_hash($pass, PASSWORD_DEFAULT), $u['id']]);
     }
     log_attempt($email, true);
-    session_regenerate_id(true);
-    $_SESSION['uid'] = (int)$u['id'];
-    q('UPDATE users SET last_login = ? WHERE id = ?', [now(), $u['id']]);
+    if ($u['status'] === 'unverified') { $e = pend_code($u, 'verify'); if ($e) flash($e, 'warn'); return 'CODE'; }
+    if (needs_2fa($u) && !is_trusted($u)) { $e = pend_code($u, 'login'); if ($e) flash($e, 'warn'); return 'CODE'; }
+    open_session($u);
     return null;
 }
 
@@ -68,7 +84,7 @@ function logout(): void {
 }
 
 /** Crée un compte. Retourne [id, null] ou [null, erreur]. */
-function create_user(string $role, string $email, string $pass, string $first, string $last, string $phone = ''): array {
+function create_user(string $role, string $email, string $pass, string $first, string $last, string $phone = '', string $status = 'active'): array {
     $email = strtolower(trim($email));
     if (!isset(ROLES[$role])) return [null, 'Type de compte invalide.'];
     if (!valid_email($email)) return [null, 'Adresse email invalide.'];
@@ -76,8 +92,10 @@ function create_user(string $role, string $email, string $pass, string $first, s
     if (trim($first) === '' || mb_strlen($first) > 80 || mb_strlen($last) > 80) return [null, 'Indiquez votre prénom et votre nom.'];
     if (q('SELECT 1 FROM users WHERE email = ?', [$email])->fetch()) return [null, 'Un compte existe déjà avec cet email. Connectez-vous.'];
     q('INSERT INTO users (role, email, password_hash, first_name, last_name, phone, status, created_at) VALUES (?,?,?,?,?,?,?,?)',
-      [$role, $email, password_hash($pass, PASSWORD_DEFAULT), trim($first), trim($last), trim($phone), 'active', now()]);
-    return [(int)db()->lastInsertId(), null];
+      [$role, $email, password_hash($pass, PASSWORD_DEFAULT), trim($first), trim($last), trim($phone), $status, now()]);
+    $newId = (int)db()->lastInsertId();
+    if ($status === 'active') q('UPDATE users SET email_verified_at = ? WHERE id = ?', [now(), $newId]);
+    return [$newId, null];
 }
 
 /** Site ouvert au public (voyageurs) ? Tant qu'il est fermé, seuls l'admin et les riads utilisent l'app. */

@@ -53,7 +53,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $p('co_legal', 160), in_array($p('co_form'), FORMS, true) ? $p('co_form') : '', $ice === '' || strlen($ice) === 15 ? $ice : $r['co_ice'],
             $p('co_rc', 60), digits($p('co_if')), $p('co_license', 80), $p('co_address'), $p('co_rep', 120), $p('co_rep_role', 60),
             $holder, $bankName, $newRib, strtoupper($p('bank_swift', 11)), $doc, $bankStatus, $bankChanged ? now() : $r['bank_updated'], now(), $rid]);
-        if ($bankChanged && $r['bank_rib'] !== '') flash('Nouveau RIB enregistré : il sera vérifié par StayInRiad avant le prochain virement.', 'warn');
+        if ($bankChanged && $r['bank_rib'] !== '') {
+            flash('Nouveau RIB enregistré : il sera vérifié par StayInRiad avant le prochain virement.', 'warn');
+            $owner = q('SELECT * FROM users WHERE id = ?', [$r['owner_id']])->fetch();
+            $msg = '<p>Bonjour ' . e($owner['first_name']) . ',</p><p>Le <b>compte bancaire</b> de <b>' . e($r['name']) . '</b> vient d\'être modifié sur StayInRiad (nouveau compte : ' . e(mask_rib($newRib)) . '). Par sécurité, les virements sont suspendus jusqu\'à sa vérification par notre équipe.</p><p style="background:#fbebeb;padding:12px;border-radius:8px"><b>Ce n\'est pas vous ?</b> Contactez-nous immédiatement à contact@stayinriad.com et changez votre mot de passe.</p>';
+            if ($owner) { send_mail($owner['email'], '⚠️ Votre RIB StayInRiad a été modifié', mail_layout('Changement de compte bancaire', $msg)); if (intl_phone((string)$owner['phone'])) send_sms((string)$owner['phone'], 'stayinriad.com : le RIB de ' . $r['name'] . ' vient d\'etre modifie. Si ce n\'est pas vous, contactez contact@stayinriad.com immediatement.'); }
+            send_mail(admin_email(), '[StayInRiad] RIB modifié : ' . $r['name'] . ' (à vérifier)', mail_layout('RIB modifié', '<p>' . e($r['name']) . ' : nouveau RIB ' . e(mask_rib($newRib)) . ', modifié par ' . e($u['email']) . '. Vérifiez l\'attestation avant le prochain virement.</p>' . mail_button(base_url() . 'admin_riad.php?id=' . $rid, 'Vérifier')));
+            log_action('rib_modifié', $r['name'] . ' · ' . mask_rib($newRib));
+        }
         elseif (!$err) flash('Fiche enregistrée.');
         if (!$err) redirect('riad.php' . ($u['role'] === 'admin' ? '?id=' . $rid : ''));
         $r = my_riad($u, $rid) ?? $r;

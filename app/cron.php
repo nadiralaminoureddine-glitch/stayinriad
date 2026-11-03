@@ -27,7 +27,16 @@ $limit = date('Y-m-d', strtotime("-$days days"));
 $n = q('DELETE FROM police_forms WHERE booking_id IN (SELECT id FROM bookings WHERE check_out < ?)', [$limit])->rowCount();
 if ($n) $log[] = "$n fiche(s) de police supprimée(s)";
 
-// 4) Nettoyage du journal des connexions (90 jours)
+// 4) Comptes jamais activés (code non saisi) depuis 7 jours : supprimés avec leur fiche riad vide
+$old = gmdate('Y-m-d H:i:s', time() - 7 * 86400);
+foreach (q("SELECT id FROM users WHERE status = 'unverified' AND created_at < ?", [$old])->fetchAll() as $x) {
+    foreach (q('SELECT id FROM riads WHERE owner_id = ?', [$x['id']])->fetchAll() as $rr) { q('DELETE FROM rooms WHERE riad_id = ?', [$rr['id']]); q('DELETE FROM photos WHERE riad_id = ?', [$rr['id']]); q('DELETE FROM riads WHERE id = ?', [$rr['id']]); }
+    q('DELETE FROM auth_codes WHERE user_id = ?', [$x['id']]); q('DELETE FROM users WHERE id = ?', [$x['id']]);
+    $log[] = 'compte non activé supprimé #' . $x['id'];
+}
+q('DELETE FROM auth_codes WHERE expires_at < ?', [gmdate('Y-m-d H:i:s', time() - 86400)]);
+
+// 5) Nettoyage du journal des connexions (90 jours)
 q('DELETE FROM login_attempts WHERE at < ?', [gmdate('Y-m-d H:i:s', time() - 90 * 86400)]);
 
 echo date('Y-m-d H:i') . ' OK ' . implode(' · ', $log) . "\n";

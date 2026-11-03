@@ -3,7 +3,7 @@
 declare(strict_types=1);
 if (!defined('SIR_APP')) exit;
 
-const SCHEMA_VERSION = 4;
+const SCHEMA_VERSION = 5;
 
 function run_migrations(): void {
     global $CONFIG;
@@ -73,6 +73,12 @@ function run_migrations(): void {
         db()->exec("CREATE TABLE IF NOT EXISTS police_forms (id $id, booking_id $fk NOT NULL, guest_no INT NOT NULL, data TEXT NOT NULL, created_at DATETIME NOT NULL, FOREIGN KEY (booking_id) REFERENCES bookings(id))$tail");
         db()->exec("CREATE TABLE IF NOT EXISTS payouts (id $id, riad_id $fk NOT NULL, amount_eur DECIMAL(12,2) NOT NULL, amount_mad DECIMAL(12,2) NOT NULL, refs TEXT NOT NULL, bank_rib VARCHAR(24) NOT NULL, bank_ref VARCHAR(80) NOT NULL DEFAULT '', paid_at DATETIME NOT NULL, FOREIGN KEY (riad_id) REFERENCES riads(id))$tail");
         db()->exec("CREATE TABLE IF NOT EXISTS email_log (id $id, to_addr VARCHAR(190) NOT NULL, subject VARCHAR(255) NOT NULL, status VARCHAR(20) NOT NULL, created_at DATETIME NOT NULL)$tail");
+    }
+    if ($v < 5) {
+        foreach (["email_verified_at DATETIME NULL", "pw_changed_at DATETIME NULL"] as $c) { try { db()->exec("ALTER TABLE users ADD COLUMN $c"); } catch (PDOException $e) {} }
+        q("UPDATE users SET email_verified_at = created_at WHERE email_verified_at IS NULL AND status = 'active'"); // comptes existants : déjà validés
+        db()->exec("CREATE TABLE IF NOT EXISTS auth_codes (id $id, user_id $fk NOT NULL, purpose VARCHAR(20) NOT NULL, code_hash VARCHAR(64) NOT NULL, expires_at DATETIME NOT NULL, attempts INT NOT NULL DEFAULT 0, used TINYINT NOT NULL DEFAULT 0, created_at DATETIME NOT NULL, FOREIGN KEY (user_id) REFERENCES users(id))$tail");
+        db()->exec("CREATE TABLE IF NOT EXISTS admin_log (id $id, user_id $fk NULL, action VARCHAR(60) NOT NULL, details VARCHAR(500) NOT NULL DEFAULT '', ip VARCHAR(45) NOT NULL DEFAULT '', created_at DATETIME NOT NULL)$tail");
     }
     q("DELETE FROM settings WHERE k = 'schema_version'");
     q("INSERT INTO settings (k, v) VALUES ('schema_version', ?)", [(string)SCHEMA_VERSION]);

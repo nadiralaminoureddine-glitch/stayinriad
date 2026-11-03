@@ -10,28 +10,33 @@ if (!site_open()) $type = 'riad'; // tant que le site est fermé : inscriptions 
 $err = null;
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $p = fn($k) => trim((string)($_POST[$k] ?? ''));
-    if ($p('pass') !== $p('pass2')) $err = 'Les deux mots de passe ne sont pas identiques.';
+    $started = (int)($_SESSION['reg_started'] ?? 0);
+    // anti-robots : champ invisible rempli, ou formulaire envoyé en moins de 4 secondes
+    if ($p('website') !== '' || !$started || time() - $started < 4) { sleep(2); $err = 'Merci de réessayer dans quelques secondes.'; }
+    elseif ($p('pass') !== $p('pass2')) $err = 'Les deux mots de passe ne sont pas identiques.';
     elseif (empty($_POST['cgu'])) $err = 'Merci d\'accepter les conditions pour créer votre compte.';
     elseif ($type === 'riad' && ($p('riad_name') === '' || !in_array($p('city'), CITIES, true))) $err = 'Indiquez le nom et la ville de votre riad.';
-    elseif ($type === 'riad' && $p('phone') === '') $err = 'Indiquez un numéro de téléphone pour que nous puissions vous aider à l\'inscription.';
+    elseif (!intl_phone($p('phone'))) $err = 'Indiquez un numéro de téléphone valide, avec l\'indicatif du pays (ex. +212 6…, +33 6…).';
     else {
         db()->beginTransaction();
-        [$id, $err] = create_user($type, $p('email'), (string)($_POST['pass'] ?? ''), $p('first'), $p('last'), $p('phone'));
+        [$id, $err] = create_user($type, $p('email'), (string)($_POST['pass'] ?? ''), $p('first'), $p('last'), (string)intl_phone($p('phone')), 'unverified');
         if ($id && $type === 'riad') {
             q('INSERT INTO riads (owner_id, name, city, rooms_count, status, created_at) VALUES (?,?,?,?,?,?)',
               [$id, mb_substr($p('riad_name'), 0, 120), $p('city'), max(0, min(200, (int)$p('rooms'))), 'brouillon', now()]);
         }
         if ($id) {
             db()->commit();
-            if ($type === 'riad') send_mail(admin_email(), '[StayInRiad] Nouveau riad inscrit : ' . $p('riad_name'), mail_layout('Nouveau riad inscrit', mail_rows(['Riad' => e($p('riad_name')), 'Ville' => e($p('city')), 'Propriétaire' => e($p('first') . ' ' . $p('last')), 'Téléphone' => e($p('phone')), 'Email' => e($p('email'))]) . mail_button(base_url() . 'admin.php', 'Voir dans l\'administration')));
-            attempt_login($p('email'), (string)$_POST['pass']);
-            flash($type === 'riad' ? 'Bienvenue ! Votre riad est enregistré. Notre équipe va vous contacter pour finaliser votre fiche.' : 'Bienvenue sur StayInRiad !');
-            redirect('account.php');
+            unset($_SESSION['reg_started']);
+            $e = pend_code(q('SELECT * FROM users WHERE id = ?', [$id])->fetch(), 'verify');
+            if ($e) flash($e, 'warn');
+            redirect('verify.php');
         }
         db()->rollBack();
     }
 }
 
+$_SESSION['reg_started'] = $_SESSION['reg_started'] ?? time();
+if ($_SERVER['REQUEST_METHOD'] !== 'POST') $_SESSION['reg_started'] = time();
 $v = fn($k, $d = '') => e($_POST[$k] ?? $d);
 $riadFields = $type === 'riad' ? '<h2>Votre riad</h2>
 <label>Nom du riad</label><input name="riad_name" required maxlength="120" value="' . $v('riad_name') . '">
@@ -44,7 +49,8 @@ render_page('Créer un compte', '<div class="card narrow"><h1>' . ($type === 'ri
 <div class="row"><div><label>Prénom</label><input name="first" required maxlength="80" autocomplete="given-name" value="' . $v('first') . '"></div>
 <div><label>Nom</label><input name="last" maxlength="80" autocomplete="family-name" value="' . $v('last') . '"></div></div>
 <label>Email</label><input type="email" name="email" required autocomplete="email" value="' . $v('email') . '">
-<label>Téléphone' . ($type === 'riad' ? ' / WhatsApp' : ' (facultatif)') . '</label><input name="phone" ' . ($type === 'riad' ? 'required ' : '') . 'maxlength="40" autocomplete="tel" placeholder="+212 6 ..." value="' . $v('phone') . '">
+<label>Téléphone mobile' . ($type === 'riad' ? ' / WhatsApp' : '') . '</label><input name="phone" required maxlength="40" autocomplete="tel" inputmode="tel" placeholder="+212 6 … ou +33 6 …" value="' . $v('phone') . '"><p class="note" style="margin:4px 0 0">Un code de confirmation vous sera envoyé pour activer votre compte.</p>
+<div class="hp" aria-hidden="true"><label>Site web</label><input name="website" tabindex="-1" autocomplete="off"></div>
 <label>Mot de passe (10 caractères minimum, lettres et chiffres)</label><input type="password" name="pass" required minlength="10" autocomplete="new-password">
 <label>Confirmer le mot de passe</label><input type="password" name="pass2" required minlength="10" autocomplete="new-password">
 <label style="font-weight:400;display:flex;gap:8px;align-items:flex-start"><input type="checkbox" name="cgu" value="1" style="width:auto;margin-top:4px"' . (!empty($_POST['cgu']) ? ' checked' : '') . '> J\'accepte que StayInRiad utilise mes informations pour gérer mon compte' . ($type === 'riad' ? ' et me contacter pour l\'inscription de mon riad' : '') . '.</label>

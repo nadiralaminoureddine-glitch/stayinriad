@@ -20,9 +20,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } elseif ($act === 'cancel') {
         if ($isAdmin && !empty($_POST['full_refund'])) $GLOBALS['FULL_REFUND'] = true;
         $err = cancel_booking($b, $isAdmin ? 'admin' : 'client');
+        if ($isAdmin && !$err) log_action('annulation', $b['ref'] . (!empty($_POST['full_refund']) ? ' · remboursement total' : ''));
         flash($err ?: 'Réservation annulée. Un email de confirmation vous a été envoyé.', $err ? 'bad' : 'ok');
     } elseif ($act === 'refunded' && $isAdmin) {
-        q("UPDATE bookings SET refund_status = 'remboursé' WHERE id = ?", [$b['id']]); flash('Remboursement marqué comme effectué.');
+        q("UPDATE bookings SET refund_status = 'remboursé' WHERE id = ?", [$b['id']]); log_action('remboursement', $b['ref'] . ' · ' . eur((float)$b['refund'])); flash('Remboursement marqué comme effectué.');
     }
     redirect($self);
 }

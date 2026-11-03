@@ -47,6 +47,6 @@ const ld=JSON.stringify([{"@context":"https://schema.org","@type":"Organization"
  fs.writeFileSync(OUT+'/robots.txt',`User-agent: *\nAllow: /\nDisallow: /app/\n\nSitemap: ${SITE}/sitemap.xml\n`);
  const urls=Object.values(L).map(v=>`  <url>\n    <loc>${SITE}${v.path}</loc>\n${Object.entries(L).map(([k,w])=>`    <xhtml:link rel="alternate" hreflang="${k}" href="${SITE}${w.path}"/>`).join('\n')}\n    <xhtml:link rel="alternate" hreflang="x-default" href="${SITE}/"/>\n    <changefreq>weekly</changefreq>\n  </url>`).join('\n');
  fs.writeFileSync(OUT+'/sitemap.xml',`<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">\n${urls}\n</urlset>\n`);
- for(const f of ['partage.jpg','apple-touch-icon.png'])fs.copyFileSync(ROOT+'/'+f,OUT+'/'+f);
+ for(const f of ['partage.jpg','apple-touch-icon.png','.htaccess'])fs.copyFileSync(ROOT+'/'+f,OUT+'/'+f);
  console.log('ok');
 })();
