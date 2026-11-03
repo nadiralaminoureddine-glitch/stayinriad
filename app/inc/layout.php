@@ -27,7 +27,7 @@ function render_page(string $title, string $body): void {
     $flash = $f ? '<div class="flash ' . e($f[1]) . '">' . e($f[0]) . '</div>' : '';
     echo '<!DOCTYPE html><html lang="fr"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">'
        . '<meta name="robots" content="noindex, nofollow"><title>' . e($title) . ' · StayInRiad</title>'
-       . '<link rel="stylesheet" href="assets/app.css"></head><body>'
+       . '<link rel="stylesheet" href="assets/app.css">' . (isset($_SESSION['cur']) ? '' : '<script src="assets/cur.js" defer></script>') . '</head><body>'
        . '<header><div class="wrap">' . logo_html() . '<nav>' . $nav . '</nav></div></header>'
        . '<main class="wrap">' . $flash . $body . '</main>'
        . '<footer class="wrap">© ' . date('Y') . ' stayinriad.com · <a href="mailto:contact@stayinriad.com">contact@stayinriad.com</a></footer>'

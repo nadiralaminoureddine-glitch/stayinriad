@@ -88,7 +88,13 @@ function csrf_check(): void {
     }
 }
 csrf_check();
-if (isset($_GET['cur']) && in_array($_GET['cur'], ['EUR', 'MAD', 'USD'], true)) $_SESSION['cur'] = $_GET['cur'];
+// Devise d'affichage : choix du visiteur (gardé 1 an), sinon détectée selon le pays (voir assets/cur.js)
+if (isset($_GET['cur']) && in_array($_GET['cur'], ['EUR', 'MAD', 'USD'], true)) {
+    $_SESSION['cur'] = $_GET['cur'];
+    setcookie('sir_cur', $_GET['cur'], ['expires' => time() + 365 * 86400, 'path' => '/', 'secure' => $https, 'httponly' => false, 'samesite' => 'Lax']);
+} elseif (!isset($_SESSION['cur']) && in_array($_COOKIE['sir_cur'] ?? '', ['EUR', 'MAD', 'USD'], true)) {
+    $_SESSION['cur'] = $_COOKIE['sir_cur'];
+}
 
 require __DIR__ . '/migrate.php';
 require __DIR__ . '/auth.php';
