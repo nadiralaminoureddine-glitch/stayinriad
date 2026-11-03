@@ -1,0 +1,12 @@
+# StayInRiad — espace privé
+Options -Indexes
+
+# Toujours en HTTPS
+RewriteEngine On
+RewriteCond %{HTTPS} off
+RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+
+# Pas dans les moteurs de recherche
+<IfModule mod_headers.c>
+  Header set X-Robots-Tag "noindex, nofollow"
+</IfModule>
