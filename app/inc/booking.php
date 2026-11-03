@@ -9,7 +9,34 @@ const BOOKING_STATUS = ['bloquée' => ['Paiement en cours', 'warn'], 'confirmée
 
 function eur(float $v): string { return number_format($v, $v == floor($v) ? 0 : 2, ',', ' ') . ' €'; }
 function mad(float $v): string { return number_format($v, 0, ',', ' ') . ' MAD'; }
-function eur_mad(): float { global $CONFIG; return (float)($CONFIG['eur_mad'] ?? 10.75); }
+/** Taux de change (modifiables par l'admin). 1 € = X MAD / X $. */
+function rate(string $k): float {
+    global $CONFIG; static $c = [];
+    if (!isset($c[$k])) { try { $v = q('SELECT v FROM settings WHERE k = ?', ['rate_' . $k])->fetchColumn(); } catch (Throwable $e) { $v = false; }
+        $c[$k] = $v !== false ? (float)$v : (float)($CONFIG['rate_' . $k] ?? ($k === 'mad' ? 10.75 : 1.08)); }
+    return $c[$k];
+}
+function eur_mad(): float { return rate('mad'); }
+const CURRENCIES = ['EUR' => '€', 'MAD' => 'DH', 'USD' => '$'];
+function cur(): string { return $_SESSION['cur'] ?? 'EUR'; }
+/** Affiche un prix (stocké en euros) dans la devise choisie par le visiteur. */
+function price(float $eur): string {
+    return match (cur()) {
+        'MAD' => number_format(round($eur * rate('mad')), 0, ',', ' ') . ' DH',
+        'USD' => '$' . number_format(round($eur * rate('usd')), 0, '.', ','),
+        default => eur($eur),
+    };
+}
+/** Prix d'un séjour (prix par nuit × nuits), cohérent avec le prix par nuit affiché. */
+function price_stay(float $eurNight, int $nights): string {
+    return match (cur()) {
+        'MAD' => number_format(round($eurNight * rate('mad')) * $nights, 0, ',', ' ') . ' DH',
+        'USD' => '$' . number_format(round($eurNight * rate('usd')) * $nights, 0, '.', ','),
+        default => eur($eurNight * $nights),
+    };
+}
+/** Rappel quand la devise affichée n'est pas celle du paiement. */
+function pay_note(float $eur): string { return cur() === 'EUR' ? '' : '<p class="note">Paiement en euros : vous serez débité de <b>' . eur($eur) . '</b>. Montant en ' . (cur() === 'MAD' ? 'dirhams' : 'dollars') . ' indicatif, selon le taux du jour.</p>'; }
 function today(): string { return date('Y-m-d'); }
 function fr_date(string $d): string {
     static $m = ['janv.','févr.','mars','avr.','mai','juin','juil.','août','sept.','oct.','nov.','déc.'];

@@ -21,8 +21,8 @@ $r = q('SELECT * FROM riads WHERE id = ?', [$b['riad_id']])->fetch();
 $mins = $b['status'] === 'bloquée' ? max(0, (int)ceil((strtotime($b['hold_until'] . ' UTC') - time()) / 60)) : 0;
 $summary = '<div class="card summary"><b style="font-size:18px">' . e($r['name']) . '</b><div class="note">📍 ' . e(($r['address'] ?: $r['city'])) . '</div>
 <p><b>' . e($b['room_name']) . '</b></p><p>📅 ' . e(fr_date($b['check_in'])) . ' → ' . e(fr_date($b['check_out'])) . '<br>' . (int)$b['nights'] . ' nuit(s) · ' . (int)$b['guests'] . ' personne(s)</p>
-<div class="line"><span>' . eur((float)$b['price_night']) . ' × ' . (int)$b['nights'] . '</span><span>' . eur((float)$b['subtotal']) . '</span></div>
-<div class="line tot"><span>Total</span><span>' . eur((float)$b['total']) . '</span></div><p class="note">Taxe de séjour à régler sur place.</p></div>';
+<div class="line"><span>' . price((float)$b['price_night']) . ' × ' . (int)$b['nights'] . '</span><span>' . price_stay((float)$b['price_night'], (int)$b['nights']) . '</span></div>
+<div class="line tot"><span>Total</span><span>' . price_stay((float)$b['price_night'], (int)$b['nights']) . '</span></div>' . pay_note((float)$b['total']) . '<p class="note">Taxe de séjour à régler sur place.</p></div>';
 
 if ($b['status'] === 'confirmée') {
     $body = '<div class="card" style="text-align:center"><div style="font-size:44px">✅</div><h1>Réservation confirmée</h1>
@@ -34,7 +34,7 @@ if ($b['status'] === 'confirmée') {
         ? '<p>Paiement sécurisé par carte bancaire.</p>' // le bouton de la passerelle sera branché ici
         : '<div class="flash warn">Le paiement en ligne sera bientôt disponible. Votre chambre est bloquée encore <b>' . $mins . ' min</b>.</div>';
     if (test_payment_allowed()) $pay .= '<form method="post">' . csrf_field() . '<button class="btn" name="action" value="test_pay">🧪 Paiement de TEST (admin uniquement)</button></form><p class="note">Visible uniquement pour l\'administrateur, pour tester le parcours. Aucun argent n\'est débité.</p>';
-    $body = '<h1>Paiement</h1><div class="bookgrid"><div class="card"><h2 style="margin-top:0">' . eur((float)$b['total']) . ' à payer</h2>
+    $body = '<h1>Paiement</h1><div class="bookgrid"><div class="card"><h2 style="margin-top:0">' . eur((float)$b['total']) . ' à payer</h2>' . (cur() !== 'EUR' ? '<p class="note">soit environ ' . price_stay((float)$b['price_night'], (int)$b['nights']) . '</p>' : '') . '
     <p>Réservation <b>' . e($b['ref']) . '</b> au nom de ' . e($b['first_name'] . ' ' . $b['last_name']) . '.</p>' . $pay . '</div>' . $summary . '</div>';
 } else {
     $body = '<div class="card"><h1>' . ($b['status'] === 'expirée' ? 'Délai de paiement dépassé' : 'Réservation annulée') . '</h1>

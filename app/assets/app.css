@@ -88,3 +88,5 @@ table.cal td form{margin:0}table.cal td button{width:100%;height:30px;border:0;b
 td.free{background:#e5f4e4;color:var(--ok)}td.part{background:#fdf0dc;color:var(--warn)}td.full{background:#fbebeb;color:var(--bad)}td.closed{background:#d9d2c7;color:#5a524b}td.past{opacity:.4}
 .lg{display:inline-block;width:12px;height:12px;border-radius:3px;vertical-align:middle}.lg.free{background:#e5f4e4}.lg.part{background:#fdf0dc}.lg.full{background:#fbebeb}.lg.closed{background:#d9d2c7}
 @media (max-width:760px){.search{grid-template-columns:1fr 1fr}.search>div:first-child,.search>div:last-child{grid-column:1/-1}.bookgrid{grid-template-columns:1fr}.pgal{grid-template-columns:1fr 1fr;grid-auto-rows:110px}.pgal .big{grid-column:1/-1}}
+.cur{display:inline-flex;border:1px solid rgba(255,255,255,.4);border-radius:8px;overflow:hidden}
+.cur a{padding:4px 9px;opacity:.8;text-decoration:none!important}.cur a.on{background:var(--gold);color:var(--green-d);opacity:1;font-weight:700}

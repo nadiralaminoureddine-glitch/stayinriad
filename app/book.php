@@ -53,7 +53,7 @@ render_page('Réserver', '<p><a href="riad_view.php?' . e(http_build_query(['id'
 <b style="font-size:18px">' . e($r['name']) . '</b><div class="note">📍 ' . e($r['city']) . '</div>
 <p><b>' . e($room['name']) . '</b><br><span class="note">' . e($room['description']) . '</span></p>
 <p>📅 ' . e(fr_date($in)) . ' → ' . e(fr_date($out)) . '<br>' . $n . ' nuit' . ($n > 1 ? 's' : '') . ' · ' . $g . ' personne' . ($g > 1 ? 's' : '') . '</p>
-<div class="line"><span>' . eur((float)$room['price_eur']) . ' × ' . $n . ' nuit' . ($n > 1 ? 's' : '') . '</span><span>' . eur($total) . '</span></div>
+<div class="line"><span>' . price((float)$room['price_eur']) . ' × ' . $n . ' nuit' . ($n > 1 ? 's' : '') . '</span><span>' . price_stay((float)$room['price_eur'], $n) . '</span></div>
 ' . ($r['breakfast'] ? '<div class="line"><span>Petit-déjeuner</span><span style="color:var(--ok)">inclus</span></div>' : '') . '
-<div class="line tot"><span>Total</span><span>' . eur($total) . '</span></div>
+<div class="line tot"><span>Total</span><span>' . price_stay((float)$room['price_eur'], $n) . '</span></div>' . pay_note($total) . '
 <p class="note">Taxe de séjour à régler sur place, directement au riad.<br>' . ($r['free_cancel'] ? 'Annulation gratuite jusqu\'à 48 h avant l\'arrivée.' : 'Tarif non remboursable.') . '</p></div></div>');

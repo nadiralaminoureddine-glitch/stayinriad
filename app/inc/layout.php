@@ -20,6 +20,10 @@ function render_page(string $title, string $body): void {
     } else {
         $nav = (site_open() ? '<a href="riads.php">Les riads</a>' : '') . '<a href="login.php">Connexion</a><a href="register.php' . (site_open() ? '' : '?type=riad') . '">' . (site_open() ? 'Créer un compte' : 'Inscrire mon riad') . '</a>';
     }
+    $cur = $_SESSION['cur'] ?? 'EUR';
+    $qs = $_GET; unset($qs['cur']);
+    $curLinks = '<span class="cur">' . implode('', array_map(fn($c, $l) => '<a href="?' . e(http_build_query($qs + ['cur' => $c])) . '"' . ($c === $cur ? ' class="on"' : '') . '>' . $l . '</a>', ['EUR', 'MAD', 'USD'], ['€', 'DH', '$'])) . '</span>';
+    $nav = $curLinks . $nav;
     $flash = $f ? '<div class="flash ' . e($f[1]) . '">' . e($f[0]) . '</div>' : '';
     echo '<!DOCTYPE html><html lang="fr"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">'
        . '<meta name="robots" content="noindex, nofollow"><title>' . e($title) . ' · StayInRiad</title>'

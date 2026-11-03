@@ -88,6 +88,7 @@ function csrf_check(): void {
     }
 }
 csrf_check();
+if (isset($_GET['cur']) && in_array($_GET['cur'], ['EUR', 'MAD', 'USD'], true)) $_SESSION['cur'] = $_GET['cur'];
 
 require __DIR__ . '/migrate.php';
 require __DIR__ . '/auth.php';

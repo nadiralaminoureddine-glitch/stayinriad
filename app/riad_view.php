@@ -28,7 +28,7 @@ $roomRows = implode('', array_map(function ($x) use ($r, $dated, $in, $out, $n, 
     $btn = ($dated && $fits && $free > 0) ? '<a class="btn sm" href="book.php?' . e(http_build_query(['room' => $x['id'], 'in' => $in, 'out' => $out, 'g' => $g])) . '">Réserver</a>' : '';
     return '<div class="room"><div class="rthumb">' . ($ph ? '<img src="uploads/' . e($ph[0]) . '" alt="">' : '<div class="noimg">🛏️</div>') . '</div>
       <div style="flex:1;min-width:0"><b>' . e($x['name']) . '</b><div class="note">' . ($x['description'] !== '' ? e($x['description']) . ' · ' : '') . 'jusqu\'à ' . (int)$x['capacity'] . ' pers.</div>' . $state . '</div>
-      <div style="text-align:right"><b>' . eur((float)$x['price_eur']) . '</b><div class="note">/ nuit</div>' . ($dated ? '<div class="note">' . eur((float)$x['price_eur'] * $n) . ' au total</div>' : '') . $btn . '</div></div>';
+      <div style="text-align:right"><b>' . price((float)$x['price_eur']) . '</b><div class="note">/ nuit</div>' . ($dated ? '<div class="note">' . price_stay((float)$x['price_eur'], $n) . ' au total</div>' : '') . $btn . '</div></div>';
 }, $rooms));
 
 render_page($r['name'], '<p><a href="riads.php?city=' . e(urlencode($r['city'])) . '">← Riads à ' . e($r['city']) . '</a></p>
