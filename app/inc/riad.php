@@ -157,6 +157,6 @@ function photo_duplicates(?int $riadId = null): array {
 }
 
 function riad_tabs(string $on, string $q = ''): string {
-    $t = ['res' => ['bookings.php', 'Réservations'], 'cal' => ['calendar.php', 'Calendrier'], 'sync' => ['sync.php', 'Booking/Airbnb'], 'police' => ['police_list.php', 'Fiches de police'], 'pay' => ['payouts.php', 'Versements'], 'fiche' => ['riad.php', 'Fiche'], 'rooms' => ['rooms.php', 'Chambres & prix'], 'photos' => ['photos.php', 'Photos']];
+    $t = ['res' => ['bookings.php', 'Réservations'], 'cal' => ['calendar.php', 'Calendrier'], 'sync' => ['sync.php', 'Booking/Airbnb'], 'police' => ['police_list.php', 'Fiches de police'], 'avis' => ['reviews.php', 'Avis clients'], 'pay' => ['payouts.php', 'Versements'], 'fiche' => ['riad.php', 'Fiche'], 'rooms' => ['rooms.php', 'Chambres & prix'], 'photos' => ['photos.php', 'Photos']];
     return '<div class="tabs">' . implode('', array_map(fn($k) => '<a href="' . $t[$k][0] . $q . '"' . ($k === $on ? ' class="on"' : '') . '>' . $t[$k][1] . '</a>', array_keys($t))) . '</div>';
 }

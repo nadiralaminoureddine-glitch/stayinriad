@@ -100,3 +100,11 @@ td.free{background:#e5f4e4;color:var(--ok)}td.part{background:#fdf0dc;color:var(
 .chan{border-top:1px solid #eee3d3;margin-top:12px;padding-top:8px}.chan h3{margin:4px 0}
 label.check{display:flex;gap:8px;align-items:center;font-weight:600;margin:6px 0}label.check input{width:auto}
 details summary{cursor:pointer;color:var(--ink);font-weight:600}
+.rate{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:6px 0;border-bottom:1px solid #eee3d3}.rate>span{font-weight:600;font-size:15px}
+.stars{display:inline-flex;flex-direction:row-reverse;gap:2px}.stars input{position:absolute;opacity:0;width:1px;height:1px}
+.stars label{display:inline-block;margin:0;font-size:30px;line-height:1;color:#d9d2c7;cursor:pointer;padding:0 1px}
+.stars label:hover,.stars label:hover~label,.stars input:checked~label{color:#e0a43a}.stars input:focus-visible+label{outline:2px solid var(--ink);border-radius:4px}
+.yn{display:flex;gap:18px}textarea{width:100%;font:inherit;padding:10px;border:1px solid #d6cbb9;border-radius:10px;box-sizing:border-box}
+.review{border-top:1px solid #eee3d3;padding:12px 0}.review:first-child{border-top:0}.review p{margin:6px 0}.private{background:#faf6ef;padding:8px;border-radius:8px}
+.rhead{display:flex;gap:12px;align-items:center}.score{background:var(--ink);color:#fff;font-weight:700;border-radius:8px 8px 8px 0;padding:6px 8px;min-width:34px;text-align:center}.score.big{font-size:24px;padding:10px 12px}
+.bar{display:grid;grid-template-columns:1fr 1.2fr 34px;gap:8px;align-items:center;margin:8px 0;font-size:14px}.track{background:#eee3d3;height:8px;border-radius:9px;overflow:hidden}.track i{display:block;height:100%;background:var(--ink)}

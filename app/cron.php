@@ -24,6 +24,9 @@ foreach (q("SELECT * FROM bookings WHERE status = 'confirmée' AND police_filled
     $log[] = 'rappel police ' . $b['ref'];
 }
 
+// 2 bis) Fiche de satisfaction : le jour du départ, à partir de midi
+$log = array_merge($log, send_review_requests());
+
 // 3) Suppression des fiches de police après le délai de conservation (par défaut 365 jours après le départ)
 $days = (int)($CONFIG['police_retention_days'] ?? 365);
 $limit = date('Y-m-d', strtotime("-$days days"));

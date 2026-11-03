@@ -3,7 +3,7 @@
 declare(strict_types=1);
 if (!defined('SIR_APP')) exit;
 
-const SCHEMA_VERSION = 6;
+const SCHEMA_VERSION = 7;
 
 function run_migrations(): void {
     global $CONFIG;
@@ -93,6 +93,15 @@ function run_migrations(): void {
         db()->exec("CREATE TABLE IF NOT EXISTS ext_blocks (id $id, feed_id $fk NOT NULL, room_id $fk NOT NULL, start_day DATE NOT NULL, end_day DATE NOT NULL)$tail");
         try { db()->exec("CREATE INDEX idx_ext_room ON ext_blocks (room_id, start_day, end_day)"); } catch (PDOException $e) {}
         try { db()->exec("CREATE INDEX idx_ext_feed ON ext_blocks (feed_id)"); } catch (PDOException $e) {}
+    }
+    if ($v < 7) {
+        try { db()->exec("ALTER TABLE bookings ADD COLUMN review_sent DATETIME NULL"); } catch (PDOException $e) {}
+        db()->exec("CREATE TABLE IF NOT EXISTS reviews (id $id, booking_id $fk NOT NULL UNIQUE, riad_id $fk NOT NULL,
+            staff TINYINT NOT NULL, clean TINYINT NOT NULL, comfort TINYINT NOT NULL, location TINYINT NOT NULL, value TINYINT NOT NULL,
+            breakfast TINYINT NULL, score DECIMAL(3,1) NOT NULL, recommend TINYINT NOT NULL DEFAULT 1,
+            liked VARCHAR(1000) NOT NULL DEFAULT '', disliked VARCHAR(1000) NOT NULL DEFAULT '', private_note VARCHAR(1000) NOT NULL DEFAULT '',
+            created_at DATETIME NOT NULL, FOREIGN KEY (booking_id) REFERENCES bookings(id), FOREIGN KEY (riad_id) REFERENCES riads(id))$tail");
+        try { db()->exec("CREATE INDEX idx_reviews_riad ON reviews (riad_id, created_at)"); } catch (PDOException $e) {}
     }
     q("DELETE FROM settings WHERE k = 'schema_version'");
     q("INSERT INTO settings (k, v) VALUES ('schema_version', ?)", [(string)SCHEMA_VERSION]);
