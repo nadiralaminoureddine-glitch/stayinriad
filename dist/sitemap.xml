@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">
+  <url>
+    <loc>https://stayinriad.com/</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://stayinriad.com/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://stayinriad.com/en/"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://stayinriad.com/es/"/>
+    <xhtml:link rel="alternate" hreflang="ar" href="https://stayinriad.com/ar/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://stayinriad.com/"/>
+    <changefreq>weekly</changefreq>
+  </url>
+  <url>
+    <loc>https://stayinriad.com/en/</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://stayinriad.com/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://stayinriad.com/en/"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://stayinriad.com/es/"/>
+    <xhtml:link rel="alternate" hreflang="ar" href="https://stayinriad.com/ar/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://stayinriad.com/"/>
+    <changefreq>weekly</changefreq>
+  </url>
+  <url>
+    <loc>https://stayinriad.com/es/</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://stayinriad.com/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://stayinriad.com/en/"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://stayinriad.com/es/"/>
+    <xhtml:link rel="alternate" hreflang="ar" href="https://stayinriad.com/ar/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://stayinriad.com/"/>
+    <changefreq>weekly</changefreq>
+  </url>
+  <url>
+    <loc>https://stayinriad.com/ar/</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://stayinriad.com/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://stayinriad.com/en/"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://stayinriad.com/es/"/>
+    <xhtml:link rel="alternate" hreflang="ar" href="https://stayinriad.com/ar/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://stayinriad.com/"/>
+    <changefreq>weekly</changefreq>
+  </url>
+</urlset>

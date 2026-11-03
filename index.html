@@ -101,6 +101,7 @@ html[dir=rtl] .pattern{right:auto;left:-40px}
 @media (max-width:860px){.cities{grid-template-columns:repeat(2,1fr)}.grid3,.grid3.two{grid-template-columns:1fr}.partner{grid-template-columns:1fr}footer .cols{grid-template-columns:1fr}}
 @media (max-width:520px){.g2{grid-template-columns:1fr}.city{height:140px}}
 .paylogos{display:flex;align-items:center;justify-content:center;gap:12px;flex-wrap:wrap;padding-top:18px;margin-top:18px;border-top:1px solid rgba(255,255,255,.15);font-size:13px;opacity:.95}.paylogos img{height:30px;width:auto;background:#fff;border-radius:6px;padding:4px 8px}
+.seo{margin-top:16px;color:var(--muted);font-size:15px;line-height:1.6}.seo b{color:var(--ink);font-weight:600}
 </style>
 </head>
 <body>
@@ -131,6 +132,7 @@ html[dir=rtl] .pattern{right:auto;left:-40px}
   <section>
     <h2 data-i18n="dest_h"></h2><p class="sub" data-i18n="dest_sub"></p>
     <div class="cities" id="cities"></div>
+    <p class="seo" data-i18n="seo_p" data-html></p>
   </section>
 
   <section>
@@ -206,7 +208,7 @@ function patio(p){const [w,l,t,a]=PAL[p];let z="";for(let i=0;i<10;i++)z+=`<rect
 const CITIES=["Marrakech","Fès","Essaouira","Chefchaouen","Tanger","Rabat","Ouarzazate","Merzouga"];
 const CITY_TR={"Fès":{en:"Fez",es:"Fez",ar:"فاس"},"Marrakech":{ar:"مراكش"},"Essaouira":{ar:"الصويرة"},"Chefchaouen":{ar:"شفشاون"},"Tanger":{en:"Tangier",es:"Tánger",ar:"طنجة"},"Rabat":{ar:"الرباط"},"Ouarzazate":{ar:"ورزازات"},"Merzouga":{ar:"مرزوكة"},"Meknès":{en:"Meknes",es:"Mequinez",ar:"مكناس"},"Agadir":{ar:"أكادير"},"Tétouan":{en:"Tetouan",es:"Tetuán",ar:"تطوان"},"Autre":{en:"Other",es:"Otra",ar:"أخرى"}};
 const T={
-fr:{lg1:"Mentions légales",lg2:"Conditions générales (CGV)",lg3:"Confidentialité",nav_partner:"Inscrire mon riad",badge:"Plateforme de réservation 100 % marocaine",h1:"Trouvez le riad parfait, du cœur des médinas aux portes du désert",lead:"StayInRiad est la plateforme 100 % marocaine dédiée uniquement aux riads. Patios fleuris, hammams, terrasses sur les toits : bientôt, réservez en direct, du nord au sud du Royaume.",
+fr:{lg1:"Mentions légales",lg2:"Conditions générales (CGV)",lg3:"Confidentialité",nav_partner:"Inscrire mon riad",seo_p:"Vous cherchez un <b>riad à Marrakech</b> au cœur de la médina, un <b>riad à Fès</b> près des souks, un <b>riad à Essaouira</b> face à l'océan, un riad à Chefchaouen, la perle bleue, ou une nuit dans le désert à Merzouga ? StayInRiad réunit uniquement des <b>riads au Maroc</b> : maisons d'hôtes traditionnelles avec patio, <b>riads avec piscine</b>, terrasses sur les toits et hammams, à réserver en ligne en toute simplicité.",badge:"Plateforme de réservation 100 % marocaine",h1:"Trouvez le riad parfait, du cœur des médinas aux portes du désert",lead:"StayInRiad est la plateforme 100 % marocaine dédiée uniquement aux riads. Patios fleuris, hammams, terrasses sur les toits : bientôt, réservez en direct, du nord au sud du Royaume.",
 soon:"✦ Ouverture prochaine",pay_sec:"Paiement sécurisé",cta_riad:"🏡 J'ai un riad : m'inscrire",cta_trav:"✉️ Me prévenir de l'ouverture",tr1:"Plateforme 100 % marocaine",tr2:"Prix en euros",tr3:"Uniquement des riads",
 dest_h:"Bientôt disponibles",dest_sub:"Les premières villes où vous pourrez réserver votre riad",why_h:"Pourquoi StayInRiad ?",why_sub:"Des riads, rien que des riads.",
 w1b:"100 % riads authentiques",w1s:"Uniquement des demeures traditionnelles organisées autour d'un patio intérieur.",w2b:"Recherche par carte",w2s:"Trouvez un riad au bon endroit, avec la distance jusqu'aux lieux incontournables de chaque médina.",w3b:"En 4 langues",w3s:"Français, anglais, arabe et espagnol, avec la langue choisie selon votre pays.",
@@ -221,7 +223,7 @@ ft_tag:"🇲🇦 La plateforme de réservation 100 % marocaine dédiée aux riad
 lang_auto:"Langue choisie selon votre localisation",lang_change:"Changer",
 wa_intro:"Bonjour StayInRiad, je souhaite inscrire mon riad.",mail_subj:"Pré-inscription riad",wait_subj:"Prévenez-moi de l'ouverture de StayInRiad",wait_body:"Bonjour, merci de me prévenir à l'ouverture des réservations. Mon e-mail :",
 l_riad:"Riad",l_city:"Ville",l_name:"Nom",l_rooms:"Chambres",l_phone:"Téléphone",l_email:"E-mail",l_msg:"Message"},
-en:{lg1:"Legal notice",lg2:"Terms and conditions",lg3:"Privacy policy",nav_partner:"List my riad",badge:"100% Moroccan booking platform",h1:"Find the perfect riad, from the heart of the medinas to the edge of the desert",lead:"StayInRiad is the 100% Moroccan platform dedicated exclusively to riads. Flower-filled patios, hammams, rooftop terraces: soon you'll book direct, from the north to the south of the Kingdom.",
+en:{lg1:"Legal notice",lg2:"Terms and conditions",lg3:"Privacy policy",nav_partner:"List my riad",seo_p:"Looking for a <b>riad in Marrakech</b> in the heart of the medina, a <b>riad in Fez</b> near the souks, a <b>riad in Essaouira</b> by the ocean, a riad in Chefchaouen, the blue pearl, or a night in the desert in Merzouga? StayInRiad brings together only <b>riads in Morocco</b>: traditional guesthouses with a courtyard, <b>riads with a pool</b>, rooftop terraces and hammams, easy to book online.",badge:"100% Moroccan booking platform",h1:"Find the perfect riad, from the heart of the medinas to the edge of the desert",lead:"StayInRiad is the 100% Moroccan platform dedicated exclusively to riads. Flower-filled patios, hammams, rooftop terraces: soon you'll book direct, from the north to the south of the Kingdom.",
 soon:"✦ Opening soon",pay_sec:"Secure payment",cta_riad:"🏡 I own a riad: sign up",cta_trav:"✉️ Notify me at launch",tr1:"100% Moroccan platform",tr2:"Prices in euros",tr3:"Riads only",
 dest_h:"Coming soon",dest_sub:"The first cities where you'll be able to book your riad",why_h:"Why StayInRiad?",why_sub:"Riads, nothing but riads.",
 w1b:"100% authentic riads",w1s:"Only traditional houses built around an inner courtyard.",w2b:"Map search",w2s:"Find a riad in the right spot, with the distance to each medina's must-see places.",w3b:"In 4 languages",w3s:"French, English, Arabic and Spanish, with the language picked based on your country.",
@@ -236,7 +238,7 @@ ft_tag:"🇲🇦 The 100% Moroccan booking platform dedicated to riads.",ft_cont
 lang_auto:"Language chosen based on your location",lang_change:"Change",
 wa_intro:"Hello StayInRiad, I'd like to list my riad.",mail_subj:"Riad pre-registration",wait_subj:"Notify me when StayInRiad opens",wait_body:"Hello, please let me know when bookings open. My email:",
 l_riad:"Riad",l_city:"City",l_name:"Name",l_rooms:"Rooms",l_phone:"Phone",l_email:"Email",l_msg:"Message"},
-ar:{lg1:"الإشعار القانوني",lg2:"الشروط العامة",lg3:"سياسة الخصوصية",nav_partner:"سجّل رياضك",badge:"منصة حجز مغربية 100%",h1:"اعثر على الرياض المثالي، من قلب المدن العتيقة إلى أبواب الصحراء",lead:"StayInRiad منصة مغربية 100% مخصصة للرياضات فقط. أفنية مزهرة، حمّامات، وأسطح مطلّة: قريبًا يمكنك الحجز مباشرة من شمال المملكة إلى جنوبها.",
+ar:{lg1:"الإشعار القانوني",lg2:"الشروط العامة",lg3:"سياسة الخصوصية",nav_partner:"سجّل رياضك",seo_p:"تبحث عن <b>رياض في مراكش</b> في قلب المدينة العتيقة، أو <b>رياض في فاس</b> قرب الأسواق، أو <b>رياض في الصويرة</b> قبالة المحيط، أو رياض في شفشاون، الجوهرة الزرقاء، أو ليلة في صحراء مرزوكة؟ تجمع StayInRiad <b>الرياضات في المغرب</b> فقط: دور ضيافة تقليدية بفناء داخلي، <b>رياضات بمسبح</b>، أسطح وحمامات، للحجز عبر الإنترنت بكل سهولة.",badge:"منصة حجز مغربية 100%",h1:"اعثر على الرياض المثالي، من قلب المدن العتيقة إلى أبواب الصحراء",lead:"StayInRiad منصة مغربية 100% مخصصة للرياضات فقط. أفنية مزهرة، حمّامات، وأسطح مطلّة: قريبًا يمكنك الحجز مباشرة من شمال المملكة إلى جنوبها.",
 soon:"✦ الافتتاح قريبًا",pay_sec:"دفع آمن",cta_riad:"🏡 أملك رياضًا: سجّلني",cta_trav:"✉️ أخبروني عند الافتتاح",tr1:"منصة مغربية 100%",tr2:"الأسعار باليورو",tr3:"رياضات فقط",
 dest_h:"قريبًا",dest_sub:"أولى المدن التي ستتمكن فيها من حجز رياضك",why_h:"لماذا StayInRiad؟",why_sub:"رياضات، ولا شيء غير الرياضات.",
 w1b:"رياضات أصيلة 100%",w1s:"منازل تقليدية فقط مبنية حول فناء داخلي.",w2b:"البحث على الخريطة",w2s:"اعثر على رياض في المكان المناسب، مع المسافة إلى أهم معالم كل مدينة عتيقة.",w3b:"بأربع لغات",w3s:"الفرنسية والإنجليزية والعربية والإسبانية، مع اختيار اللغة حسب بلدك.",
@@ -251,7 +253,7 @@ ft_tag:"🇲🇦 منصة الحجز المغربية 100% المخصصة للر
 lang_auto:"تم اختيار اللغة حسب موقعك",lang_change:"تغيير",
 wa_intro:"مرحبًا StayInRiad، أرغب في تسجيل رياضي.",mail_subj:"تسجيل مسبق لرياض",wait_subj:"أخبروني عند افتتاح StayInRiad",wait_body:"مرحبًا، أرجو إخباري عند فتح الحجوزات. بريدي:",
 l_riad:"الرياض",l_city:"المدينة",l_name:"الاسم",l_rooms:"الغرف",l_phone:"الهاتف",l_email:"البريد",l_msg:"الرسالة"},
-es:{lg1:"Aviso legal",lg2:"Condiciones generales",lg3:"Privacidad",nav_partner:"Registrar mi riad",badge:"Plataforma de reservas 100 % marroquí",h1:"Encuentra el riad perfecto, del corazón de las medinas a las puertas del desierto",lead:"StayInRiad es la plataforma 100 % marroquí dedicada solo a los riads. Patios en flor, hammams, terrazas en las azoteas: muy pronto podrás reservar directamente, del norte al sur del Reino.",
+es:{lg1:"Aviso legal",lg2:"Condiciones generales",lg3:"Privacidad",nav_partner:"Registrar mi riad",seo_p:"¿Buscas un <b>riad en Marrakech</b> en el corazón de la medina, un <b>riad en Fez</b> cerca de los zocos, un <b>riad en Esauira</b> frente al océano, un riad en Chefchaouen, la perla azul, o una noche en el desierto de Merzouga? StayInRiad reúne solo <b>riads en Marruecos</b>: casas tradicionales con patio, <b>riads con piscina</b>, terrazas en la azotea y hammams, fáciles de reservar en línea.",badge:"Plataforma de reservas 100 % marroquí",h1:"Encuentra el riad perfecto, del corazón de las medinas a las puertas del desierto",lead:"StayInRiad es la plataforma 100 % marroquí dedicada solo a los riads. Patios en flor, hammams, terrazas en las azoteas: muy pronto podrás reservar directamente, del norte al sur del Reino.",
 soon:"✦ Apertura próximamente",pay_sec:"Pago seguro",cta_riad:"🏡 Tengo un riad: registrarme",cta_trav:"✉️ Avisadme en la apertura",tr1:"Plataforma 100 % marroquí",tr2:"Precios en euros",tr3:"Solo riads",
 dest_h:"Muy pronto",dest_sub:"Las primeras ciudades donde podrás reservar tu riad",why_h:"¿Por qué StayInRiad?",why_sub:"Riads y nada más que riads.",
 w1b:"Riads 100 % auténticos",w1s:"Solo casas tradicionales construidas en torno a un patio interior.",w2b:"Búsqueda en el mapa",w2s:"Encuentra un riad en el lugar ideal, con la distancia a los lugares imprescindibles de cada medina.",w3b:"En 4 idiomas",w3s:"Francés, inglés, árabe y español, con el idioma elegido según tu país.",
@@ -287,8 +289,10 @@ function setLang(l,manual){LANG=T[l]?l:"fr";if(manual){try{localStorage.setItem(
   $("ftContact").innerHTML=[CONFIG.email?`✉️ <a href="mailto:${CONFIG.email}" dir="ltr">${CONFIG.email}</a>`:"",CONFIG.whatsapp?`💬 <a href="https://wa.me/${CONFIG.whatsapp}" dir="ltr">+${CONFIG.whatsapp}</a>`:""].filter(Boolean).join("<br>")||t("no_contact");
   $("sendWa").style.display=CONFIG.whatsapp?"":"none";$("sendMail").style.display=CONFIG.email?"":"none";
   if(!CONFIG.whatsapp&&!CONFIG.email)$("fErr").textContent=t("no_contact");
-  document.title="StayInRiad — "+t("badge");}
-$("langSel").onchange=e=>setLang(e.target.value,true);
+  if(!document.documentElement.dataset.page)document.title="StayInRiad — "+t("badge");}
+const LANG_PATH={fr:"/",en:"/en/",es:"/es/",ar:"/ar/"};
+const PAGE_LANG=document.documentElement.dataset.page||null, IS_ROOT=document.documentElement.dataset.root==="1";
+$("langSel").onchange=e=>{const v=e.target.value;try{localStorage.setItem("sir_lang",v);}catch(x){}if(PAGE_LANG&&LANG_PATH[v]){location.href=LANG_PATH[v];}else setLang(v,true);};
 
 /* ==== Formulaires (sans serveur : ouvre WhatsApp ou la messagerie) ==== */
 function partnerText(){const f={riad:$("fRiad").value.trim(),city:$("fCity").value,name:$("fName").value.trim(),rooms:$("fRooms").value.trim(),phone:$("fPhone").value.trim(),email:$("fEmail").value.trim(),msg:$("fMsg").value.trim()};
@@ -301,8 +305,11 @@ $("tForm").onsubmit=e=>{e.preventDefault();const m=$("tEmail").value.trim();if(!
 
 /* ==== Démarrage ==== */
 $("yr").textContent=new Date().getFullYear();
-const D=detect();setLang(D.l,false);
-if(D.auto)$("langNote").innerHTML=`🌐 ${t("lang_auto")} · <a href="#" style="color:var(--gold)" onclick="$('langSel').focus();if($('langSel').showPicker)$('langSel').showPicker();return false">${t("lang_change")}</a>`;
+const D=detect();const BOT=/bot|crawl|spider|slurp|facebookexternalhit|whatsapp|preview/i.test(navigator.userAgent||"")||navigator.webdriver;
+if(IS_ROOT&&!BOT&&D.l!=="fr"&&LANG_PATH[D.l]){try{sessionStorage.setItem("sir_auto","1");}catch(x){}location.replace(LANG_PATH[D.l]);}
+else{setLang(PAGE_LANG||D.l,false);
+let AUTO=false;try{AUTO=sessionStorage.getItem("sir_auto")==="1";sessionStorage.removeItem("sir_auto");}catch(x){}
+if(PAGE_LANG?AUTO:D.auto)$("langNote").innerHTML=`🌐 ${t("lang_auto")} · <a href="#" style="color:var(--gold)" onclick="$('langSel').focus();if($('langSel').showPicker)$('langSel').showPicker();return false">${t("lang_change")}</a>`;}
 </script>
 </body>
 </html>
