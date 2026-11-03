@@ -1,0 +1,11 @@
+---
+# Déploiement automatique cPanel (Git Version Control → « Deploy HEAD Commit »)
+# Copie la page d'accueil (dossier dist) et l'application (dossier app) dans public_html.
+# Ne supprime rien sur le serveur : photos, logos de paiement et fichiers privés sont conservés.
+deployment:
+  tasks:
+    - export DEPLOYPATH=/home/stayinri/public_html/
+    - /bin/cp -R dist/. $DEPLOYPATH
+    - /bin/mkdir -p ${DEPLOYPATH}app
+    - /bin/cp -R app/. ${DEPLOYPATH}app/
+    - /bin/rm -f ${DEPLOYPATH}app/install.php
