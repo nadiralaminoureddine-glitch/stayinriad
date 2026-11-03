@@ -1,0 +1,11 @@
+Logos de paiement StayInRiad
+============================
+Déposez ici les fichiers OFFICIELS fournis par votre banque / le CMI (kit commerçant),
+une fois le contrat de paiement signé. Noms attendus (PNG ou SVG) :
+
+  cmi.png   (ou cmi.svg)
+  visa.png  (ou visa.svg)
+  mastercard.png (ou mastercard.svg)
+
+Ils s'affichent automatiquement, dans cet ordre, en bas de toutes les pages et sur la page de paiement.
+Pour en retirer un, supprimez simplement le fichier.

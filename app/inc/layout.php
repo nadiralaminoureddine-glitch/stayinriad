@@ -7,6 +7,15 @@ function logo_html(): string {
     return '<a class="logo" href="account.php"><svg width="30" height="30" viewBox="0 0 40 40" aria-hidden="true"><rect x="8" y="8" width="24" height="24" fill="#d9a441"/><rect x="8" y="8" width="24" height="24" fill="#d9a441" transform="rotate(45 20 20)"/><rect x="13" y="13" width="14" height="14" fill="#0f5a4a"/><rect x="13" y="13" width="14" height="14" fill="#0f5a4a" transform="rotate(45 20 20)"/><circle cx="20" cy="20" r="3" fill="#d9a441"/></svg><span>stay<b>in</b>riad<b>.com</b></span></a>';
 }
 
+/** Logos de paiement officiels, s'ils ont été déposés dans assets/pay/ (cmi, visa, mastercard). */
+function pay_logos(): string {
+    $dir = dirname(__DIR__) . '/assets/pay'; $out = '';
+    foreach (['cmi' => 'CMI', 'visa' => 'Visa', 'mastercard' => 'Mastercard'] as $f => $alt) {
+        foreach (['svg', 'png'] as $ext) if (is_file("$dir/$f.$ext")) { $out .= '<img src="assets/pay/' . $f . '.' . $ext . '" alt="' . $alt . '" height="28">'; break; }
+    }
+    return $out ? '<div class="paylogos"><span>🔒 Paiement sécurisé</span>' . $out . '</div>' : '';
+}
+
 function render_page(string $title, string $body): void {
     $u = current_user();
     $f = flash();
@@ -30,6 +39,6 @@ function render_page(string $title, string $body): void {
        . '<link rel="stylesheet" href="assets/app.css">' . (isset($_SESSION['cur']) ? '' : '<script src="assets/cur.js" defer></script>') . '</head><body>'
        . '<header><div class="wrap">' . logo_html() . '<nav>' . $nav . '</nav></div></header>'
        . '<main class="wrap">' . $flash . $body . '</main>'
-       . '<footer class="wrap">© ' . date('Y') . ' stayinriad.com · <a href="mailto:contact@stayinriad.com">contact@stayinriad.com</a></footer>'
+       . '<footer class="wrap">' . pay_logos() . '© ' . date('Y') . ' stayinriad.com · <a href="mailto:contact@stayinriad.com">contact@stayinriad.com</a></footer>'
        . '</body></html>';
 }

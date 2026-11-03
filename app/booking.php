@@ -34,7 +34,7 @@ if ($b['status'] === 'confirmée') {
         ? '<p>Paiement sécurisé par carte bancaire.</p>' // le bouton de la passerelle sera branché ici
         : '<div class="flash warn">Le paiement en ligne sera bientôt disponible. Votre chambre est bloquée encore <b>' . $mins . ' min</b>.</div>';
     if (test_payment_allowed()) $pay .= '<form method="post">' . csrf_field() . '<button class="btn" name="action" value="test_pay">🧪 Paiement de TEST (admin uniquement)</button></form><p class="note">Visible uniquement pour l\'administrateur, pour tester le parcours. Aucun argent n\'est débité.</p>';
-    $body = '<h1>Paiement</h1><div class="bookgrid"><div class="card"><h2 style="margin-top:0">' . eur((float)$b['total']) . ' à payer</h2>' . (cur() !== 'EUR' ? '<p class="note">soit environ ' . price_stay((float)$b['price_night'], (int)$b['nights']) . '</p>' : '') . '
+    $body = '<h1>Paiement</h1><div class="bookgrid"><div class="card">' . pay_logos() . '<h2 style="margin-top:0">' . eur((float)$b['total']) . ' à payer</h2>' . (cur() !== 'EUR' ? '<p class="note">soit environ ' . price_stay((float)$b['price_night'], (int)$b['nights']) . '</p>' : '') . '
     <p>Réservation <b>' . e($b['ref']) . '</b> au nom de ' . e($b['first_name'] . ' ' . $b['last_name']) . '.</p>' . $pay . '</div>' . $summary . '</div>';
 } else {
     $body = '<div class="card"><h1>' . ($b['status'] === 'expirée' ? 'Délai de paiement dépassé' : 'Réservation annulée') . '</h1>
