@@ -3,6 +3,7 @@
 declare(strict_types=1);
 require __DIR__ . '/inc/bootstrap.php';
 require __DIR__ . '/inc/riad.php';
+require __DIR__ . '/inc/booking.php';
 
 require_login('admin');
 $rid = (int)($_GET['id'] ?? 0);
@@ -15,6 +16,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $pid = (int)($_POST['photo_id'] ?? 0);
     $ph = $pid ? q('SELECT * FROM photos WHERE id = ? AND riad_id = ?', [$pid, $rid])->fetch() : null;
     log_action('riad_' . $act, $r['name'] . ($pid ? ' · photo ' . $pid : '') . (isset($_POST['commission']) ? ' · ' . $_POST['commission'] . ' %' : '') . (!empty($_POST['note']) ? ' · ' . $_POST['note'] : ''));
+    if ($act === 'sync_done') { q('UPDATE riads SET sync_booking_invite = NULL, sync_airbnb_call = NULL WHERE id = ?', [$rid]); flash('Demande de synchronisation marquée comme traitée.'); redirect($back); }
     switch ($act) {
         case 'photo_ok':
             if ($ph) { $pub = publish_photo($ph['file']); q("UPDATE photos SET status = 'publiée', public_file = ? WHERE id = ?", [$pub, $pid]); flash('Photo validée et publiée avec le logo.'); }
@@ -105,4 +107,14 @@ render_page($r['name'], '<p><a href="admin.php">← Tous les riads</a></p><h1>' 
  $line('Équipements', e(implode(', ', $amen))) . $line('Petit-déjeuner', $r['breakfast'] ? 'Inclus' : 'Non inclus') . $line('Annulation', $r['free_cancel'] ? 'Gratuite jusqu\'à 48 h' : 'Non remboursable') .
  $line('Description', nl2br(e($r['description']))) . '</table></div></div>
 <div class="card"><h2 style="margin-top:0">Chambres (' . count($rooms) . ')</h2>' . ($rooms ? '<div class="scroll"><table><thead><tr><th>Chambre</th><th>Pers.</th><th>Nombre</th><th>Prix / nuit</th></tr></thead><tbody>' . implode('', array_map(fn($x) => '<tr><td><b>' . e($x['name']) . '</b><br><span class="note">' . e($x['description']) . '</span></td><td>' . (int)$x['capacity'] . '</td><td>' . (int)$x['qty'] . '</td><td>' . e(number_format((float)$x['price_eur'], 0, ',', ' ')) . ' €</td></tr>', $rooms)) . '</tbody></table></div>' : '<p class="note">Aucune chambre.</p>') . '</div>
+' . (function () use ($r, $rid) {
+    [$st, $todo] = riad_sync_summary($r);
+    $req = ($r['sync_booking_invite'] ? '<li>📩 Invitation Booking.com signalée le ' . e(fr_date(substr($r['sync_booking_invite'], 0, 10))) . ' : acceptez-la (email de Booking à ' . SYNC_TEAM_EMAIL . ') et installez les liens.</li>' : '')
+         . ($r['sync_airbnb_call'] ? '<li>📞 Appel Airbnb demandé le ' . e(fr_date(substr($r['sync_airbnb_call'], 0, 10))) . ' : ' . e($r['phone']) . '</li>' : '');
+    return '<div class="card"><h2 style="margin-top:0">Booking / Airbnb ' . sync_pill($r) . '</h2>'
+      . ($req ? '<ul>' . $req . '</ul>' : '')
+      . ($todo ? '<p class="note">Reste à faire :</p><ul class="note">' . implode('', array_map(fn($t) => '<li>' . e($t) . '</li>', $todo)) . '</ul>' : '')
+      . '<a class="btn" href="sync.php?id=' . $rid . '">Ouvrir la synchronisation du riad</a>'
+      . ($req ? ' <form method="post" style="display:inline">' . csrf_field() . '<button class="btn ghost" name="action" value="sync_done">Demande traitée</button></form>' : '') . '</div>';
+})() . '
 <p><a class="btn ghost" href="riad.php?id=' . $rid . '">Modifier la fiche à la place du riad</a> <a class="btn ghost" href="bookings.php?id=' . $rid . '">Réservations du riad</a> <a class="btn ghost" href="calendar.php?id=' . $rid . '">Calendrier</a> <a class="btn ghost" href="riad_view.php?id=' . $rid . '">Voir la page publique</a></p>');

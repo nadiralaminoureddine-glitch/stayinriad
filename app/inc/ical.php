@@ -198,3 +198,46 @@ function ical_export(array $room): string {
     $L[] = 'END:VCALENDAR';
     return implode("\r\n", $L) . "\r\n";
 }
+
+// ---------------------------------------------------------------- état de la synchronisation (riad + admin)
+const SYNC_TEAM_EMAIL = 'contact@stayinriad.com';
+const SYNC_CHANNELS = ['booking' => 'Booking.com', 'airbnb' => 'Airbnb'];
+
+/** Note qui lit notre lien (Booking, Airbnb…) : c'est la preuve que le lien StayInRiad est bien installé chez eux. */
+function ical_note_reader(array $room, string $ua): void {
+    $col = stripos($ua, 'booking') !== false ? 'seen_booking' : (stripos($ua, 'airbnb') !== false ? 'seen_airbnb' : null);
+    if ($col === null) {
+        if (preg_match('/Mozilla|Chrome|Safari/i', $ua) && !preg_match('/bot|crawl|calendar|ical/i', $ua)) return; // un navigateur : ignoré
+        $col = 'seen_other';
+    }
+    q("UPDATE rooms SET $col = ? WHERE id = ?", [now(), $room['id']]);
+}
+function riad_channels(array $r): array { return $r['channels'] === null || $r['channels'] === '' || $r['channels'] === 'none' ? [] : array_values(array_intersect(explode(',', $r['channels']), array_keys(SYNC_CHANNELS))); }
+function seen_recent(?string $t): bool { return $t !== null && strtotime($t . ' UTC') > time() - 3 * 86400; }
+
+/** Pour une chambre et un site : [import OK, notre lien lu par ce site]. */
+function room_sync_state(array $room, string $ch): array {
+    $label = SYNC_CHANNELS[$ch];
+    $in = false;
+    foreach (room_feeds((int)$room['id']) as $f) if ($f['source'] === $label && $f['last_ok'] && $f['last_error'] === '') $in = true;
+    return [$in, seen_recent($room['seen_' . $ch] ?? null)];
+}
+/** Résumé pour un riad : 'aucun' (pas sur Booking/Airbnb), 'complet', 'à faire', ou 'non renseigné'. */
+function riad_sync_summary(array $r): array {
+    if ($r['channels'] === null || $r['channels'] === '') return ['non renseigné', []];
+    $chs = riad_channels($r); if (!$chs) return ['aucun', []];
+    $todo = [];
+    foreach (q('SELECT * FROM rooms WHERE riad_id = ? AND active = 1 ORDER BY id', [$r['id']])->fetchAll() as $x) {
+        foreach ($chs as $ch) {
+            if ((int)$x['qty'] !== 1) { $todo[] = $x['name'] . ' : une ligne par chambre'; continue 2; }
+            [$in, $out] = room_sync_state($x, $ch);
+            if (!$in) $todo[] = $x['name'] . ' : lien ' . SYNC_CHANNELS[$ch] . ' à coller sur StayInRiad';
+            if (!$out) $todo[] = $x['name'] . ' : lien StayInRiad à installer chez ' . SYNC_CHANNELS[$ch];
+        }
+    }
+    return [$todo ? 'à faire' : 'complet', $todo];
+}
+function sync_pill(array $r): string {
+    [$s] = riad_sync_summary($r);
+    return match ($s) { 'complet' => '<span class="pill ok">Booking/Airbnb synchronisé</span>', 'aucun' => '<span class="pill info">Pas sur Booking/Airbnb</span>', 'à faire' => '<span class="pill warn">Synchro Booking/Airbnb à terminer</span>', default => '<span class="pill warn">Synchro Booking/Airbnb : à renseigner</span>' };
+}

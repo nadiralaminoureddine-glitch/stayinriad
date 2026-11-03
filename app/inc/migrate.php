@@ -81,7 +81,12 @@ function run_migrations(): void {
         db()->exec("CREATE TABLE IF NOT EXISTS admin_log (id $id, user_id $fk NULL, action VARCHAR(60) NOT NULL, details VARCHAR(500) NOT NULL DEFAULT '', ip VARCHAR(45) NOT NULL DEFAULT '', created_at DATETIME NOT NULL)$tail");
     }
     if ($v < 6) {
-        try { db()->exec("ALTER TABLE rooms ADD COLUMN ical_token VARCHAR(40) NOT NULL DEFAULT ''"); } catch (PDOException $e) {}
+        foreach (["ical_token VARCHAR(40) NOT NULL DEFAULT ''", "seen_booking DATETIME NULL", "seen_airbnb DATETIME NULL", "seen_other DATETIME NULL"] as $c) {
+            try { db()->exec("ALTER TABLE rooms ADD COLUMN $c"); } catch (PDOException $e) {}
+        }
+        foreach (["channels VARCHAR(40) NULL", "sync_booking_invite DATETIME NULL", "sync_airbnb_call DATETIME NULL", "sync_done_note VARCHAR(255) NOT NULL DEFAULT ''"] as $c) {
+            try { db()->exec("ALTER TABLE riads ADD COLUMN $c"); } catch (PDOException $e) {}
+        }
         db()->exec("CREATE TABLE IF NOT EXISTS ical_feeds (id $id, room_id $fk NOT NULL, source VARCHAR(20) NOT NULL, url VARCHAR(600) NOT NULL,
             last_sync DATETIME NULL, last_ok DATETIME NULL, last_error VARCHAR(255) NOT NULL DEFAULT '', events INT NOT NULL DEFAULT 0,
             fail_since DATETIME NULL, alerted TINYINT NOT NULL DEFAULT 0, created_at DATETIME NOT NULL, FOREIGN KEY (room_id) REFERENCES rooms(id))$tail");

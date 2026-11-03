@@ -96,3 +96,7 @@ td.free{background:#e5f4e4;color:var(--ok)}td.part{background:#fdf0dc;color:var(
 .copy{width:100%;font-family:ui-monospace,Menlo,monospace;font-size:12px;background:#faf6ef}
 .feed{display:flex;justify-content:space-between;gap:10px;align-items:center;padding:8px 0;border-top:1px solid #eee3d3}.feed>div{min-width:0;overflow-wrap:anywhere}.feed form{flex:0 0 auto;margin:0}
 .feed:first-child{border-top:0}
+.copyrow{display:flex;gap:8px;align-items:center;margin:6px 0}.copyrow input{flex:1;min-width:0;margin:0}.copyrow .btn{flex:0 0 auto}
+.chan{border-top:1px solid #eee3d3;margin-top:12px;padding-top:8px}.chan h3{margin:4px 0}
+label.check{display:flex;gap:8px;align-items:center;font-weight:600;margin:6px 0}label.check input{width:auto}
+details summary{cursor:pointer;color:var(--ink);font-weight:600}

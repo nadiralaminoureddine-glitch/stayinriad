@@ -11,6 +11,7 @@ if ($u['role'] === 'admin') {
       <div class="kpi"><small>Riads inscrits</small><b>' . $n('SELECT COUNT(*) FROM riads') . '</b></div>
       <div class="kpi"><small>Riads en ligne</small><b>' . $n("SELECT COUNT(*) FROM riads WHERE status = 'en ligne'") . '</b></div>
       <div class="kpi"><small>À vérifier</small><b>' . $n("SELECT COUNT(*) FROM riads WHERE status = 'soumis'") . '</b></div>
+      <div class="kpi"><small>Demandes de synchro</small><b>' . $n('SELECT COUNT(*) FROM riads WHERE sync_booking_invite IS NOT NULL OR sync_airbnb_call IS NOT NULL') . '</b></div>
       <div class="kpi"><small>Voyageurs</small><b>' . $n("SELECT COUNT(*) FROM users WHERE role = 'traveler'") . '</b></div>
     </div><div class="card"><h2 style="margin-top:0">Administration</h2><p>Gérez les comptes, les riads inscrits et les réservations.</p><a class="btn" href="admin.php">Voir les comptes</a> <a class="btn ghost" href="bookings.php">Réservations</a> <a class="btn ghost" href="payouts.php">Versements</a> <a class="btn ghost" href="riads.php">Voir le site</a></div>';
 } elseif ($u['role'] === 'riad') {
@@ -19,7 +20,10 @@ if ($u['role'] === 'admin') {
     if (!$r) { $body = $hello . '<div class="card"><p>Aucun riad lié à ce compte. Écrivez-nous à contact@stayinriad.com.</p></div>'; }
     else {
         $miss = dossier_missing($r);
-        $body = $hello . '<div class="card"><h2 style="margin-top:0">' . e($r['name']) . ' ' . status_pill($r['status']) . '</h2>'
+        require_once __DIR__ . '/inc/booking.php';
+        [$sst] = riad_sync_summary($r);
+        $syncCard = in_array($sst, ['complet', 'aucun'], true) ? '' : '<div class="card" style="border-color:var(--terra)"><h2 style="margin-top:0">🔄 Déjà sur Booking.com ou Airbnb ?</h2><p>Reliez vos calendriers pour ne jamais vendre une chambre deux fois. Pour Booking.com, notre équipe s\'en occupe : il suffit de nous inviter. Pour Airbnb, on le fait avec vous en 5 minutes.</p><a class="btn" href="sync.php">Synchroniser Booking / Airbnb</a></div>';
+        $body = $hello . $syncCard . '<div class="card"><h2 style="margin-top:0">' . e($r['name']) . ' ' . status_pill($r['status']) . ' ' . sync_pill($r) . '</h2>'
           . ($r['status'] === 'refusé' && $r['admin_note'] ? '<div class="flash bad">✏️ À corriger : ' . e($r['admin_note']) . '</div>' : '')
           . ($r['status'] === 'en ligne' ? '<p>✅ Votre riad est en ligne.</p>' : ($r['status'] === 'soumis' ? '<p>⏳ Votre fiche est en cours de vérification par notre équipe.</p>' :
              ($miss ? '<p>Pour mettre votre riad en ligne, complétez :</p><ul>' . implode('', array_map(fn($m) => '<li>' . e($m) . '</li>', $miss)) . '</ul>' : '<p>Votre fiche est complète : envoyez-la pour validation depuis la page « Fiche du riad ».</p>')))
