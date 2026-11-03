@@ -1,0 +1,2 @@
+# Les fichiers internes ne sont jamais accessibles depuis le web
+Require all denied

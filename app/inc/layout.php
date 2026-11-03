@@ -1,0 +1,30 @@
+<?php
+// StayInRiad — gabarit des pages
+declare(strict_types=1);
+if (!defined('SIR_APP')) exit;
+
+function logo_html(): string {
+    return '<a class="logo" href="account.php"><svg width="30" height="30" viewBox="0 0 40 40" aria-hidden="true"><rect x="8" y="8" width="24" height="24" fill="#d9a441"/><rect x="8" y="8" width="24" height="24" fill="#d9a441" transform="rotate(45 20 20)"/><rect x="13" y="13" width="14" height="14" fill="#0f5a4a"/><rect x="13" y="13" width="14" height="14" fill="#0f5a4a" transform="rotate(45 20 20)"/><circle cx="20" cy="20" r="3" fill="#d9a441"/></svg><span>stay<b>in</b>riad<b>.com</b></span></a>';
+}
+
+function render_page(string $title, string $body): void {
+    $u = current_user();
+    $f = flash();
+    $nav = '';
+    if ($u) {
+        $nav = '<span class="who">' . e($u['first_name']) . ' · ' . e(ROLES[$u['role']] ?? '') . '</span>'
+             . ($u['role'] === 'admin' ? '<a href="admin.php">Comptes</a>' : '')
+             . '<a href="account.php">Mon espace</a>'
+             . '<form method="post" action="logout.php" class="inline">' . csrf_field() . '<button class="link">Déconnexion</button></form>';
+    } else {
+        $nav = '<a href="login.php">Connexion</a><a href="register.php">Créer un compte</a>';
+    }
+    $flash = $f ? '<div class="flash ' . e($f[1]) . '">' . e($f[0]) . '</div>' : '';
+    echo '<!DOCTYPE html><html lang="fr"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">'
+       . '<meta name="robots" content="noindex, nofollow"><title>' . e($title) . ' · StayInRiad</title>'
+       . '<link rel="stylesheet" href="assets/app.css"></head><body>'
+       . '<header><div class="wrap">' . logo_html() . '<nav>' . $nav . '</nav></div></header>'
+       . '<main class="wrap">' . $flash . $body . '</main>'
+       . '<footer class="wrap">© ' . date('Y') . ' stayinriad.com · <a href="mailto:contact@stayinriad.com">contact@stayinriad.com</a></footer>'
+       . '</body></html>';
+}
