@@ -53,7 +53,7 @@ render_page('Créer un compte', '<div class="card narrow"><h1>' . ($type === 'ri
 <div class="hp" aria-hidden="true"><label>Site web</label><input name="website" tabindex="-1" autocomplete="off"></div>
 <label>Mot de passe (10 caractères minimum, lettres et chiffres)</label><input type="password" name="pass" required minlength="10" autocomplete="new-password">
 <label>Confirmer le mot de passe</label><input type="password" name="pass2" required minlength="10" autocomplete="new-password">
-<label style="font-weight:400;display:flex;gap:8px;align-items:flex-start"><input type="checkbox" name="cgu" value="1" style="width:auto;margin-top:4px"' . (!empty($_POST['cgu']) ? ' checked' : '') . '> J\'accepte que StayInRiad utilise mes informations pour gérer mon compte' . ($type === 'riad' ? ' et me contacter pour l\'inscription de mon riad' : '') . '.</label>
+<label style="font-weight:400;display:flex;gap:8px;align-items:flex-start"><input type="checkbox" name="cgu" value="1" style="width:auto;margin-top:4px"' . (!empty($_POST['cgu']) ? ' checked' : '') . '> J\'accepte les <a href="/conditions/" target="_blank" rel="noopener">conditions générales d\'utilisation</a> et que StayInRiad utilise mes informations pour gérer mon compte' . ($type === 'riad' ? ' et me contacter pour l\'inscription de mon riad' : '') . '.</label>
 ' . ($err ? '<div class="err">' . e($err) . '</div>' : '') . '
 <button class="btn full">Créer mon compte</button></form>
 <p class="note" style="margin-top:14px">Déjà inscrit ? <a href="login.php">Se connecter</a></p></div>');

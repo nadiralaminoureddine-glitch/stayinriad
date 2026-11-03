@@ -157,6 +157,21 @@ function photo_duplicates(?int $riadId = null): array {
 }
 
 function riad_tabs(string $on, string $q = ''): string {
-    $t = ['res' => ['bookings.php', 'Réservations'], 'cal' => ['calendar.php', 'Calendrier'], 'sync' => ['sync.php', 'Booking/Airbnb'], 'police' => ['police_list.php', 'Fiches de police'], 'avis' => ['reviews.php', 'Avis clients'], 'pay' => ['payouts.php', 'Versements'], 'fiche' => ['riad.php', 'Fiche'], 'rooms' => ['rooms.php', 'Chambres & prix'], 'photos' => ['photos.php', 'Photos']];
+    $t = ['res' => ['bookings.php', 'Réservations'], 'cal' => ['calendar.php', 'Calendrier'], 'sync' => ['sync.php', 'Booking/Airbnb'], 'police' => ['police_list.php', 'Fiches de police'], 'avis' => ['reviews.php', 'Avis clients'], 'pay' => ['payouts.php', 'Versements'], 'releve' => ['statement.php', 'Relevé mensuel'], 'fiche' => ['riad.php', 'Fiche'], 'rooms' => ['rooms.php', 'Chambres & prix'], 'photos' => ['photos.php', 'Photos']];
     return '<div class="tabs">' . implode('', array_map(fn($k) => '<a href="' . $t[$k][0] . $q . '"' . ($k === $on ? ' class="on"' : '') . '>' . $t[$k][1] . '</a>', array_keys($t))) . '</div>';
+}
+
+// ---------------------------------------------------------------- commission choisie par le riad (15 à 20 %)
+const COMMISSION_MIN = 15;
+const COMMISSION_MAX = 20;
+function commission_card(array $r): string {
+    $cur = (float)$r['commission'];
+    $opts = '';
+    for ($c = COMMISSION_MIN; $c <= COMMISSION_MAX; $c++) {
+        $opts .= '<label class="ccard' . ((int)round($cur) === $c ? ' on' : '') . '"><input type="radio" name="commission" value="' . $c . '"' . ((int)round($cur) === $c ? ' checked' : '') . '><b>' . $c . ' %</b><span>vous recevez ' . (100 - $c) . ' € sur 100 €</span></label>';
+    }
+    $outside = $cur < COMMISSION_MIN || $cur > COMMISSION_MAX ? '<p class="note">Commission actuelle fixée avec notre équipe : <b>' . e(rtrim(rtrim(number_format($cur, 2, ',', ''), '0'), ',')) . ' %</b>.</p>' : '';
+    return '<div class="card" style="margin-top:18px"><h2 style="margin-top:0">Votre commission</h2>
+<p>C\'est vous qui choisissez, entre <b>' . COMMISSION_MIN . ' et ' . COMMISSION_MAX . ' %</b>. Elle est calculée uniquement sur le prix des nuits (jamais sur la taxe de séjour ni les extras). Vous pouvez la changer quand vous voulez : le nouveau taux s\'applique aux <b>prochaines réservations</b>, celles déjà faites gardent leur taux.</p>' . $outside . '
+<form method="post">' . csrf_field() . '<div class="ccards">' . $opts . '</div><button class="btn" name="action" value="commission">Enregistrer ma commission</button></form></div>';
 }

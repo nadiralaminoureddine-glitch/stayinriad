@@ -45,7 +45,7 @@ render_page('Réserver', '<p><a href="riad_view.php?' . e(http_build_query(['id'
 <div class="row"><div><label>Téléphone</label><input name="phone" required maxlength="40" autocomplete="tel" placeholder="+33 6 …" value="' . $v('phone', $u['phone'] ?? '') . '"></div>
 <div><label>Pays</label><select name="country">' . implode('', array_map(fn($c) => '<option' . (($_POST['country'] ?? '') === $c ? ' selected' : '') . '>' . e($c) . '</option>', COUNTRIES)) . '</select></div></div>
 <label>Demande particulière (facultatif)</label><input name="request" maxlength="500" placeholder="Heure d\'arrivée, lit bébé…" value="' . $v('request') . '">
-<label class="chk"><input type="checkbox" name="cgv" value="1"' . (!empty($_POST['cgv']) ? ' checked' : '') . '> J\'accepte les conditions de réservation et d\'annulation du riad.</label>
+<label class="chk"><input type="checkbox" name="cgv" value="1"' . (!empty($_POST['cgv']) ? ' checked' : '') . '> J\'accepte les conditions de réservation et d\'annulation du riad et les <a href="/conditions/" target="_blank" rel="noopener">conditions générales d\'utilisation</a>.</label>
 ' . ($fe ? '<div class="err">' . e($fe) . '</div>' : '') . '
 <button class="btn full">Continuer vers le paiement</button>
 <p class="note">La chambre est bloquée pour vous pendant ' . HOLD_MINUTES . ' minutes le temps du paiement.</p></form>

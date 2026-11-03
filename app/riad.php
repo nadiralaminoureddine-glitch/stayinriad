@@ -15,7 +15,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $p = fn($k, $max = 255) => mb_substr(trim((string)($_POST[$k] ?? '')), 0, $max);
     $action = $_POST['action'] ?? 'save';
 
-    if ($action === 'submit') {
+    if ($action === 'commission') {
+        $c = (int)($_POST['commission'] ?? 0);
+        if ($c < COMMISSION_MIN || $c > COMMISSION_MAX) $err[] = 'Choisissez une commission entre ' . COMMISSION_MIN . ' et ' . COMMISSION_MAX . ' %.';
+        elseif ((float)$r['commission'] !== (float)$c) {
+            $old = rtrim(rtrim(number_format((float)$r['commission'], 2, '.', ''), '0'), '.');
+            q('UPDATE riads SET commission = ?, updated_at = ? WHERE id = ?', [$c, now(), $rid]);
+            log_action('commission_riad', $r['name'] . ' · ' . $old . ' % → ' . $c . ' %');
+            send_mail(admin_email(), '[Commission] ' . $r['name'] . ' : ' . $old . ' % → ' . $c . ' %', mail_layout('Commission modifiée par le riad', '<p><b>' . e($r['name']) . '</b> a choisi une commission de <b>' . $c . ' %</b> (avant : ' . e($old) . ' %). Elle s\'applique aux nouvelles réservations.</p>'));
+            flash('Commission enregistrée : ' . $c . ' %. Elle s\'applique à vos prochaines réservations.');
+            redirect('riad.php' . ($u['role'] === 'admin' ? '?id=' . $rid : ''));
+        } else redirect('riad.php' . ($u['role'] === 'admin' ? '?id=' . $rid : ''));
+    } elseif ($action === 'submit') {
         $miss = dossier_missing($r);
         if ($miss) $err[] = 'Il manque encore : ' . implode(', ', $miss) . '.';
         elseif (photo_duplicates($rid)) $err[] = 'Une de vos photos ressemble à celle d\'un autre établissement. Notre équipe va la vérifier avant la mise en ligne.';
@@ -110,6 +121,7 @@ render_page('Fiche du riad', '<h1>' . e($r['name']) . ' ' . status_pill($r['stat
 
 <button class="btn" name="action" value="save">Enregistrer</button></form>
 
+' . commission_card($r) . '
 <div class="card" style="margin-top:18px"><h2 style="margin-top:0">Envoyer pour validation</h2>' .
 ($r['status'] === 'en ligne' ? '<p class="note">Votre riad est déjà en ligne.</p>' :
  ($r['status'] === 'soumis' ? '<p class="note">Fiche déjà envoyée : vérification en cours.</p>' :

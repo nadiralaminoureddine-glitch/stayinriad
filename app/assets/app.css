@@ -108,3 +108,7 @@ details summary{cursor:pointer;color:var(--ink);font-weight:600}
 .review{border-top:1px solid #eee3d3;padding:12px 0}.review:first-child{border-top:0}.review p{margin:6px 0}.private{background:#faf6ef;padding:8px;border-radius:8px}
 .rhead{display:flex;gap:12px;align-items:center}.score{background:var(--ink);color:#fff;font-weight:700;border-radius:8px 8px 8px 0;padding:6px 8px;min-width:34px;text-align:center}.score.big{font-size:24px;padding:10px 12px}
 .bar{display:grid;grid-template-columns:1fr 1.2fr 34px;gap:8px;align-items:center;margin:8px 0;font-size:14px}.track{background:#eee3d3;height:8px;border-radius:9px;overflow:hidden}.track i{display:block;height:100%;background:var(--ink)}
+.ccards{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:10px 0 14px}.ccard{display:flex;flex-direction:column;align-items:center;gap:2px;border:1.5px solid #d6cbb9;border-radius:12px;padding:10px 6px;margin:0;cursor:pointer;text-align:center;background:#fff}
+.ccard input{position:absolute;opacity:0;width:1px;height:1px}.ccard b{font-size:20px}.ccard span{font-size:12px;font-weight:400;color:var(--muted,#6b625a)}.ccard:has(input:checked){border-color:var(--ink);background:#e9f3ef}.ccard:has(input:focus-visible){outline:2px solid var(--ink)}
+.printonly{display:none}
+@media print{header,footer,.noprint,.tabs,.btn{display:none!important}.printonly{display:block}body{background:#fff}.card{border:0;box-shadow:none;padding:0}.kpis{grid-template-columns:repeat(4,1fr)}table{font-size:11px}}

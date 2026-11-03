@@ -246,3 +246,4 @@ function police_decrypt(string $blob): array {
 
 require_once __DIR__ . '/ical.php';
 require_once __DIR__ . '/reviews.php';
+require_once __DIR__ . '/statement.php';
