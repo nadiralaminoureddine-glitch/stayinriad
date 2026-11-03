@@ -6,7 +6,7 @@ html = f'''<!DOCTYPE html>
 <html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Conditions générales d'utilisation | StayInRiad</title>
 <meta name="description" content="Conditions générales d'utilisation de stayinriad.com : réservation, paiement, annulation, séjour et données personnelles.">
-<link rel="canonical" href="https://stayinriad.com/conditions/"><link rel="icon" href="/apple-touch-icon.png">
+<link rel="canonical" href="https://stayinriad.com/conditions/"><link rel="icon" href="/favicon.ico" sizes="48x48"><link rel="icon" href="/favicon.svg" type="image/svg+xml"><link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <style>
 :root{{--green:#0f5a4a;--terra:#b5472b;--ink:#1f1a17;--muted:#6b625a;--line:#e3d7c5;--gold:#d9a441}}
 *{{box-sizing:border-box}}body{{margin:0;font-family:Inter,system-ui,-apple-system,"Segoe UI",sans-serif;color:var(--ink);background:#fbf8f3;line-height:1.6}}

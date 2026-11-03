@@ -38,6 +38,7 @@ const ld=JSON.stringify([{"@context":"https://schema.org","@type":"Organization"
     document.head.insertAdjacentHTML('beforeend',alt);
     const s=document.createElement('script');s.type='application/ld+json';s.textContent=ld;document.head.appendChild(s);
     document.getElementById('langNote').innerHTML='';
+    const lg=document.querySelector('a.logo');if(lg)lg.setAttribute('href',m.path);
   },{m,lang,alt,ld,SITE});
   let html='<!DOCTYPE html>\n'+(await p.evaluate(()=>document.documentElement.outerHTML));
   const dir=lang==='fr'?OUT:OUT+'/'+lang;fs.mkdirSync(dir,{recursive:true});fs.writeFileSync(dir+'/index.html',html);
@@ -47,7 +48,7 @@ const ld=JSON.stringify([{"@context":"https://schema.org","@type":"Organization"
  fs.writeFileSync(OUT+'/robots.txt',`User-agent: *\nAllow: /\nDisallow: /app/\n\nSitemap: ${SITE}/sitemap.xml\n`);
  const urls=Object.values(L).map(v=>`  <url>\n    <loc>${SITE}${v.path}</loc>\n${Object.entries(L).map(([k,w])=>`    <xhtml:link rel="alternate" hreflang="${k}" href="${SITE}${w.path}"/>`).join('\n')}\n    <xhtml:link rel="alternate" hreflang="x-default" href="${SITE}/"/>\n    <changefreq>weekly</changefreq>\n  </url>`).join('\n');
  fs.writeFileSync(OUT+'/sitemap.xml',`<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">\n${urls}\n</urlset>\n`);
- for(const f of ['partage.jpg','apple-touch-icon.png','.htaccess'])fs.copyFileSync(ROOT+'/'+f,OUT+'/'+f);
+ for(const f of ['partage.jpg','apple-touch-icon.png','.htaccess','favicon.ico','favicon.svg','favicon-32.png','icon-192.png','icon-512.png','site.webmanifest'])fs.copyFileSync(ROOT+'/'+f,OUT+'/'+f);
  fs.cpSync(ROOT+'/conditions',OUT+'/conditions',{recursive:true,filter:f=>!f.endsWith('.md')});
  console.log('ok');
 })();

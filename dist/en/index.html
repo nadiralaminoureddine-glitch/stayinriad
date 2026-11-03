@@ -20,9 +20,8 @@
 <meta name="twitter:title" content="Riads in Morocco: book a riad in Marrakech, Fez, Essaouira | StayInRiad">
 <meta name="twitter:description" content="StayInRiad is a 100% Moroccan booking platform for riads only: traditional riads with courtyards, pools and rooftop terraces in Marrakech, Fez, Essaouira, Chefchaouen and the Sahara. Opening soon.">
 <meta name="twitter:image" content="https://stayinriad.com/partage.jpg">
-<link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <meta name="theme-color" content="#0f5a4a">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Crect width='40' height='40' rx='8' fill='%230f5a4a'/%3E%3Crect x='8' y='8' width='24' height='24' fill='%23d9a441'/%3E%3Crect x='8' y='8' width='24' height='24' fill='%23d9a441' transform='rotate(45 20 20)'/%3E%3Crect x='13' y='13' width='14' height='14' fill='%230f5a4a'/%3E%3Crect x='13' y='13' width='14' height='14' fill='%230f5a4a' transform='rotate(45 20 20)'/%3E%3Ccircle cx='20' cy='20' r='3' fill='%23d9a441'/%3E%3C/svg%3E">
+<link rel="icon" href="/favicon.ico" sizes="48x48"><link rel="icon" href="/favicon.svg" type="image/svg+xml"><link rel="apple-touch-icon" href="/apple-touch-icon.png"><link rel="manifest" href="/site.webmanifest"><meta name="theme-color" content="#0f5a4a">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&amp;family=Inter:wght@400;500;600;700&amp;family=Cairo:wght@400;600;700&amp;display=swap" rel="stylesheet">
 <style>
@@ -34,7 +33,7 @@ button,input,select,textarea{font:inherit}
 header{background-color:var(--green);background-image:var(--zelLine);background-size:64px;color:#fff;position:relative;overflow:hidden}
 .topbar{display:flex;align-items:center;justify-content:space-between;padding:14px 0;gap:10px;flex-wrap:wrap}
 .dotcom{color:var(--gold);font-weight:500}
-.logo{display:flex;align-items:center;gap:10px;font-family:Fraunces,serif;font-size:25px;font-weight:700;direction:ltr}
+.logo{display:flex;align-items:center;gap:10px;color:inherit;text-decoration:none;font-family:Fraunces,serif;font-size:25px;font-weight:700;direction:ltr}
 .nav{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
 .nav select,.nav a{background:transparent;color:#fff;border:1px solid rgba(255,255,255,.35);border-radius:8px;padding:8px 10px;cursor:pointer;text-decoration:none;font-size:14px}
 .nav select{background:rgba(255,255,255,.12);border-color:rgba(255,255,255,.6);font-weight:600}.nav select:hover,.nav select:focus{background:rgba(255,255,255,.2);outline:none;border-color:var(--gold)}.nav select option{color:#1f1a17;background:#fff;font-weight:500}.nav select option:checked{background:#f7efe3;color:#0f5a4a;font-weight:700}
@@ -111,7 +110,7 @@ html[dir=rtl] .pattern{right:auto;left:-40px}
 <header>
   <div class="wrap">
     <div class="topbar">
-      <div class="logo"><svg width="34" height="34" viewBox="0 0 40 40"><rect x="8" y="8" width="24" height="24" fill="#d9a441"></rect><rect x="8" y="8" width="24" height="24" fill="#d9a441" transform="rotate(45 20 20)"></rect><rect x="13" y="13" width="14" height="14" fill="#0f5a4a"></rect><rect x="13" y="13" width="14" height="14" fill="#0f5a4a" transform="rotate(45 20 20)"></rect><circle cx="20" cy="20" r="3" fill="#d9a441"></circle></svg><span style="white-space:nowrap">stay<span class="dotcom">in</span>riad<span class="dotcom">.com</span></span></div>
+      <a class="logo" href="/en/" aria-label="stayinriad.com — accueil"><svg width="34" height="34" viewBox="0 0 40 40"><rect x="8" y="8" width="24" height="24" fill="#d9a441"></rect><rect x="8" y="8" width="24" height="24" fill="#d9a441" transform="rotate(45 20 20)"></rect><rect x="13" y="13" width="14" height="14" fill="#0f5a4a"></rect><rect x="13" y="13" width="14" height="14" fill="#0f5a4a" transform="rotate(45 20 20)"></rect><circle cx="20" cy="20" r="3" fill="#d9a441"></circle></svg><span style="white-space:nowrap">stay<span class="dotcom">in</span>riad<span class="dotcom">.com</span></span></a>
       <nav class="nav">
         <select id="langSel" aria-label="Langue / Language / اللغة"><option value="fr">🌐 FR · Français</option><option value="en">🌐 EN · English</option><option value="ar">🌐 ع · العربية</option><option value="es">🌐 ES · Español</option></select>
         <a href="#partenaires" class="solid" data-i18n="nav_partner">List my riad</a>

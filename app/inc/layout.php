@@ -4,7 +4,7 @@ declare(strict_types=1);
 if (!defined('SIR_APP')) exit;
 
 function logo_html(): string {
-    return '<a class="logo" href="account.php"><svg width="30" height="30" viewBox="0 0 40 40" aria-hidden="true"><rect x="8" y="8" width="24" height="24" fill="#d9a441"/><rect x="8" y="8" width="24" height="24" fill="#d9a441" transform="rotate(45 20 20)"/><rect x="13" y="13" width="14" height="14" fill="#0f5a4a"/><rect x="13" y="13" width="14" height="14" fill="#0f5a4a" transform="rotate(45 20 20)"/><circle cx="20" cy="20" r="3" fill="#d9a441"/></svg><span>stay<b>in</b>riad<b>.com</b></span></a>';
+    return '<a class="logo" href="/" aria-label="stayinriad.com — accueil"><svg width="30" height="30" viewBox="0 0 40 40" aria-hidden="true"><rect x="8" y="8" width="24" height="24" fill="#d9a441"/><rect x="8" y="8" width="24" height="24" fill="#d9a441" transform="rotate(45 20 20)"/><rect x="13" y="13" width="14" height="14" fill="#0f5a4a"/><rect x="13" y="13" width="14" height="14" fill="#0f5a4a" transform="rotate(45 20 20)"/><circle cx="20" cy="20" r="3" fill="#d9a441"/></svg><span>stay<b>in</b>riad<b>.com</b></span></a>';
 }
 
 /** Logos de paiement officiels, s'ils ont été déposés dans assets/pay/ (cmi, visa, mastercard). */
@@ -36,7 +36,7 @@ function render_page(string $title, string $body): void {
     $flash = $f ? '<div class="flash ' . e($f[1]) . '">' . e($f[0]) . '</div>' : '';
     echo '<!DOCTYPE html><html lang="fr"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">'
        . '<meta name="robots" content="noindex, nofollow"><title>' . e($title) . ' · StayInRiad</title>'
-       . '<link rel="stylesheet" href="assets/app.css">' . (isset($_SESSION['cur']) ? '' : '<script src="assets/cur.js" defer></script>') . '</head><body>'
+       . '<link rel="icon" href="/favicon.ico" sizes="48x48"><link rel="icon" href="/favicon.svg" type="image/svg+xml"><link rel="apple-touch-icon" href="/apple-touch-icon.png"><meta name="theme-color" content="#0f5a4a"><link rel="stylesheet" href="assets/app.css">' . (isset($_SESSION['cur']) ? '' : '<script src="assets/cur.js" defer></script>') . '</head><body>'
        . '<header><div class="wrap">' . logo_html() . '<nav>' . $nav . '</nav></div></header>'
        . '<main class="wrap">' . $flash . $body . '</main>'
        . '<footer class="wrap">' . pay_logos() . '© ' . date('Y') . ' stayinriad.com · <a href="mailto:contact@stayinriad.com">contact@stayinriad.com</a></footer>'
