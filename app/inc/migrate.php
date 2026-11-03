@@ -3,7 +3,7 @@
 declare(strict_types=1);
 if (!defined('SIR_APP')) exit;
 
-const SCHEMA_VERSION = 2;
+const SCHEMA_VERSION = 3;
 
 function run_migrations(): void {
     global $CONFIG;
@@ -47,6 +47,23 @@ function run_migrations(): void {
             created_at DATETIME NOT NULL, FOREIGN KEY (riad_id) REFERENCES riads(id)
         )$tail");
         db()->exec("CREATE TABLE IF NOT EXISTS photo_ok (pair VARCHAR(40) PRIMARY KEY, at DATETIME NOT NULL)$tail");
+    }
+    if ($v < 3) {
+        db()->exec("CREATE TABLE IF NOT EXISTS bookings (
+            id $id, ref VARCHAR(12) NOT NULL UNIQUE, token VARCHAR(40) NOT NULL,
+            riad_id $fk NOT NULL, room_id $fk NOT NULL, user_id $fk NULL,
+            first_name VARCHAR(80) NOT NULL, last_name VARCHAR(80) NOT NULL, email VARCHAR(190) NOT NULL,
+            phone VARCHAR(40) NOT NULL DEFAULT '', country VARCHAR(60) NOT NULL DEFAULT '', request VARCHAR(500) NOT NULL DEFAULT '',
+            check_in DATE NOT NULL, check_out DATE NOT NULL, nights INT NOT NULL, guests INT NOT NULL,
+            room_name VARCHAR(120) NOT NULL, price_night DECIMAL(8,2) NOT NULL, subtotal DECIMAL(10,2) NOT NULL,
+            commission_rate DECIMAL(5,2) NOT NULL, commission DECIMAL(10,2) NOT NULL, net DECIMAL(10,2) NOT NULL,
+            total DECIMAL(10,2) NOT NULL, eur_mad DECIMAL(8,4) NOT NULL, net_mad DECIMAL(12,2) NOT NULL,
+            status VARCHAR(20) NOT NULL, hold_until DATETIME NULL, paid_at DATETIME NULL, payment_ref VARCHAR(80) NOT NULL DEFAULT '',
+            source VARCHAR(30) NOT NULL DEFAULT 'StayInRiad', created_at DATETIME NOT NULL,
+            FOREIGN KEY (riad_id) REFERENCES riads(id), FOREIGN KEY (room_id) REFERENCES rooms(id)
+        )$tail");
+        try { db()->exec("CREATE INDEX idx_book_room ON bookings (room_id, check_in, check_out)"); } catch (PDOException $e) {}
+        db()->exec("CREATE TABLE IF NOT EXISTS closed_days (room_id $fk NOT NULL, day DATE NOT NULL, PRIMARY KEY (room_id, day))$tail");
     }
     q("DELETE FROM settings WHERE k = 'schema_version'");
     q("INSERT INTO settings (k, v) VALUES ('schema_version', ?)", [(string)SCHEMA_VERSION]);
