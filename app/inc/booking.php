@@ -65,9 +65,10 @@ function room_free(array $room, string $in, string $out): int {
     $books = q('SELECT check_in, check_out FROM bookings WHERE room_id = ? AND check_in < ? AND check_out > ? AND ' . occupying_sql(),
                [$room['id'], $out, $in, now()])->fetchAll();
     $closed = array_flip(array_column(q('SELECT day FROM closed_days WHERE room_id = ? AND day >= ? AND day < ?', [$room['id'], $in, $out])->fetchAll(), 'day'));
+    $ext = ext_days((int)$room['id'], $in, $out); // réservations Booking/Airbnb
     for ($d = $in; $d < $out; $d = date('Y-m-d', strtotime($d . ' +1 day'))) {
         if (isset($closed[$d])) return 0;
-        $used = 0; foreach ($books as $b) if ($b['check_in'] <= $d && $d < $b['check_out']) $used++;
+        $used = $ext[$d] ?? 0; foreach ($books as $b) if ($b['check_in'] <= $d && $d < $b['check_out']) $used++;
         $free = min($free, (int)$room['qty'] - $used);
     }
     return max(0, $free);
@@ -77,11 +78,12 @@ function room_days(array $room, string $from, int $days): array {
     $to = date('Y-m-d', strtotime("$from +$days days"));
     $books = q('SELECT check_in, check_out FROM bookings WHERE room_id = ? AND check_in < ? AND check_out > ? AND ' . occupying_sql(), [$room['id'], $to, $from, now()])->fetchAll();
     $closed = array_flip(array_column(q('SELECT day FROM closed_days WHERE room_id = ? AND day >= ? AND day < ?', [$room['id'], $from, $to])->fetchAll(), 'day'));
+    $ext = ext_days((int)$room['id'], $from, $to);
     $out = [];
     for ($i = 0; $i < $days; $i++) {
-        $d = date('Y-m-d', strtotime("$from +$i days")); $used = 0;
+        $d = date('Y-m-d', strtotime("$from +$i days")); $x = $ext[$d] ?? 0; $used = $x;
         foreach ($books as $b) if ($b['check_in'] <= $d && $d < $b['check_out']) $used++;
-        $out[$d] = ['free' => max(0, (int)$room['qty'] - $used), 'used' => $used, 'closed' => isset($closed[$d])];
+        $out[$d] = ['free' => max(0, (int)$room['qty'] - $used), 'used' => $used, 'ext' => $x, 'closed' => isset($closed[$d])];
     }
     return $out;
 }
@@ -96,6 +98,7 @@ function new_ref(): string {
 /** Bloque une chambre pendant le paiement. Retourne [réservation, erreur]. */
 function create_hold(array $riad, array $room, string $in, string $out, int $nights, int $guests, array $guest, ?int $userId): array {
     global $CONFIG;
+    ical_sync_room((int)$room['id']); // relit Booking/Airbnb en direct juste avant le paiement
     $pdo = db(); $my = ($CONFIG['db']['driver'] ?? 'mysql') !== 'sqlite';
     $pdo->beginTransaction();
     try {
@@ -240,3 +243,5 @@ function police_decrypt(string $blob): array {
     $p = openssl_decrypt(substr($raw, 28), 'aes-256-gcm', police_key(), OPENSSL_RAW_DATA, substr($raw, 0, 12), substr($raw, 12, 16));
     return $p === false ? [] : (json_decode($p, true) ?: []);
 }
+
+require_once __DIR__ . '/ical.php';

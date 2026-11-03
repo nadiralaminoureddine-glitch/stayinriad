@@ -85,10 +85,14 @@ table.cal th{padding:4px;text-align:center;font-size:11px}table.cal th.rn{text-a
 table.cal th.we{color:var(--terra)}
 table.cal td{padding:0;border:0;text-align:center;min-width:28px;height:30px;border-radius:5px;font-weight:600}
 table.cal td form{margin:0}table.cal td button{width:100%;height:30px;border:0;background:none;font:inherit;font-weight:600;cursor:pointer;color:inherit}
-td.free{background:#e5f4e4;color:var(--ok)}td.part{background:#fdf0dc;color:var(--warn)}td.full{background:#fbebeb;color:var(--bad)}td.closed{background:#d9d2c7;color:#5a524b}td.past{opacity:.4}
-.lg{display:inline-block;width:12px;height:12px;border-radius:3px;vertical-align:middle}.lg.free{background:#e5f4e4}.lg.part{background:#fdf0dc}.lg.full{background:#fbebeb}.lg.closed{background:#d9d2c7}
+td.free{background:#e5f4e4;color:var(--ok)}td.part{background:#fdf0dc;color:var(--warn)}td.full{background:#fbebeb;color:var(--bad)}td.closed{background:#d9d2c7;color:#5a524b}td.ext{background:#e3e8f6;color:#33427a}td.past{opacity:.4}
+.lg{display:inline-block;width:12px;height:12px;border-radius:3px;vertical-align:middle}.lg.free{background:#e5f4e4}.lg.part{background:#fdf0dc}.lg.full{background:#fbebeb}.lg.closed{background:#d9d2c7}.lg.ext{background:#e3e8f6}
 @media (max-width:760px){.search{grid-template-columns:1fr 1fr}.search>div:first-child,.search>div:last-child{grid-column:1/-1}.bookgrid{grid-template-columns:1fr}.pgal{grid-template-columns:1fr 1fr;grid-auto-rows:110px}.pgal .big{grid-column:1/-1}}
 .cur{display:inline-flex;border:1px solid rgba(255,255,255,.4);border-radius:8px;overflow:hidden}
 .cur a{padding:4px 9px;opacity:.8;text-decoration:none!important}.cur a.on{background:var(--gold);color:var(--green-d);opacity:1;font-weight:700}
 .paylogos{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:6px 0 12px}.paylogos span{font-size:13px;color:var(--muted)}.paylogos img{height:28px;width:auto;background:#fff;border:1px solid var(--line);border-radius:6px;padding:3px 6px}
 .hp{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden}
+
+.copy{width:100%;font-family:ui-monospace,Menlo,monospace;font-size:12px;background:#faf6ef}
+.feed{display:flex;justify-content:space-between;gap:10px;align-items:center;padding:8px 0;border-top:1px solid #eee3d3}.feed>div{min-width:0;overflow-wrap:anywhere}.feed form{flex:0 0 auto;margin:0}
+.feed:first-child{border-top:0}

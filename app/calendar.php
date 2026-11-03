@@ -34,8 +34,9 @@ $rows = implode('', array_map(function ($x) use ($first, $days, $q) {
     $cells = '';
     foreach (room_days($x, $first, $days) as $d => $s) {
         $past = $d < today();
-        $cls = $s['closed'] ? 'closed' : ($s['free'] === 0 ? 'full' : ($s['used'] ? 'part' : 'free'));
-        $txt = $s['closed'] ? '✕' : (string)$s['free'];
+        $isExt = !$s['closed'] && $s['free'] === 0 && $s['ext'] > 0;
+        $cls = $s['closed'] ? 'closed' : ($isExt ? 'ext' : ($s['free'] === 0 ? 'full' : ($s['used'] ? 'part' : 'free')));
+        $txt = $s['closed'] ? '✕' : ($isExt ? '⇄' : (string)$s['free']);
         $cells .= '<td class="' . $cls . ($past ? ' past' : '') . '">' . ($past ? $txt : '<form method="post">' . csrf_field() . '<input type="hidden" name="room_id" value="' . (int)$x['id'] . '"><input type="hidden" name="day" value="' . $d . '"><button title="' . ($s['closed'] ? 'Rouvrir' : 'Fermer') . ' le ' . e(fr_date($d)) . '">' . $txt . '</button></form>') . '</td>';
     }
     return '<tr><th class="rn">' . e($x['name']) . '<br><span class="note">' . (int)$x['qty'] . ' ch.</span></th>' . $cells . '</tr>';
@@ -43,6 +44,6 @@ $rows = implode('', array_map(function ($x) use ($first, $days, $q) {
 
 render_page('Calendrier', '<h1>' . e($r['name']) . ' ' . status_pill($r['status']) . '</h1>' . riad_tabs('cal', $q) . '
 <div class="card"><div style="display:flex;justify-content:space-between;align-items:center;gap:10px"><a class="btn sm ghost" href="' . e($nav(-1)) . '">←</a><h2 style="margin:0">' . e(ucfirst($label)) . '</h2><a class="btn sm ghost" href="' . e($nav(1)) . '">→</a></div>
-<p class="note">Chaque case indique le <b>nombre de chambres encore libres</b>. Touchez une case pour <b>fermer</b> la vente ce jour-là (✕), ou pour la rouvrir. Les réservations StayInRiad sont déduites automatiquement.</p>
+<p class="note">Chaque case indique le <b>nombre de chambres encore libres</b>. Touchez une case pour <b>fermer</b> la vente ce jour-là (✕), ou pour la rouvrir. Les réservations StayInRiad, et celles de Booking/Airbnb si vous avez activé la <a href="sync.php' . $q . '">synchronisation</a>, sont déduites automatiquement.</p>
 ' . ($rooms ? '<div class="scroll"><table class="cal"><thead><tr><th></th>' . $head . '</tr></thead><tbody>' . $rows . '</tbody></table></div>' : '<p class="note">Ajoutez d\'abord vos chambres.</p>') . '
-<p class="note"><span class="lg free"></span> libre · <span class="lg part"></span> en partie réservé · <span class="lg full"></span> complet · <span class="lg closed"></span> fermé</p></div>');
+<p class="note"><span class="lg free"></span> libre · <span class="lg part"></span> en partie réservé · <span class="lg full"></span> complet · <span class="lg ext"></span> ⇄ réservé sur Booking/Airbnb · <span class="lg closed"></span> fermé</p></div>');

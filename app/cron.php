@@ -12,6 +12,9 @@ $log = [];
 // 1) Paiements abandonnés : la chambre est libérée
 expire_holds();
 
+// 1 bis) Calendriers Booking.com / Airbnb : relus toutes les 15 minutes
+$log = array_merge($log, ical_sync_due());
+
 // 2) Rappel fiche de police : la veille de l'arrivée (ou le jour même), si elle n'est pas remplie
 $tomorrow = date('Y-m-d', strtotime('+1 day'));
 foreach (q("SELECT * FROM bookings WHERE status = 'confirmée' AND police_filled_at IS NULL AND police_reminded = 0 AND check_in <= ? AND check_in >= ?", [$tomorrow, today()])->fetchAll() as $b) {

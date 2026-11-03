@@ -3,7 +3,7 @@
 declare(strict_types=1);
 if (!defined('SIR_APP')) exit;
 
-const SCHEMA_VERSION = 5;
+const SCHEMA_VERSION = 6;
 
 function run_migrations(): void {
     global $CONFIG;
@@ -79,6 +79,15 @@ function run_migrations(): void {
         q("UPDATE users SET email_verified_at = created_at WHERE email_verified_at IS NULL AND status = 'active'"); // comptes existants : déjà validés
         db()->exec("CREATE TABLE IF NOT EXISTS auth_codes (id $id, user_id $fk NOT NULL, purpose VARCHAR(20) NOT NULL, code_hash VARCHAR(64) NOT NULL, expires_at DATETIME NOT NULL, attempts INT NOT NULL DEFAULT 0, used TINYINT NOT NULL DEFAULT 0, created_at DATETIME NOT NULL, FOREIGN KEY (user_id) REFERENCES users(id))$tail");
         db()->exec("CREATE TABLE IF NOT EXISTS admin_log (id $id, user_id $fk NULL, action VARCHAR(60) NOT NULL, details VARCHAR(500) NOT NULL DEFAULT '', ip VARCHAR(45) NOT NULL DEFAULT '', created_at DATETIME NOT NULL)$tail");
+    }
+    if ($v < 6) {
+        try { db()->exec("ALTER TABLE rooms ADD COLUMN ical_token VARCHAR(40) NOT NULL DEFAULT ''"); } catch (PDOException $e) {}
+        db()->exec("CREATE TABLE IF NOT EXISTS ical_feeds (id $id, room_id $fk NOT NULL, source VARCHAR(20) NOT NULL, url VARCHAR(600) NOT NULL,
+            last_sync DATETIME NULL, last_ok DATETIME NULL, last_error VARCHAR(255) NOT NULL DEFAULT '', events INT NOT NULL DEFAULT 0,
+            fail_since DATETIME NULL, alerted TINYINT NOT NULL DEFAULT 0, created_at DATETIME NOT NULL, FOREIGN KEY (room_id) REFERENCES rooms(id))$tail");
+        db()->exec("CREATE TABLE IF NOT EXISTS ext_blocks (id $id, feed_id $fk NOT NULL, room_id $fk NOT NULL, start_day DATE NOT NULL, end_day DATE NOT NULL)$tail");
+        try { db()->exec("CREATE INDEX idx_ext_room ON ext_blocks (room_id, start_day, end_day)"); } catch (PDOException $e) {}
+        try { db()->exec("CREATE INDEX idx_ext_feed ON ext_blocks (feed_id)"); } catch (PDOException $e) {}
     }
     q("DELETE FROM settings WHERE k = 'schema_version'");
     q("INSERT INTO settings (k, v) VALUES ('schema_version', ?)", [(string)SCHEMA_VERSION]);
