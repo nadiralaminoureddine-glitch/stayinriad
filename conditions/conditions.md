@@ -27,7 +27,7 @@ StayInRiad :
 
 Les Riads partenaires sont responsables de l'exactitude de leurs informations. StayInRiad corrige ou retire toute annonce inexacte dès qu'il en a connaissance.
 
-Le classement des riads sur la Plateforme tient compte notamment de la ville et des dates recherchées, des disponibilités et des prix.
+Les résultats affichent les riads qui correspondent à votre recherche (ville, dates, nombre de personnes, disponibilités). Ils sont classés d'abord selon la commission choisie par chaque riad (entre 15 et 20 % du prix des nuits) : un riad qui choisit une commission plus élevée apparaît plus haut. À égalité, la note donnée par les voyageurs départage. Cette commission ne change pas le prix que vous payez.
 
 ## 3. Votre compte
 

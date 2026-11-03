@@ -172,6 +172,6 @@ function commission_card(array $r): string {
     }
     $outside = $cur < COMMISSION_MIN || $cur > COMMISSION_MAX ? '<p class="note">Commission actuelle fixée avec notre équipe : <b>' . e(rtrim(rtrim(number_format($cur, 2, ',', ''), '0'), ',')) . ' %</b>.</p>' : '';
     return '<div class="card" style="margin-top:18px"><h2 style="margin-top:0">Votre commission</h2>
-<p>C\'est vous qui choisissez, entre <b>' . COMMISSION_MIN . ' et ' . COMMISSION_MAX . ' %</b>. Elle est calculée uniquement sur le prix des nuits (jamais sur la taxe de séjour ni les extras). Vous pouvez la changer quand vous voulez : le nouveau taux s\'applique aux <b>prochaines réservations</b>, celles déjà faites gardent leur taux.</p>' . $outside . '
+<p>C\'est vous qui choisissez, entre <b>' . COMMISSION_MIN . ' et ' . COMMISSION_MAX . ' %</b>. Elle est calculée uniquement sur le prix des nuits (jamais sur la taxe de séjour ni les extras). Vous pouvez la changer quand vous voulez : le nouveau taux s\'applique aux <b>prochaines réservations</b>, celles déjà faites gardent leur taux.</p><p class="note">Une commission plus élevée place votre riad plus haut dans les résultats de recherche (à égalité, la note des voyageurs départage).</p>' . $outside . '
 <form method="post">' . csrf_field() . '<div class="ccards">' . $opts . '</div><button class="btn" name="action" value="commission">Enregistrer ma commission</button></form></div>';
 }

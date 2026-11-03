@@ -13,7 +13,7 @@ $err = null; $n = 0;
 if ($in !== '' || $out !== '') { [$in, $out, $n, $err] = parse_stay($in, $out); if ($err) { $in = $_GET['in'] ?? ''; $out = $_GET['out'] ?? ''; } }
 $dated = $n > 0;
 
-$sql = "SELECT * FROM riads WHERE status = 'en ligne'" . ($city ? ' AND city = ?' : '') . ' ORDER BY name';
+$sql = "SELECT * FROM riads WHERE status = 'en ligne'" . ($city ? ' AND city = ?' : '') . ' ORDER BY commission DESC, (SELECT AVG(score) FROM reviews v WHERE v.riad_id = riads.id) DESC, name'; // classement : commission choisie, puis note des voyageurs
 $riads = q($sql, $city ? [$city] : [])->fetchAll();
 $cards = [];
 foreach ($riads as $r) {
