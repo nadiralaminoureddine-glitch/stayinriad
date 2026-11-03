@@ -1,14 +1,15 @@
 <?php
 declare(strict_types=1);
 require __DIR__ . '/inc/bootstrap.php';
+require __DIR__ . '/inc/riad.php';
 
 require_login('admin');
 
-$riads = q('SELECT r.*, u.first_name, u.last_name, u.email, u.phone FROM riads r JOIN users u ON u.id = r.owner_id ORDER BY r.id DESC')->fetchAll();
+$riads = q("SELECT r.*, u.first_name, u.last_name, u.email, u.phone FROM riads r JOIN users u ON u.id = r.owner_id ORDER BY CASE r.status WHEN 'soumis' THEN 0 WHEN 'refusé' THEN 1 WHEN 'brouillon' THEN 2 ELSE 3 END, r.id DESC")->fetchAll();
 $users = q('SELECT id, role, email, first_name, last_name, phone, created_at, last_login FROM users ORDER BY id DESC LIMIT 200')->fetchAll();
 $d = fn($s) => $s ? e(date('d/m/Y H:i', strtotime($s . ' UTC'))) : '—';
 
-$rRows = implode('', array_map(fn($r) => '<tr><td><b>' . e($r['name']) . '</b><br><span class="note">' . e($r['city']) . ' · ' . (int)$r['rooms_count'] . ' ch.</span></td><td>' . e($r['first_name'] . ' ' . $r['last_name']) . '<br><span class="note">' . e($r['email']) . '<br>' . e($r['phone']) . '</span></td><td>' . e(rtrim(rtrim(number_format((float)$r['commission'], 2, '.', ''), '0'), '.')) . ' %</td><td><span class="pill ' . ($r['status'] === 'en ligne' ? 'ok' : 'warn') . '">' . e($r['status']) . '</span></td><td>' . $d($r['created_at']) . '</td></tr>', $riads));
+$rRows = implode('', array_map(fn($r) => '<tr><td><a href="admin_riad.php?id=' . (int)$r['id'] . '"><b>' . e($r['name']) . '</b></a><br><span class="note">' . e($r['city']) . ' · ' . (int)$r['rooms_count'] . ' ch.</span></td><td>' . e($r['first_name'] . ' ' . $r['last_name']) . '<br><span class="note">' . e($r['email']) . '<br>' . e($r['phone']) . '</span></td><td>' . e(rtrim(rtrim(number_format((float)$r['commission'], 2, '.', ''), '0'), '.')) . ' %</td><td>' . status_pill($r['status']) . '<br>' . bank_pill($r) . '</td><td>' . $d($r['created_at']) . '</td></tr>', $riads));
 $uRows = implode('', array_map(fn($u) => '<tr><td>' . e($u['first_name'] . ' ' . $u['last_name']) . '</td><td>' . e($u['email']) . '</td><td><span class="pill info">' . e(ROLES[$u['role']] ?? $u['role']) . '</span></td><td>' . $d($u['created_at']) . '</td><td>' . $d($u['last_login']) . '</td></tr>', $users));
 
 render_page('Comptes', '<h1>Administration</h1>

@@ -10,13 +10,22 @@ if ($u['role'] === 'admin') {
     $body = $hello . '<div class="kpis">
       <div class="kpi"><small>Riads inscrits</small><b>' . $n('SELECT COUNT(*) FROM riads') . '</b></div>
       <div class="kpi"><small>Riads en ligne</small><b>' . $n("SELECT COUNT(*) FROM riads WHERE status = 'en ligne'") . '</b></div>
+      <div class="kpi"><small>À vérifier</small><b>' . $n("SELECT COUNT(*) FROM riads WHERE status = 'soumis'") . '</b></div>
       <div class="kpi"><small>Voyageurs</small><b>' . $n("SELECT COUNT(*) FROM users WHERE role = 'traveler'") . '</b></div>
     </div><div class="card"><h2 style="margin-top:0">Administration</h2><p>Gérez les comptes et les riads inscrits.</p><a class="btn" href="admin.php">Voir les comptes</a></div>';
 } elseif ($u['role'] === 'riad') {
-    $riads = q('SELECT * FROM riads WHERE owner_id = ? ORDER BY id', [$u['id']])->fetchAll();
-    $list = implode('', array_map(fn($r) => '<tr><td><b>' . e($r['name']) . '</b></td><td>' . e($r['city']) . '</td><td>' . (int)$r['rooms_count'] . '</td><td><span class="pill ' . ($r['status'] === 'en ligne' ? 'ok' : 'warn') . '">' . e($r['status'] === 'en ligne' ? 'En ligne' : 'En préparation') . '</span></td></tr>', $riads));
-    $body = $hello . '<div class="card"><h2 style="margin-top:0">Mon riad</h2><div class="scroll"><table><thead><tr><th>Riad</th><th>Ville</th><th>Chambres</th><th>Statut</th></tr></thead><tbody>' . $list . '</tbody></table></div>
-    <p class="note" style="margin-top:12px">Prochaine étape : notre équipe vous contacte pour compléter votre fiche (photos, chambres, prix, informations de la société et RIB). Ces écrans arrivent dans la prochaine version de votre espace.</p></div>';
+    require __DIR__ . '/inc/riad.php';
+    $r = my_riad($u);
+    if (!$r) { $body = $hello . '<div class="card"><p>Aucun riad lié à ce compte. Écrivez-nous à contact@stayinriad.com.</p></div>'; }
+    else {
+        $miss = dossier_missing($r);
+        $body = $hello . '<div class="card"><h2 style="margin-top:0">' . e($r['name']) . ' ' . status_pill($r['status']) . '</h2>'
+          . ($r['status'] === 'refusé' && $r['admin_note'] ? '<div class="flash bad">✏️ À corriger : ' . e($r['admin_note']) . '</div>' : '')
+          . ($r['status'] === 'en ligne' ? '<p>✅ Votre riad est en ligne.</p>' : ($r['status'] === 'soumis' ? '<p>⏳ Votre fiche est en cours de vérification par notre équipe.</p>' :
+             ($miss ? '<p>Pour mettre votre riad en ligne, complétez :</p><ul>' . implode('', array_map(fn($m) => '<li>' . e($m) . '</li>', $miss)) . '</ul>' : '<p>Votre fiche est complète : envoyez-la pour validation depuis la page « Fiche du riad ».</p>')))
+          . '<a class="btn" href="riad.php">Fiche du riad</a> <a class="btn ghost" href="rooms.php">Chambres & prix</a> <a class="btn ghost" href="photos.php">Photos</a>'
+          . '<p class="note" style="margin-top:14px">Besoin d\'aide ? Notre équipe peut remplir la fiche avec vous : <a href="mailto:contact@stayinriad.com">contact@stayinriad.com</a></p></div>';
+    }
 } else {
     $body = $hello . '<div class="card"><h2 style="margin-top:0">Mes réservations</h2><p class="note">Vous n\'avez pas encore de réservation. Les réservations ouvriront bientôt : nous vous préviendrons par email.</p></div>';
 }

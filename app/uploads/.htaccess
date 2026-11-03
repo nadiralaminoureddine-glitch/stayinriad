@@ -1,0 +1,5 @@
+# Photos publiques uniquement : aucun script ne peut s'exécuter ici
+Options -Indexes
+<FilesMatch "\.(php|phtml|phar|pl|py|cgi|sh)$">
+  Require all denied
+</FilesMatch>

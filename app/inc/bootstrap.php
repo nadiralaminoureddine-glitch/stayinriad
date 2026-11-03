@@ -89,5 +89,6 @@ function csrf_check(): void {
 }
 csrf_check();
 
+require __DIR__ . '/migrate.php';
 require __DIR__ . '/auth.php';
 require __DIR__ . '/layout.php';
