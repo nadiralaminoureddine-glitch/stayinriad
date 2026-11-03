@@ -4,6 +4,7 @@ declare(strict_types=1);
 require __DIR__ . '/inc/bootstrap.php';
 require __DIR__ . '/inc/riad.php';
 require __DIR__ . '/inc/booking.php';
+require_public_open();
 
 $city = in_array($_GET['city'] ?? '', CITIES, true) ? $_GET['city'] : '';
 $g = max(1, min(12, (int)($_GET['g'] ?? 2)));

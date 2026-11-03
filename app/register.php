@@ -6,6 +6,7 @@ if (current_user()) redirect('account.php');
 const CITIES = ['Marrakech','Fès','Essaouira','Chefchaouen','Meknès','Rabat','Tanger','Ouarzazate','Merzouga','Agadir','Taroudant','Autre'];
 
 $type = ($_GET['type'] ?? $_POST['type'] ?? 'traveler') === 'riad' ? 'riad' : 'traveler';
+if (!site_open()) $type = 'riad'; // tant que le site est fermé : inscriptions de riads uniquement
 $err = null;
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $p = fn($k) => trim((string)($_POST[$k] ?? ''));
@@ -36,8 +37,8 @@ $riadFields = $type === 'riad' ? '<h2>Votre riad</h2>
 <div class="row"><div><label>Ville</label><select name="city" required>' . implode('', array_map(fn($c) => '<option' . (($_POST['city'] ?? '') === $c ? ' selected' : '') . '>' . e($c) . '</option>', CITIES)) . '</select></div>
 <div><label>Nombre de chambres</label><input type="number" name="rooms" min="1" max="200" value="' . $v('rooms') . '"></div></div><h2>Vos coordonnées</h2>' : '';
 
-render_page('Créer un compte', '<div class="card narrow"><h1>Créer un compte</h1>
-<div class="tabs"><a href="register.php?type=traveler"' . ($type === 'traveler' ? ' class="on"' : '') . '>Voyageur</a><a href="register.php?type=riad"' . ($type === 'riad' ? ' class="on"' : '') . '>Propriétaire de riad</a></div>
+render_page('Créer un compte', '<div class="card narrow"><h1>' . ($type === 'riad' ? 'Inscrire mon riad' : 'Créer un compte') . '</h1>
+' . (site_open() ? '<div class="tabs"><a href="register.php?type=traveler"' . ($type === 'traveler' ? ' class="on"' : '') . '>Voyageur</a><a href="register.php?type=riad"' . ($type === 'riad' ? ' class="on"' : '') . '>Propriétaire de riad</a></div>' : '<p class="note">Inscription des <b>propriétaires de riads</b>. Les comptes voyageurs ouvriront avec les réservations.</p>') . '
 <form method="post">' . csrf_field() . '<input type="hidden" name="type" value="' . $type . '">' . $riadFields . '
 <div class="row"><div><label>Prénom</label><input name="first" required maxlength="80" autocomplete="given-name" value="' . $v('first') . '"></div>
 <div><label>Nom</label><input name="last" maxlength="80" autocomplete="family-name" value="' . $v('last') . '"></div></div>

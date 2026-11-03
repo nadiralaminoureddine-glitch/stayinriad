@@ -4,6 +4,12 @@ require __DIR__ . '/inc/bootstrap.php';
 require __DIR__ . '/inc/riad.php';
 
 require_login('admin');
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['site_open'])) {
+    set_site_open($_POST['site_open'] === '1');
+    flash($_POST['site_open'] === '1' ? 'Le site est OUVERT : les voyageurs peuvent chercher et réserver.' : 'Le site est FERMÉ : seuls vous et les riads utilisez l\'app.');
+    redirect('admin.php');
+}
+$openBox = '<div class="card" style="border-color:' . (site_open() ? 'var(--ok)' : 'var(--gold)') . '"><h2 style="margin-top:0">' . (site_open() ? '🟢 Site ouvert aux voyageurs' : '🔒 Site fermé (pré-lancement)') . '</h2><p class="note">' . (site_open() ? 'Tout le monde peut chercher des riads, créer un compte voyageur et réserver.' : 'Les visiteurs ne voient pas les riads et ne peuvent pas réserver. Seuls les riads peuvent s\'inscrire. Vous, en admin, voyez tout pour tester.') . '</p><form method="post">' . csrf_field() . '<button class="btn ' . (site_open() ? 'ghost' : '') . '" name="site_open" value="' . (site_open() ? '0' : '1') . '">' . (site_open() ? 'Fermer le site' : 'Ouvrir le site aux voyageurs') . '</button></form></div>';
 
 $riads = q("SELECT r.*, u.first_name, u.last_name, u.email, u.phone FROM riads r JOIN users u ON u.id = r.owner_id ORDER BY CASE r.status WHEN 'soumis' THEN 0 WHEN 'refusé' THEN 1 WHEN 'brouillon' THEN 2 ELSE 3 END, r.id DESC")->fetchAll();
 $users = q('SELECT id, role, email, first_name, last_name, phone, created_at, last_login FROM users ORDER BY id DESC LIMIT 200')->fetchAll();
@@ -12,6 +18,6 @@ $d = fn($s) => $s ? e(date('d/m/Y H:i', strtotime($s . ' UTC'))) : '—';
 $rRows = implode('', array_map(fn($r) => '<tr><td><a href="admin_riad.php?id=' . (int)$r['id'] . '"><b>' . e($r['name']) . '</b></a><br><span class="note">' . e($r['city']) . ' · ' . (int)$r['rooms_count'] . ' ch.</span></td><td>' . e($r['first_name'] . ' ' . $r['last_name']) . '<br><span class="note">' . e($r['email']) . '<br>' . e($r['phone']) . '</span></td><td>' . e(rtrim(rtrim(number_format((float)$r['commission'], 2, '.', ''), '0'), '.')) . ' %</td><td>' . status_pill($r['status']) . '<br>' . bank_pill($r) . '</td><td>' . $d($r['created_at']) . '</td></tr>', $riads));
 $uRows = implode('', array_map(fn($u) => '<tr><td>' . e($u['first_name'] . ' ' . $u['last_name']) . '</td><td>' . e($u['email']) . '</td><td><span class="pill info">' . e(ROLES[$u['role']] ?? $u['role']) . '</span></td><td>' . $d($u['created_at']) . '</td><td>' . $d($u['last_login']) . '</td></tr>', $users));
 
-render_page('Comptes', '<h1>Administration</h1>
+render_page('Comptes', '<h1>Administration</h1>' . $openBox . '
 <div class="card"><h2 style="margin-top:0">Riads inscrits (' . count($riads) . ')</h2>' . ($riads ? '<div class="scroll"><table><thead><tr><th>Riad</th><th>Propriétaire</th><th>Commission</th><th>Statut</th><th>Inscrit le</th></tr></thead><tbody>' . $rRows . '</tbody></table></div>' : '<p class="note">Aucun riad inscrit pour l\'instant.</p>') . '</div>
 <div class="card"><h2 style="margin-top:0">Tous les comptes (' . count($users) . ')</h2><div class="scroll"><table><thead><tr><th>Nom</th><th>Email</th><th>Type</th><th>Créé le</th><th>Dernière connexion</th></tr></thead><tbody>' . $uRows . '</tbody></table></div></div>');

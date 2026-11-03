@@ -79,3 +79,18 @@ function create_user(string $role, string $email, string $pass, string $first, s
       [$role, $email, password_hash($pass, PASSWORD_DEFAULT), trim($first), trim($last), trim($phone), 'active', now()]);
     return [(int)db()->lastInsertId(), null];
 }
+
+/** Site ouvert au public (voyageurs) ? Tant qu'il est fermé, seuls l'admin et les riads utilisent l'app. */
+function site_open(): bool {
+    try { return q("SELECT v FROM settings WHERE k = 'site_open'")->fetchColumn() === '1'; } catch (Throwable $e) { return false; }
+}
+function set_site_open(bool $open): void { q("DELETE FROM settings WHERE k = 'site_open'"); q("INSERT INTO settings (k, v) VALUES ('site_open', ?)", [$open ? '1' : '0']); }
+/** Pages voyageurs : réservées à l'admin tant que le site est fermé. */
+function require_public_open(): void {
+    if (site_open()) return;
+    $u = current_user();
+    if ($u && $u['role'] === 'admin') return;
+    http_response_code(503);
+    render_page('Bientôt', '<div class="card narrow" style="text-align:center"><h1>Ouverture prochaine</h1><p>Les réservations sur StayInRiad ouvrent bientôt.</p><p>Vous êtes propriétaire d\'un riad ? <a href="register.php?type=riad">Inscrivez votre riad</a>.</p><a class="btn" href="/">Retour à l\'accueil</a></div>');
+    exit;
+}

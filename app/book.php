@@ -4,6 +4,7 @@ declare(strict_types=1);
 require __DIR__ . '/inc/bootstrap.php';
 require __DIR__ . '/inc/riad.php';
 require __DIR__ . '/inc/booking.php';
+require_public_open();
 
 const COUNTRIES = ['France','Maroc','Espagne','Royaume-Uni','États-Unis','Belgique','Allemagne','Italie','Suisse','Canada','Pays-Bas','Autre'];
 

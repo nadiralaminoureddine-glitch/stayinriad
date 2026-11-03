@@ -4,6 +4,7 @@ declare(strict_types=1);
 require __DIR__ . '/inc/bootstrap.php';
 require __DIR__ . '/inc/riad.php';
 require __DIR__ . '/inc/booking.php';
+require_public_open();
 
 $r = q("SELECT * FROM riads WHERE id = ? AND status = 'en ligne'", [(int)($_GET['id'] ?? 0)])->fetch();
 $u = current_user();

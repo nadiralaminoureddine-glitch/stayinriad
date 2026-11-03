@@ -13,12 +13,12 @@ function render_page(string $title, string $body): void {
     $nav = '';
     if ($u) {
         $nav = '<span class="who">' . e($u['first_name']) . ' · ' . e(ROLES[$u['role']] ?? '') . '</span>'
-             . '<a href="riads.php">Les riads</a>'
+             . (site_open() || $u['role'] === 'admin' ? '<a href="riads.php">Les riads</a>' : '')
              . ($u['role'] === 'admin' ? '<a href="admin.php">Comptes</a><a href="bookings.php">Réservations</a>' : '')
              . '<a href="account.php">Mon espace</a>'
              . '<form method="post" action="logout.php" class="inline">' . csrf_field() . '<button class="link">Déconnexion</button></form>';
     } else {
-        $nav = '<a href="riads.php">Les riads</a><a href="login.php">Connexion</a><a href="register.php">Créer un compte</a>';
+        $nav = (site_open() ? '<a href="riads.php">Les riads</a>' : '') . '<a href="login.php">Connexion</a><a href="register.php' . (site_open() ? '' : '?type=riad') . '">' . (site_open() ? 'Créer un compte' : 'Inscrire mon riad') . '</a>';
     }
     $flash = $f ? '<div class="flash ' . e($f[1]) . '">' . e($f[0]) . '</div>' : '';
     echo '<!DOCTYPE html><html lang="fr"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">'
