@@ -47,9 +47,12 @@ const ld=JSON.stringify([{"@context":"https://schema.org","@type":"Organization"
  await b.close();
  fs.writeFileSync(OUT+'/robots.txt',`User-agent: *\nAllow: /\nDisallow: /app/\n\nSitemap: ${SITE}/sitemap.xml\n`);
  const urls=Object.values(L).map(v=>`  <url>\n    <loc>${SITE}${v.path}</loc>\n${Object.entries(L).map(([k,w])=>`    <xhtml:link rel="alternate" hreflang="${k}" href="${SITE}${w.path}"/>`).join('\n')}\n    <xhtml:link rel="alternate" hreflang="x-default" href="${SITE}/"/>\n    <changefreq>weekly</changefreq>\n  </url>`).join('\n');
- fs.writeFileSync(OUT+'/sitemap.xml',`<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">\n${urls}\n</urlset>\n`);
+ const PAIRS=JSON.parse(fs.readFileSync(ROOT+'/guides/pairs.json','utf8'));
+ const urls2=PAIRS.map(([fr,en])=>[fr,en].map(u=>`  <url>\n    <loc>${SITE}${u}</loc>\n    <xhtml:link rel="alternate" hreflang="fr" href="${SITE}${fr}"/>\n    <xhtml:link rel="alternate" hreflang="en" href="${SITE}${en}"/>\n    <xhtml:link rel="alternate" hreflang="x-default" href="${SITE}${fr}"/>\n    <changefreq>monthly</changefreq>\n  </url>`).join('\n')).join('\n')+`\n  <url>\n    <loc>${SITE}/conditions/</loc>\n    <changefreq>yearly</changefreq>\n  </url>`;
+ fs.writeFileSync(OUT+'/sitemap.xml',`<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">\n${urls}\n${urls2}\n</urlset>\n`);
  for(const f of ['partage.jpg','apple-touch-icon.png','.htaccess','favicon.ico','favicon.svg','favicon-32.png','icon-192.png','icon-512.png','site.webmanifest'])fs.copyFileSync(ROOT+'/'+f,OUT+'/'+f);
  fs.cpSync(ROOT+'/conditions',OUT+'/conditions',{recursive:true,filter:f=>!f.endsWith('.md')});
  fs.cpSync(ROOT+'/videos',OUT+'/videos',{recursive:true});
+ fs.cpSync(ROOT+'/guides',OUT,{recursive:true,filter:f=>!f.endsWith('pairs.json')});
  console.log('ok');
 })();

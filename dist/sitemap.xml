@@ -36,4 +36,78 @@
     <xhtml:link rel="alternate" hreflang="x-default" href="https://stayinriad.com/"/>
     <changefreq>weekly</changefreq>
   </url>
+  <url>
+    <loc>https://stayinriad.com/riads-marrakech/</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://stayinriad.com/riads-marrakech/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://stayinriad.com/en/riads-marrakech/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://stayinriad.com/riads-marrakech/"/>
+    <changefreq>monthly</changefreq>
+  </url>
+  <url>
+    <loc>https://stayinriad.com/en/riads-marrakech/</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://stayinriad.com/riads-marrakech/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://stayinriad.com/en/riads-marrakech/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://stayinriad.com/riads-marrakech/"/>
+    <changefreq>monthly</changefreq>
+  </url>
+  <url>
+    <loc>https://stayinriad.com/riads-fes/</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://stayinriad.com/riads-fes/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://stayinriad.com/en/riads-fes/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://stayinriad.com/riads-fes/"/>
+    <changefreq>monthly</changefreq>
+  </url>
+  <url>
+    <loc>https://stayinriad.com/en/riads-fes/</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://stayinriad.com/riads-fes/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://stayinriad.com/en/riads-fes/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://stayinriad.com/riads-fes/"/>
+    <changefreq>monthly</changefreq>
+  </url>
+  <url>
+    <loc>https://stayinriad.com/riads-essaouira/</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://stayinriad.com/riads-essaouira/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://stayinriad.com/en/riads-essaouira/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://stayinriad.com/riads-essaouira/"/>
+    <changefreq>monthly</changefreq>
+  </url>
+  <url>
+    <loc>https://stayinriad.com/en/riads-essaouira/</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://stayinriad.com/riads-essaouira/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://stayinriad.com/en/riads-essaouira/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://stayinriad.com/riads-essaouira/"/>
+    <changefreq>monthly</changefreq>
+  </url>
+  <url>
+    <loc>https://stayinriad.com/riads-chefchaouen/</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://stayinriad.com/riads-chefchaouen/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://stayinriad.com/en/riads-chefchaouen/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://stayinriad.com/riads-chefchaouen/"/>
+    <changefreq>monthly</changefreq>
+  </url>
+  <url>
+    <loc>https://stayinriad.com/en/riads-chefchaouen/</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://stayinriad.com/riads-chefchaouen/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://stayinriad.com/en/riads-chefchaouen/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://stayinriad.com/riads-chefchaouen/"/>
+    <changefreq>monthly</changefreq>
+  </url>
+  <url>
+    <loc>https://stayinriad.com/inscrire-mon-riad/</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://stayinriad.com/inscrire-mon-riad/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://stayinriad.com/en/list-your-riad/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://stayinriad.com/inscrire-mon-riad/"/>
+    <changefreq>monthly</changefreq>
+  </url>
+  <url>
+    <loc>https://stayinriad.com/en/list-your-riad/</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://stayinriad.com/inscrire-mon-riad/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://stayinriad.com/en/list-your-riad/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://stayinriad.com/inscrire-mon-riad/"/>
+    <changefreq>monthly</changefreq>
+  </url>
+  <url>
+    <loc>https://stayinriad.com/conditions/</loc>
+    <changefreq>yearly</changefreq>
+  </url>
 </urlset>
