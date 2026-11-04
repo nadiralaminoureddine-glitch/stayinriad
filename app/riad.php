@@ -32,6 +32,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         elseif (photo_duplicates($rid)) $err[] = 'Une de vos photos ressemble à celle d\'un autre établissement. Notre équipe va la vérifier avant la mise en ligne.';
         else {
             q("UPDATE riads SET status = 'soumis', submitted_at = ?, updated_at = ? WHERE id = ?", [now(), now(), $rid]);
+            $owner = q('SELECT first_name, last_name, email, phone FROM users WHERE id = ?', [(int)$r['owner_id']])->fetch();
+            $nRooms = (int)q('SELECT COUNT(*) FROM rooms WHERE riad_id = ? AND active = 1', [$rid])->fetchColumn();
+            send_mail(admin_email(), '[À vérifier] Fiche envoyée : ' . $r['name'] . ' (' . $r['city'] . ')', mail_layout('Une fiche riad est à vérifier', mail_rows(['Riad' => e($r['name']), 'Ville' => e($r['city']), 'Propriétaire' => e(trim(($owner['first_name'] ?? '') . ' ' . ($owner['last_name'] ?? ''))), 'Téléphone' => e($owner['phone'] ?? ''), 'Email' => e($owner['email'] ?? ''), 'Chambres' => (string)$nRooms, 'Commission' => e(rtrim(rtrim(number_format((float)$r['commission'], 2, '.', ''), '0'), '.')) . ' %']) . '<p>À contrôler : société, RIB et attestation, photos. Puis « Mettre en ligne ».</p>' . mail_button(base_url() . 'admin_riad.php?id=' . $rid, 'Vérifier la fiche')));
+            if ($owner && $u['role'] !== 'admin') send_mail($owner['email'], 'Fiche reçue : ' . $r['name'], mail_layout('Merci, votre fiche est bien reçue', '<p>Bonjour ' . e($owner['first_name']) . ',</p><p>Nous avons bien reçu la fiche de <b>' . e($r['name']) . '</b>. Notre équipe vérifie la société, le RIB et les photos, en général sous 24 h, et vous prévient par email dès que votre riad est en ligne.</p><p>Une question ? Écrivez-nous sur WhatsApp au <b>+212 707-596333</b> ou à contact@stayinriad.com.</p>' . mail_button(base_url() . 'account.php', 'Mon espace riad')));
             flash('Merci ! Votre fiche est envoyée. Notre équipe la vérifie et vous prévient dès qu\'elle est en ligne.');
             redirect('riad.php' . ($u['role'] === 'admin' ? '?id=' . $rid : ''));
         }

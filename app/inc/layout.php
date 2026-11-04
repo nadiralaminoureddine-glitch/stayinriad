@@ -39,6 +39,6 @@ function render_page(string $title, string $body): void {
        . '<link rel="icon" href="/favicon.ico" sizes="48x48"><link rel="icon" href="/favicon.svg" type="image/svg+xml"><link rel="apple-touch-icon" href="/apple-touch-icon.png"><meta name="theme-color" content="#0f5a4a"><link rel="stylesheet" href="assets/app.css">' . (isset($_SESSION['cur']) ? '' : '<script src="assets/cur.js" defer></script>') . '</head><body>'
        . '<header><div class="wrap">' . logo_html() . '<nav>' . $nav . '</nav></div></header>'
        . '<main class="wrap">' . $flash . $body . '</main>'
-       . '<footer class="wrap">' . pay_logos() . '© ' . date('Y') . ' stayinriad.com · <a href="mailto:contact@stayinriad.com">contact@stayinriad.com</a></footer>'
+       . '<footer class="wrap">' . pay_logos() . '© ' . date('Y') . ' stayinriad.com · <a href="mailto:contact@stayinriad.com">contact@stayinriad.com</a> · <a href="https://wa.me/212707596333" target="_blank" rel="noopener">WhatsApp +212 707-596333</a></footer>'
        . '</body></html>';
 }

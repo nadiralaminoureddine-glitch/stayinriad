@@ -28,7 +28,7 @@ if ($u['role'] === 'admin') {
           . ($r['status'] === 'en ligne' ? '<p>✅ Votre riad est en ligne.</p>' : ($r['status'] === 'soumis' ? '<p>⏳ Votre fiche est en cours de vérification par notre équipe.</p>' :
              ($miss ? '<p>Pour mettre votre riad en ligne, complétez :</p><ul>' . implode('', array_map(fn($m) => '<li>' . e($m) . '</li>', $miss)) . '</ul>' : '<p>Votre fiche est complète : envoyez-la pour validation depuis la page « Fiche du riad ».</p>')))
           . '<a class="btn" href="bookings.php">Réservations</a> <a class="btn ghost" href="calendar.php">Calendrier</a> <a class="btn ghost" href="police_list.php">Fiches de police</a> <a class="btn ghost" href="reviews.php">Avis clients</a> <a class="btn ghost" href="payouts.php">Versements</a> <a class="btn ghost" href="statement.php">Relevé mensuel</a> <a class="btn ghost" href="riad.php">Fiche du riad</a> <a class="btn ghost" href="rooms.php">Chambres & prix</a> <a class="btn ghost" href="photos.php">Photos</a>'
-          . '<p class="note" style="margin-top:14px">Besoin d\'aide ? Notre équipe peut remplir la fiche avec vous : <a href="mailto:contact@stayinriad.com">contact@stayinriad.com</a></p></div>';
+          . '<p class="note" style="margin-top:14px">Besoin d\'aide ? Notre équipe peut remplir la fiche avec vous : <a href="https://wa.me/212707596333" target="_blank" rel="noopener">WhatsApp +212 707-596333</a> ou <a href="mailto:contact@stayinriad.com">contact@stayinriad.com</a></p></div>';
     }
 } else {
     $body = $hello . '<div class="card"><h2 style="margin-top:0">Mes réservations</h2><p>Retrouvez vos séjours, à venir et passés.</p><a class="btn" href="bookings.php">Voir mes réservations</a> <a class="btn ghost" href="riads.php">Trouver un riad</a></div>';

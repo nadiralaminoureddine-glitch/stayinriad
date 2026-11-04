@@ -18,7 +18,7 @@ function code_hash(string $code, int $uid, string $purpose): string { return has
 /** Crée et envoie un code à 6 chiffres. Refuse si trop de demandes. Retourne null ou une erreur. */
 function send_code(array $u, string $purpose): ?string {
     $recent = (int)q('SELECT COUNT(*) FROM auth_codes WHERE user_id = ? AND created_at > ?', [$u['id'], gmdate('Y-m-d H:i:s', time() - 3600)])->fetchColumn();
-    $last = q('SELECT created_at FROM auth_codes WHERE user_id = ? ORDER BY id DESC LIMIT 1', [$u['id']])->fetchColumn();
+    $last = q('SELECT created_at FROM auth_codes WHERE user_id = ? AND purpose = ? ORDER BY id DESC LIMIT 1', [$u['id'], $purpose])->fetchColumn(); // délai entre deux codes du même type
     if ($recent >= 6) return 'Trop de codes demandés. Réessayez dans une heure.';
     if ($last && strtotime($last . ' UTC') > time() - 45) return 'Un code vient d\'être envoyé. Patientez une minute avant d\'en demander un autre.';
     q('UPDATE auth_codes SET used = 1 WHERE user_id = ? AND purpose = ? AND used = 0', [$u['id'], $purpose]);
