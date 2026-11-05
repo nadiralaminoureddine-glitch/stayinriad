@@ -218,6 +218,8 @@ return [
 'Nouvelle réservation' => 'New booking', 'Réservation annulée' => 'Booking cancelled', 'Voyageurs' => 'Guests', 'Arrivée' => 'Check-in', 'Départ' => 'Check-out',
 'Lien de votre page Booking' => 'Link to your Booking page', '(facultatif)' => '(optional)', "(description, chambres, photos). Il ne vous restera qu'à indiquer vos prix." => '(description, rooms, photos). All you will have to do is add your prices.', '⚡ Votre riad est sur Booking ? Collez le lien :' => '⚡ Is your riad on Booking? Paste the link:',
 "Ce lien ne ressemble pas à une page Booking. Ouvrez votre riad sur Booking.com et copiez l'adresse de la page (elle contient « booking.com/hotel/ma/ »), ou laissez la case vide." => 'This link does not look like a Booking page. Open your riad on Booking.com and copy the page address (it contains “booking.com/hotel/ma/”), or leave the box empty.',
+'🎁 Offre de lancement : 0 % de commission pendant les 3 premiers mois après l\'ouverture des réservations.' => '🎁 Launch offer: 0% commission for the first 3 months after bookings open.',
+'🎁 Offre de lancement : 0 % de commission pendant les 3 premiers mois après l\'ouverture des réservations. Le niveau choisi compte déjà pour votre visibilité.' => '🎁 Launch offer: 0% commission for the first 3 months after bookings open. Your chosen level already counts for your visibility.',
 // --- autres emails aux riads
 'Bienvenue sur StayInRiad !' => 'Welcome to StayInRiad!', 'Bonne nouvelle : la fiche de' => 'Good news: the listing for',
 'est validée et en ligne. Les voyageurs peuvent désormais réserver.' => 'is approved and online. Travellers can now book.',
@@ -236,6 +238,7 @@ return [
 ],
 
 're' => [
+'/^🎁 Offre de lancement : 0 % de commission sur toutes les réservations jusqu\'au (\S+)\.( Le niveau choisi compte déjà pour votre visibilité\.)?$/u' => fn($x) => '🎁 Launch offer: 0% commission on all bookings until ' . $x[1] . '.' . (!empty($x[2]) ? ' Your chosen level already counts for your visibility.' : ''),
 
 '/^Votre riad est validé : (.+)$/u' => 'Your riad is approved: $1', '/^Nouvelle réservation (\S+) · (.+)$/u' => 'New booking $1 · $2', '/^Réservation annulée (\S+)$/u' => 'Booking cancelled $1',
 '/^Nouvel avis client · (.+)$/u' => 'New guest review · $1', '/^Calendrier (\S+) non synchronisé — (.+)$/u' => '$1 calendar not synced — $2',

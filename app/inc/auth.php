@@ -103,7 +103,28 @@ function create_user(string $role, string $email, string $pass, string $first, s
 function site_open(): bool {
     try { return q("SELECT v FROM settings WHERE k = 'site_open'")->fetchColumn() === '1'; } catch (Throwable $e) { return false; }
 }
-function set_site_open(bool $open): void { q("DELETE FROM settings WHERE k = 'site_open'"); q("INSERT INTO settings (k, v) VALUES ('site_open', ?)", [$open ? '1' : '0']); }
+function set_site_open(bool $open): void {
+    q("DELETE FROM settings WHERE k = 'site_open'"); q("INSERT INTO settings (k, v) VALUES ('site_open', ?)", [$open ? '1' : '0']);
+    if ($open && !q("SELECT v FROM settings WHERE k = 'opened_at'")->fetchColumn()) q("INSERT INTO settings (k, v) VALUES ('opened_at', ?)", [now()]); // départ de l'offre de lancement
+}
+
+// ---------------------------------------------------------------- offre de lancement : 0 % de commission les 3 premiers mois
+const LAUNCH_FREE_MONTHS = 3;
+/** Date (UTC) de fin de l'offre, ou null si les réservations ne sont pas encore ouvertes. */
+function launch_free_until(): ?string {
+    try { $o = q("SELECT v FROM settings WHERE k = 'opened_at'")->fetchColumn(); } catch (Throwable $e) { $o = false; }
+    return $o ? gmdate('Y-m-d H:i:s', strtotime($o . ' UTC +' . LAUNCH_FREE_MONTHS . ' months')) : null;
+}
+/** L'offre s'applique-t-elle maintenant ? (avant l'ouverture : oui, elle commencera avec les réservations) */
+function launch_free_now(): bool { $u = launch_free_until(); return $u === null || now() < $u; }
+/** Commission réellement prélevée sur une réservation faite maintenant. */
+function commission_now(array $riad): float { return launch_free_now() ? 0.0 : (float)$riad['commission']; }
+/** Phrase d'explication de l'offre. */
+function launch_offer_text(): string {
+    $u = launch_free_until();
+    return $u === null ? '🎁 Offre de lancement : 0 % de commission pendant les 3 premiers mois après l\'ouverture des réservations.'
+        : (now() < $u ? '🎁 Offre de lancement : 0 % de commission sur toutes les réservations jusqu\'au ' . date('d/m/Y', strtotime($u . ' UTC')) . '.' : '');
+}
 /** Pages voyageurs : réservées à l'admin tant que le site est fermé. */
 function require_public_open(): void {
     if (site_open()) return;

@@ -106,7 +106,7 @@ function create_hold(array $riad, array $room, string $in, string $out, int $nig
         else $pdo->exec('UPDATE rooms SET active = active WHERE id = ' . (int)$room['id']);
         if (room_free($room, $in, $out) < 1) { $pdo->rollBack(); return [null, 'Désolé, cette chambre vient d\'être réservée pour ces dates. Choisissez une autre chambre ou d\'autres dates.']; }
         $price = (float)$room['price_eur']; $sub = round($price * $nights, 2);
-        $rate = (float)$riad['commission']; $com = round($sub * $rate / 100, 2); $net = round($sub - $com, 2);
+        $rate = commission_now($riad); $com = round($sub * $rate / 100, 2); $net = round($sub - $com, 2);
         $fx = eur_mad();
         $ref = new_ref(); $token = bin2hex(random_bytes(16));
         q('INSERT INTO bookings (ref, token, riad_id, room_id, user_id, first_name, last_name, email, phone, country, request, check_in, check_out, nights, guests,
