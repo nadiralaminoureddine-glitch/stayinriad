@@ -107,8 +107,12 @@ render_page('Fiche du riad', '<h1>' . e($r['name']) . ' ' . status_pill($r['stat
 <label>Équipements</label><div class="checks">' . implode('', array_map(fn($a) => '<label class="chk"><input type="checkbox" name="amen[]" value="' . e($a) . '"' . (in_array($a, $amen, true) ? ' checked' : '') . '> ' . e($a) . '</label>', AMENITIES)) . '</div>
 <label class="chk"><input type="checkbox" name="breakfast" value="1"' . ($r['breakfast'] ? ' checked' : '') . '> Petit-déjeuner inclus dans le prix</label>
 <label class="chk"><input type="checkbox" name="free_cancel" value="1"' . ($r['free_cancel'] ? ' checked' : '') . '> Annulation gratuite jusqu\'à 48 h avant l\'arrivée</label>
+<label>Emplacement du riad sur la carte</label>
+<p class="note" style="margin:0 0 8px">Touchez la carte à l\'endroit exact de votre riad (zoomez sur votre derb), ou utilisez votre position si vous êtes au riad. Vous pouvez ensuite déplacer l\'épingle.</p>
+<div id="mapPick" style="height:340px;border-radius:12px;border:1px solid #cdbfa9;overflow:hidden;z-index:0"></div>
+<div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:8px 0 4px"><button type="button" class="btn sm ghost" id="mapMe">📍 Utiliser ma position</button><span class="note" id="mapStatus"></span></div>
 <div class="row"><div><label>Latitude GPS (facultatif)</label><input name="lat" inputmode="decimal" placeholder="31.6295" value="' . $v('lat') . '"></div><div><label>Longitude GPS (facultatif)</label><input name="lng" inputmode="decimal" placeholder="-7.9811" value="' . $v('lng') . '"></div></div>
-<p class="note">Astuce : dans Google Maps, faites un appui long sur votre riad pour voir ses coordonnées.</p></div>
+<p class="note">Rempli automatiquement par la carte. Astuce : dans Google Maps, un appui long sur votre riad affiche aussi ses coordonnées.</p></div>
 
 <div class="card"><h2 style="margin-top:0">Société</h2>
 <div class="row"><div><label>Raison sociale</label><input name="co_legal" maxlength="160" placeholder="ex. SARL Dar Yasmina" value="' . $v('co_legal') . '"></div><div><label>Forme juridique</label>' . $sel(FORMS, (string)$r['co_form'], 'co_form') . '</div></div>
@@ -130,4 +134,4 @@ render_page('Fiche du riad', '<h1>' . e($r['name']) . ' ' . status_pill($r['stat
 ($r['status'] === 'en ligne' ? '<p class="note">Votre riad est déjà en ligne.</p>' :
  ($r['status'] === 'soumis' ? '<p class="note">Fiche déjà envoyée : vérification en cours.</p>' :
   ($miss ? '<p>Avant d\'envoyer votre fiche, il manque :</p><ul>' . implode('', array_map(fn($m) => '<li>' . e($m) . '</li>', $miss)) . '</ul>' : '<p>Votre fiche est complète. Envoyez-la à l\'équipe StayInRiad pour la mise en ligne.</p>')
-  . '<form method="post">' . csrf_field() . '<button class="btn" name="action" value="submit"' . ($miss ? ' disabled' : '') . '>Envoyer ma fiche</button></form>')) . '</div>');
+  . '<form method="post">' . csrf_field() . '<button class="btn" name="action" value="submit"' . ($miss ? ' disabled' : '') . '>Envoyer ma fiche</button></form>')) . '</div>' . '<link rel="stylesheet" href="assets/leaflet/leaflet.css"><script src="assets/leaflet/leaflet.js" defer></script><script src="assets/map-pick.js" defer></script>');
