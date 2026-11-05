@@ -85,6 +85,7 @@ function import_photo_fetch(string $url): array {
 function import_decode(string $raw): array {
     $raw = trim($raw);
     if ($raw === '') return [null, 'Collez d\'abord le texte copié depuis la page Booking.'];
+    if (preg_match('/^(javascript:|\(\(\)|%28%28)/i', $raw)) return [null, 'Vous avez collé le code du favori, pas les données. Le code du favori va dans votre barre de favoris ; ensuite, cliquez sur ce favori depuis la page Booking du riad.'];
     $d = json_decode($raw, true);
     if (!is_array($d) || ($d['src'] ?? '') !== 'booking' || (int)($d['v'] ?? 0) !== 1) return [null, 'Ce texte ne vient pas du favori « Importer dans StayInRiad ». Recommencez depuis la page Booking du riad.'];
     if (!is_array($d['rooms'] ?? null)) $d['rooms'] = [];

@@ -22,7 +22,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'impor
         $sum = ($res['fields'] ? 'Fiche : ' . implode(', ', $res['fields']) . '. ' : 'Fiche : rien à compléter (déjà remplie). ')
              . $res['rooms'] . ' chambre(s) ajoutée(s), ' . $res['photos'] . ' photo(s) importée(s)'
              . ($res['photo_errors'] ? ' (' . $res['photo_errors'] . ' photo(s) non téléchargée(s))' : '') . '.';
-        if (!empty($_POST['notify']) && ($res['rooms'] || $res['photos'] || $res['fields'])) {
+        if (!empty($_POST['notify']) && ($res['rooms'] || $res['fields'] || ($res['photos'] && empty($r['import_done'])))) {
             send_mail($r['email'], 'Votre fiche StayInRiad est pré-remplie', mail_layout('Votre fiche est presque prête',
                 '<p>Bonjour ' . e($r['first_name']) . ',</p><p>Nous avons pré-rempli la fiche de <b>' . e($r['name']) . '</b> à partir de votre page Booking : '
                 . e(implode(', ', array_merge($res['fields'], $res['rooms'] ? [$res['rooms'] . ' chambre' . ($res['rooms'] > 1 ? 's' : '')] : [], $res['photos'] ? [$res['photos'] . ' photos'] : []))) . '.</p>'
