@@ -175,7 +175,7 @@ function commission_card(array $r): string {
     foreach ([15, 18, 20] as $c) {
         [$lvl, $txt] = COMMISSION_TIERS[$c];
         $on = abs($cur - $c) < 0.01;
-        $opts .= '<label class="ccard' . ($on ? ' on' : '') . '"><input type="radio" name="commission" value="' . $c . '"' . ($on ? ' checked' : '') . '><b>' . $c . ' %</b><em>' . $lvl . '</em><span>' . $txt . '</span><span>vous recevez ' . (100 - $c) . ' € sur 100 €</span></label>';
+        $opts .= '<label class="ccard' . ($on ? ' on' : '') . '"><input type="radio" name="commission" value="' . $c . '"' . ($on ? ' checked' : '') . '><b>' . $c . ' %</b><em>' . $lvl . '</em><span>' . $txt . '</span></label>';
     }
     $outside = !isset(COMMISSION_TIERS[(int)round($cur)]) || abs($cur - round($cur)) > 0.001 ? '<p class="note">Commission actuelle : <b>' . e(rtrim(rtrim(number_format($cur, 2, ',', ''), '0'), ',')) . ' %</b>. Choisissez un des trois niveaux ci-dessous pour la changer.</p>' : '';
     return '<div class="card" style="margin-top:18px"><h2 style="margin-top:0">Votre commission et votre visibilité</h2>
