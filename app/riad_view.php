@@ -18,17 +18,19 @@ $dated = $n > 0;
 
 $photos = riad_photos((int)$r['id']);
 $amen = json_decode((string)($r['amenities'] ?? '[]'), true) ?: [];
-$rooms = q('SELECT * FROM rooms WHERE riad_id = ? AND active = 1 AND price_eur > 0 ORDER BY price_eur', [$r['id']])->fetchAll();
+$preview = $r['status'] !== 'en ligne'; // aperçu admin : on montre aussi les chambres dont le prix manque
+$rooms = q('SELECT * FROM rooms WHERE riad_id = ? AND active = 1' . ($preview ? '' : ' AND price_eur > 0') . ' ORDER BY price_eur = 0, price_eur, id', [$r['id']])->fetchAll();
 $roomRows = implode('', array_map(function ($x) use ($r, $dated, $in, $out, $n, $g) {
     $ph = riad_photos((int)$r['id'], (int)$x['id']);
     $fits = (int)$x['capacity'] >= $g;
     $free = $dated ? room_free($x, $in, $out) : null;
     $state = !$fits ? '<span class="note" style="color:var(--bad)">Jusqu\'à ' . (int)$x['capacity'] . ' personnes</span>'
            : ($dated ? ($free > 0 ? '<span class="note" style="color:var(--ok)">' . ($free <= 2 ? 'Plus que ' . $free . ' disponible' . ($free > 1 ? 's' : '') : 'Disponible') . '</span>' : '<span class="note" style="color:var(--bad)">Complet à ces dates</span>') : '<span class="note">Choisissez vos dates</span>');
-    $btn = ($dated && $fits && $free > 0) ? '<a class="btn sm" href="book.php?' . e(http_build_query(['room' => $x['id'], 'in' => $in, 'out' => $out, 'g' => $g])) . '">Réserver</a>' : '';
+    $noPrice = (float)$x['price_eur'] <= 0;
+    $btn = (!$noPrice && $dated && $fits && $free > 0) ? '<a class="btn sm" href="book.php?' . e(http_build_query(['room' => $x['id'], 'in' => $in, 'out' => $out, 'g' => $g])) . '">Réserver</a>' : '';
     return '<div class="room"><div class="rthumb">' . ($ph ? '<img src="uploads/' . e($ph[0]) . '" alt="">' : '<div class="noimg">🛏️</div>') . '</div>
       <div style="flex:1;min-width:0"><b>' . e($x['name']) . '</b><div class="note">' . ($x['description'] !== '' ? e($x['description']) . ' · ' : '') . 'jusqu\'à ' . (int)$x['capacity'] . ' pers.</div>' . $state . '</div>
-      <div style="text-align:right"><b>' . price((float)$x['price_eur']) . '</b><div class="note">/ nuit</div>' . ($dated ? '<div class="note">' . price_stay((float)$x['price_eur'], $n) . ' au total</div>' : '') . $btn . '</div></div>';
+      <div style="text-align:right">' . ($noPrice ? '<span class="pill warn">Prix à indiquer</span>' : '<b>' . price((float)$x['price_eur']) . '</b><div class="note">/ nuit</div>') . ($dated && !$noPrice ? '<div class="note">' . price_stay((float)$x['price_eur'], $n) . ' au total</div>' : '') . $btn . '</div></div>';
 }, $rooms));
 
 render_page($r['name'], '<p><a href="riads.php?city=' . e(urlencode($r['city'])) . '">← Riads à ' . e($r['city']) . '</a></p>
