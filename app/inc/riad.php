@@ -161,17 +161,24 @@ function riad_tabs(string $on, string $q = ''): string {
     return '<div class="tabs">' . implode('', array_map(fn($k) => '<a href="' . $t[$k][0] . $q . '"' . ($k === $on ? ' class="on"' : '') . '>' . $t[$k][1] . '</a>', array_keys($t))) . '</div>';
 }
 
-// ---------------------------------------------------------------- commission choisie par le riad (15 à 20 %)
+// ---------------------------------------------------------------- commission choisie par le riad : 3 niveaux de visibilité
 const COMMISSION_MIN = 15;
 const COMMISSION_MAX = 20;
+const COMMISSION_TIERS = [
+    20 => ['Première page', 'En tête des résultats de recherche'],
+    18 => ['2e page', 'Juste après les riads à 20 %'],
+    15 => ['Visibilité normale', 'Après les riads à 18 et 20 %'],
+];
 function commission_card(array $r): string {
     $cur = (float)$r['commission'];
     $opts = '';
-    for ($c = COMMISSION_MIN; $c <= COMMISSION_MAX; $c++) {
-        $opts .= '<label class="ccard' . ((int)round($cur) === $c ? ' on' : '') . '"><input type="radio" name="commission" value="' . $c . '"' . ((int)round($cur) === $c ? ' checked' : '') . '><b>' . $c . ' %</b><span>vous recevez ' . (100 - $c) . ' € sur 100 €</span></label>';
+    foreach ([15, 18, 20] as $c) {
+        [$lvl, $txt] = COMMISSION_TIERS[$c];
+        $on = abs($cur - $c) < 0.01;
+        $opts .= '<label class="ccard' . ($on ? ' on' : '') . '"><input type="radio" name="commission" value="' . $c . '"' . ($on ? ' checked' : '') . '><b>' . $c . ' %</b><em>' . $lvl . '</em><span>' . $txt . '</span><span>vous recevez ' . (100 - $c) . ' € sur 100 €</span></label>';
     }
-    $outside = $cur < COMMISSION_MIN || $cur > COMMISSION_MAX ? '<p class="note">Commission actuelle fixée avec notre équipe : <b>' . e(rtrim(rtrim(number_format($cur, 2, ',', ''), '0'), ',')) . ' %</b>.</p>' : '';
-    return '<div class="card" style="margin-top:18px"><h2 style="margin-top:0">Votre commission</h2>
-<p>C\'est vous qui choisissez, entre <b>' . COMMISSION_MIN . ' et ' . COMMISSION_MAX . ' %</b>. Elle est calculée uniquement sur le prix des nuits (jamais sur la taxe de séjour ni les extras). Vous pouvez la changer quand vous voulez : le nouveau taux s\'applique aux <b>prochaines réservations</b>, celles déjà faites gardent leur taux.</p><p class="note">Une commission plus élevée place votre riad plus haut dans les résultats de recherche (à égalité, la note des voyageurs départage).</p>' . $outside . '
+    $outside = !isset(COMMISSION_TIERS[(int)round($cur)]) || abs($cur - round($cur)) > 0.001 ? '<p class="note">Commission actuelle : <b>' . e(rtrim(rtrim(number_format($cur, 2, ',', ''), '0'), ',')) . ' %</b>. Choisissez un des trois niveaux ci-dessous pour la changer.</p>' : '';
+    return '<div class="card" style="margin-top:18px"><h2 style="margin-top:0">Votre commission et votre visibilité</h2>
+<p>C\'est vous qui choisissez : <b>15, 18 ou 20 %</b>. Plus la commission est élevée, plus votre riad apparaît haut dans les résultats de recherche (à égalité, la note des voyageurs départage). Elle est calculée uniquement sur le prix des nuits (jamais sur la taxe de séjour ni les extras). Vous pouvez la changer quand vous voulez : le nouveau taux s\'applique aux <b>prochaines réservations</b>, celles déjà faites gardent leur taux.</p>' . $outside . '
 <form method="post">' . csrf_field() . '<div class="ccards">' . $opts . '</div><button class="btn" name="action" value="commission">Enregistrer ma commission</button></form></div>';
 }

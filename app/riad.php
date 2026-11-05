@@ -17,7 +17,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if ($action === 'commission') {
         $c = (int)($_POST['commission'] ?? 0);
-        if ($c < COMMISSION_MIN || $c > COMMISSION_MAX) $err[] = 'Choisissez une commission entre ' . COMMISSION_MIN . ' et ' . COMMISSION_MAX . ' %.';
+        if (!isset(COMMISSION_TIERS[$c])) $err[] = 'Choisissez une commission de 15, 18 ou 20 %.';
         elseif ((float)$r['commission'] !== (float)$c) {
             $old = rtrim(rtrim(number_format((float)$r['commission'], 2, '.', ''), '0'), '.');
             q('UPDATE riads SET commission = ?, updated_at = ? WHERE id = ?', [$c, now(), $rid]);
