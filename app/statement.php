@@ -22,7 +22,7 @@ $nav = fn($d) => $base . 'm=' . date('Y-m', strtotime($m . '-01 ' . $d . ' month
 $kpi = fn($l, $v) => '<div class="kpi"><small>' . $l . '</small><b>' . $v . '</b></div>';
 $head = '<div class="card noprint"><div style="display:flex;justify-content:space-between;align-items:center;gap:10px"><a class="btn sm ghost" href="' . e($nav('-1')) . '">←</a><h2 style="margin:0">' . e(ucfirst(month_label($m))) . '</h2><a class="btn sm ghost" href="' . e($nav('+1')) . '">→</a></div>
 <p class="note">Séjours terminés dans le mois (date de départ) et frais d\'annulation. Montants en euros, net du riad aussi en dirhams au taux bloqué le jour de chaque réservation.</p>
-<a class="btn sm" href="' . e($base . 'm=' . $m . '&xlsx=1') . '">Télécharger le relevé Excel</a> <a class="btn sm ghost" href="' . e($base . 'm=' . $m . '&csv=1') . '">CSV</a> <a class="btn sm ghost" href="#" data-print>Imprimer / PDF</a></div>';
+<a class="btn sm" href="' . e($base . 'm=' . $m . '&xlsx=1') . '">Télécharger le relevé Excel</a> <a class="btn sm ghost" href="#" data-print>Imprimer / PDF</a></div>';
 $kpis = '<div class="kpis">' . $kpi('Réservations', (string)$t['n']) . $kpi('Nuits', (string)$t['nights']) . $kpi('Payé par les voyageurs', e(eur($t['amount'])))
       . $kpi($adminAll ? 'Commissions StayInRiad' : 'Commission StayInRiad', e(eur($t['commission']))) . $kpi($adminAll ? 'Net dû aux riads' : 'Net pour vous', e(mad($t['net_mad'])))
       . $kpi('Déjà versé', e(mad($t['paid_mad']))) . $kpi('Reste à verser', e(mad($t['due_mad']))) . '</div>';
