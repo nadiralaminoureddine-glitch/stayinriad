@@ -3,7 +3,7 @@
 declare(strict_types=1);
 if (!defined('SIR_APP')) exit;
 
-const SCHEMA_VERSION = 7;
+const SCHEMA_VERSION = 8;
 
 function run_migrations(): void {
     global $CONFIG;
@@ -102,6 +102,11 @@ function run_migrations(): void {
             liked VARCHAR(1000) NOT NULL DEFAULT '', disliked VARCHAR(1000) NOT NULL DEFAULT '', private_note VARCHAR(1000) NOT NULL DEFAULT '',
             created_at DATETIME NOT NULL, FOREIGN KEY (booking_id) REFERENCES bookings(id), FOREIGN KEY (riad_id) REFERENCES riads(id))$tail");
         try { db()->exec("CREATE INDEX idx_reviews_riad ON reviews (riad_id, created_at)"); } catch (PDOException $e) {}
+    }
+    if ($v < 8) {
+        foreach (["booking_url VARCHAR(400) NOT NULL DEFAULT ''", "import_requested DATETIME NULL", "import_done DATETIME NULL"] as $c) {
+            try { db()->exec("ALTER TABLE riads ADD COLUMN $c"); } catch (PDOException $e) {}
+        }
     }
     q("DELETE FROM settings WHERE k = 'schema_version'");
     q("INSERT INTO settings (k, v) VALUES ('schema_version', ?)", [(string)SCHEMA_VERSION]);

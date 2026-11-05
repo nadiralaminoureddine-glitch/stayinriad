@@ -40,7 +40,7 @@ $form = function (?array $x) {
     $v = fn($k, $d = '') => e($x[$k] ?? $d);
     return '<form method="post" class="card">' . csrf_field() . ($x ? '<input type="hidden" name="room_id" value="' . (int)$x['id'] . '">' : '') . '
     <div class="row"><div><label>Nom de la chambre</label><input name="name" required maxlength="120" placeholder="ex. Suite Majorelle" value="' . $v('name') . '"></div>
-    <div><label>Prix par nuit (€)</label><input name="price" required inputmode="decimal" placeholder="85" value="' . ($x ? e(rtrim(rtrim(number_format((float)$x['price_eur'], 2, '.', ''), '0'), '.')) : '') . '"></div></div>
+    <div><label>Prix par nuit (€)</label><input name="price" required inputmode="decimal" placeholder="85" value="' . ($x && (float)$x['price_eur'] > 0 ? e(rtrim(rtrim(number_format((float)$x['price_eur'], 2, '.', ''), '0'), '.')) : '') . '"' . ($x && (float)$x['price_eur'] <= 0 ? ' style="border-color:var(--bad)"' : '') . '>' . ($x && (float)$x['price_eur'] <= 0 ? '<span class="note" style="color:var(--bad)">Prix à indiquer</span>' : '') . '</div></div>
     <label>Description courte</label><input name="description" maxlength="255" placeholder="ex. 1 grand lit · 20 m² · vue sur le patio" value="' . $v('description') . '">
     <div class="row"><div><label>Personnes maximum</label><input type="number" name="capacity" min="1" max="12" value="' . $v('capacity', '2') . '"></div>
     <div><label>Nombre de chambres identiques</label><input type="number" name="qty" min="1" max="50" value="' . $v('qty', '1') . '"></div></div>

@@ -8,7 +8,7 @@ require_public_open();
 
 const COUNTRIES = ['France','Maroc','Espagne','Royaume-Uni','États-Unis','Belgique','Allemagne','Italie','Suisse','Canada','Pays-Bas','Autre'];
 
-$room = q('SELECT * FROM rooms WHERE id = ? AND active = 1', [(int)($_GET['room'] ?? $_POST['room'] ?? 0)])->fetch();
+$room = q('SELECT * FROM rooms WHERE id = ? AND active = 1 AND price_eur > 0', [(int)($_GET['room'] ?? $_POST['room'] ?? 0)])->fetch();
 $r = $room ? q("SELECT * FROM riads WHERE id = ? AND status = 'en ligne'", [$room['riad_id']])->fetch() : null;
 if (!$r) { flash('Cette chambre n\'est plus disponible.', 'warn'); redirect('riads.php'); }
 [$in, $out, $n, $err] = parse_stay($_GET['in'] ?? $_POST['in'] ?? null, $_GET['out'] ?? $_POST['out'] ?? null);

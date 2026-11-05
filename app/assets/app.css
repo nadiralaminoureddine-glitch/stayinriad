@@ -112,3 +112,5 @@ details summary{cursor:pointer;color:var(--ink);font-weight:600}
 .ccard input{position:absolute;opacity:0;width:1px;height:1px}.ccard b{font-size:20px}.ccard em{font-style:normal;font-weight:700;font-size:13px;color:var(--ink)}.ccard span{font-size:12px;font-weight:400;color:var(--muted,#6b625a)}.ccard:has(input:checked){border-color:var(--ink);background:#e9f3ef}.ccard:has(input:focus-visible){outline:2px solid var(--ink)}
 .printonly{display:none}
 @media print{header,footer,.noprint,.tabs,.btn{display:none!important}.printonly{display:block}body{background:#fff}.card{border:0;box-shadow:none;padding:0}.kpis{grid-template-columns:repeat(4,1fr)}table{font-size:11px}}
+.import-card{border:1.5px solid var(--ink);background:#f3f8f6}.import-form{display:flex;gap:8px;flex-wrap:wrap;align-items:stretch}.import-form input{flex:1 1 260px;margin:0}.import-form .btn{margin-top:0}
+.flash a{color:inherit}
