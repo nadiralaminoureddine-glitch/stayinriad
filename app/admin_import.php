@@ -49,7 +49,7 @@ $bm = '<div class="card"><h2 style="margin-top:0">Installer le bouton d\'import 
 <p><a class="btn" id="bmLink" draggable="true" href="' . e(import_bookmarklet()) . '" title="Glissez-moi dans la barre de favoris">📥 Importer dans StayInRiad</a></p>
 <div id="bmHelp" class="flash warn" hidden><b>Ce bouton ne se clique pas ici :</b> faites-le glisser jusqu\'à la barre de favoris, puis relâchez.</div>
 <p class="note">Barre de favoris invisible ? Ctrl+Maj+B (Windows) ou Cmd+Maj+B (Mac).</p>
-<details><summary class="note">Le glisser-déposer ne marche pas ?</summary><ol class="note"><li><button type="button" class="btn sm ghost" id="bmCopy">Copier le code du favori</button></li><li>Clic droit sur la barre de favoris, puis <b>Ajouter une page…</b></li><li>Nom : <b>Importer dans StayInRiad</b>. Dans <b>URL</b>, collez le code (Ctrl+V), puis Enregistrer.</li></ol></details></div>';
+<details><summary class="note">Le glisser-déposer ne marche pas ?</summary><ol class="note"><li><button type="button" class="btn sm ghost" id="bmCopy">Copier le code du favori</button></li><li>Clic droit sur la barre de favoris, puis <b>Ajouter une page…</b></li><li>Nom : <b>Importer dans StayInRiad</b>. Dans le champ <b>URL</b> de ce favori, collez le code (Ctrl+V), puis Enregistrer.</li></ol><p class="note" style="color:var(--bad)">⚠️ Ne collez jamais ce code dans la barre d\'adresse : le navigateur le transforme en recherche Google.</p></details></div>';
 
 if (!$r) {
     // Arrivée depuis le favori : les données sont dans l'adresse, l'import part tout seul si le riad est reconnu
