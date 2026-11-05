@@ -34,21 +34,42 @@ function send_mail(string $to, string $subject, string $html): bool {
     $mode = $CONFIG['mail_mode'] ?? 'mail';
     $ok = true;
     if ($mode !== 'log') {
+        $bnd = 'sir_' . bin2hex(random_bytes(12));
+        $host = substr(strrchr($from, '@') ?: '@stayinriad.com', 1);
         $headers = [
-            'From' => 'stayinriad.com <' . $from . '>',
+            'From' => 'StayInRiad <' . $from . '>',
             'Reply-To' => $from,
+            'Message-ID' => '<' . bin2hex(random_bytes(16)) . '@' . $host . '>',
+            'Date' => date('r'),
             'MIME-Version' => '1.0',
-            'Content-Type' => 'text/html; charset=UTF-8',
-            'Content-Transfer-Encoding' => '8bit',
+            'Content-Type' => 'multipart/alternative; boundary="' . $bnd . '"',
             'X-Mailer' => 'StayInRiad',
         ];
-        $ok = @mail($to, '=?UTF-8?B?' . base64_encode($subject) . '?=', $html, $headers, '-f' . $from);
+        $body = "--$bnd\r\nContent-Type: text/plain; charset=UTF-8\r\nContent-Transfer-Encoding: base64\r\n\r\n" . chunk_split(base64_encode(mail_text($html)))
+              . "--$bnd\r\nContent-Type: text/html; charset=UTF-8\r\nContent-Transfer-Encoding: base64\r\n\r\n" . chunk_split(base64_encode($html))
+              . "--$bnd--\r\n";
+        $ok = @mail($to, '=?UTF-8?B?' . base64_encode($subject) . '?=', $body, $headers, '-f' . $from);
     } else {
         $dir = private_dir_mail(); @file_put_contents($dir . '/' . date('Ymd-His') . '-' . bin2hex(random_bytes(3)) . '.html', "<!-- To: $to | $subject -->\n" . $html);
     }
     try { q('INSERT INTO email_log (to_addr, subject, status, created_at) VALUES (?,?,?,?)', [$to, mb_substr($subject, 0, 255), $ok ? ($mode === 'log' ? 'journal' : 'envoyé') : 'échec', now()]); } catch (Throwable $e) {}
     if (!$ok) error_log('[StayInRiad mail] échec vers ' . $to . ' : ' . $subject);
     return $ok;
+}
+/** Version texte d'un email HTML (les filtres anti-spam pénalisent les emails sans texte). */
+function mail_text(string $html): string {
+    $t = preg_replace('#<(style|script|head)[^>]*>.*?</\1>#si', '', $html);
+    $t = preg_replace_callback('#<a\s[^>]*href="([^"]+)"[^>]*>(.*?)</a>#si', function ($m) {
+        $label = trim(html_entity_decode(strip_tags($m[2]), ENT_QUOTES | ENT_HTML5, 'UTF-8')); $url = html_entity_decode($m[1], ENT_QUOTES | ENT_HTML5, 'UTF-8');
+        if (str_starts_with($url, 'mailto:') || str_starts_with($url, 'tel:')) return $label; return ($label === '' || $label === $url) ? $url : $label . ' : ' . $url;
+    }, $t);
+    $t = preg_replace('#<(br|/p|/div|/tr|/h[1-6]|/li)[^>]*>#i', "\n", $t);
+    $t = preg_replace('#<li[^>]*>#i', "- ", $t);
+    $t = preg_replace('#</t[dh]>#i', " ", $t);
+    $t = html_entity_decode(strip_tags($t), ENT_QUOTES | ENT_HTML5, 'UTF-8');
+    $t = preg_replace("/[ \t]+/u", ' ', $t);
+    $t = preg_replace("/ *\n */", "\n", $t);
+    return trim(preg_replace("/\n{3,}/", "\n\n", $t)) . "\n";
 }
 function private_dir_mail(): string {
     global $CONFIG; $d = ($CONFIG['private_dir'] ?? (dirname(__DIR__, 3) . '/stayinriad-private')) . '/emails';
