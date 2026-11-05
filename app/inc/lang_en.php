@@ -216,7 +216,7 @@ return [
 'Selon les banques, le virement apparaît sous 1 à 2 jours ouvrés. Le détail est dans votre espace, onglet « Versements ».' => 'Depending on the bank, the transfer appears within 1 to 2 working days. Details are in your account, “Payouts” tab.',
 'StayInRiad · la plateforme 100 % marocaine des riads ·' => 'StayInRiad · the 100% Moroccan riad platform ·', 'StayInRiad ne vous demandera jamais vos coordonnées bancaires par email, message ou WhatsApp.' => 'StayInRiad will never ask for your bank details by email, message or WhatsApp.',
 'Nouvelle réservation' => 'New booking', 'Réservation annulée' => 'Booking cancelled', 'Voyageurs' => 'Guests', 'Arrivée' => 'Check-in', 'Départ' => 'Check-out',
-'Lien de votre page Booking' => 'Link to your Booking page', '(facultatif)' => '(optional)', '⚡ Votre riad est sur Booking ? Collez le lien :' => '⚡ Is your riad on Booking? Paste the link:',
+'Lien de votre page Booking' => 'Link to your Booking page', '(facultatif)' => '(optional)', "(description, chambres, photos). Il ne vous restera qu'à indiquer vos prix." => '(description, rooms, photos). All you will have to do is add your prices.', '⚡ Votre riad est sur Booking ? Collez le lien :' => '⚡ Is your riad on Booking? Paste the link:',
 "Ce lien ne ressemble pas à une page Booking. Ouvrez votre riad sur Booking.com et copiez l'adresse de la page (elle contient « booking.com/hotel/ma/ »), ou laissez la case vide." => 'This link does not look like a Booking page. Open your riad on Booking.com and copy the page address (it contains “booking.com/hotel/ma/”), or leave the box empty.',
 // --- autres emails aux riads
 'Bienvenue sur StayInRiad !' => 'Welcome to StayInRiad!', 'Bonne nouvelle : la fiche de' => 'Good news: the listing for',
