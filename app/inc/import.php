@@ -22,6 +22,12 @@ function booking_link(string $url): ?string {
     return null;
 }
 
+/** Clé stable d'une page Booking (sans la langue) : hotel/ma/riad-janate. */
+function booking_key(string $url): string {
+    $p = (string)parse_url($url, PHP_URL_PATH);
+    return strtolower(preg_replace('#\.[a-z]{2}(-[a-z]{2})?\.html$|\.html$#i', '', trim($p, '/')));
+}
+
 /** Équipements StayInRiad reconnus dans un texte Booking. */
 function import_amenities(string $t): array {
     $map = [
@@ -174,9 +180,10 @@ const out={v:1,src:'booking',url:location.origin+location.pathname,name:ld.name|
 desc:((g('[data-testid="property-description"]')||{}).innerText||ld.description||'').trim(),ll:(g('[data-atlas-latlng]')||{getAttribute:()=>''}).getAttribute('data-atlas-latlng')||'',
 fac:[...document.querySelectorAll('[data-testid*="facilit"]')].map(e=>e.innerText).join(' | ').slice(0,4000),rooms,photos:ph};
 if(!rooms.length&&!ph.length){alert('StayInRiad : rien trouvé. Ouvrez la page du riad sur Booking (pas la liste de recherche), attendez qu\'elle soit chargée et recommencez.');return}
-const t=JSON.stringify(out);const ok=()=>alert('StayInRiad : '+rooms.length+' chambre(s) et '+ph.length+' photo(s) copiées. Revenez sur StayInRiad et collez dans la zone d\'import.');
-navigator.clipboard.writeText(t).then(ok,()=>prompt('Copiez ce texte (Ctrl+C), puis collez-le sur StayInRiad :',t))}catch(e){alert('StayInRiad : erreur, '+e.message)}})()
+const t=JSON.stringify(out);const u='__BASE__admin_import.php?auto=1#sir='+btoa(unescape(encodeURIComponent(t)));
+const w=window.open(u,'_blank');if(!w)location.href=u}catch(e){alert('StayInRiad : erreur, '+e.message)}})()
 JS;
+    $js = str_replace('__BASE__', base_url(), $js);
     return 'javascript:' . rawurlencode(preg_replace("/\n/", '', $js));
 }
 
