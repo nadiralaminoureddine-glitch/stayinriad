@@ -1,4 +1,5 @@
 // Fiche du riad : choisir l'emplacement sur une carte (OpenStreetMap). Remplit les champs latitude / longitude.
+var EN = document.documentElement.lang === 'en';
 (function () {
   var box = document.getElementById('mapPick');
   if (!box || !window.L) return;
@@ -35,7 +36,7 @@
     } else marker.setLatLng([a, b]);
     lat.value = a; lng.value = b;
     if (center) map.setView([a, b], Math.max(map.getZoom(), 17));
-    if (status) status.textContent = inMorocco(a, b) ? '✅ Emplacement enregistré. Vous pouvez déplacer l\'épingle pour l\'ajuster.' : '⚠️ Ce point est hors du Maroc.';
+    if (status) status.textContent = inMorocco(a, b) ? (EN ? '✅ Location saved. You can move the pin to adjust it.' : '✅ Emplacement enregistré. Vous pouvez déplacer l\'épingle pour l\'ajuster.') : (EN ? '⚠️ This point is outside Morocco.' : '⚠️ Ce point est hors du Maroc.');
   };
   if (inMorocco(num(lat.value), num(lng.value))) put(L.latLng(num(lat.value), num(lng.value)), false);
   map.on('click', function (e) { put(e.latlng, false); });
@@ -48,7 +49,7 @@
     me.addEventListener('click', function () {
       if (status) status.textContent = 'Recherche de votre position…';
       navigator.geolocation.getCurrentPosition(function (p) { put(L.latLng(p.coords.latitude, p.coords.longitude), true); },
-        function () { if (status) status.textContent = 'Position introuvable : touchez la carte à l\'endroit de votre riad.'; },
+        function () { if (status) status.textContent = EN ? 'Location not found: tap the map where your riad is.' : 'Position introuvable : touchez la carte à l\'endroit de votre riad.'; },
         { enableHighAccuracy: true, timeout: 10000 });
     });
   }

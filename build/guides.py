@@ -147,6 +147,10 @@ footer{border-top:1px solid var(--line);text-align:center;color:var(--muted);fon
 STAR = '<svg width="30" height="30" viewBox="0 0 40 40" aria-hidden="true"><rect x="8" y="8" width="24" height="24" fill="#d9a441"/><rect x="8" y="8" width="24" height="24" fill="#d9a441" transform="rotate(45 20 20)"/><rect x="13" y="13" width="14" height="14" fill="#0f5a4a"/><rect x="13" y="13" width="14" height="14" fill="#0f5a4a" transform="rotate(45 20 20)"/><circle cx="20" cy="20" r="3" fill="#d9a441"/></svg>'
 
 def page(lang, slug_fr, slug_en, title, desc, body, ld, crumb):
+    html = _page(lang, slug_fr, slug_en, title, desc, body, ld, crumb)
+    return html.replace(REG + '"', REG + '&amp;lang=en"') if lang == 'en' else html
+
+def _page(lang, slug_fr, slug_en, title, desc, body, ld, crumb):
     e = html.escape
     if lang == 'fr':
         import re as _re

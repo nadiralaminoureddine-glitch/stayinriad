@@ -95,6 +95,7 @@ function create_user(string $role, string $email, string $pass, string $first, s
       [$role, $email, password_hash($pass, PASSWORD_DEFAULT), trim($first), trim($last), trim($phone), $status, now()]);
     $newId = (int)db()->lastInsertId();
     if ($status === 'active') q('UPDATE users SET email_verified_at = ? WHERE id = ?', [now(), $newId]);
+    if (function_exists('lang') && lang() !== 'fr') { try { q('UPDATE users SET lang = ? WHERE id = ?', [lang(), $newId]); } catch (Throwable $e) {} }
     return [$newId, null];
 }
 

@@ -3,7 +3,7 @@
 declare(strict_types=1);
 if (!defined('SIR_APP')) exit;
 
-const SCHEMA_VERSION = 8;
+const SCHEMA_VERSION = 9;
 
 function run_migrations(): void {
     global $CONFIG;
@@ -107,6 +107,9 @@ function run_migrations(): void {
         foreach (["booking_url VARCHAR(400) NOT NULL DEFAULT ''", "import_requested DATETIME NULL", "import_done DATETIME NULL"] as $c) {
             try { db()->exec("ALTER TABLE riads ADD COLUMN $c"); } catch (PDOException $e) {}
         }
+    }
+    if ($v < 9) {
+        try { db()->exec("ALTER TABLE users ADD COLUMN lang VARCHAR(5) NOT NULL DEFAULT 'fr'"); } catch (PDOException $e) {}
     }
     q("DELETE FROM settings WHERE k = 'schema_version'");
     q("INSERT INTO settings (k, v) VALUES ('schema_version', ?)", [(string)SCHEMA_VERSION]);

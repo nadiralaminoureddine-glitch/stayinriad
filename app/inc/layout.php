@@ -32,13 +32,14 @@ function render_page(string $title, string $body): void {
     $cur = $_SESSION['cur'] ?? 'EUR';
     $qs = $_GET; unset($qs['cur']);
     $curLinks = '<span class="cur">' . implode('', array_map(fn($c, $l) => '<a href="?' . e(http_build_query($qs + ['cur' => $c])) . '"' . ($c === $cur ? ' class="on"' : '') . '>' . $l . '</a>', ['EUR', 'MAD', 'USD'], ['€', 'DH', '$'])) . '</span>';
-    $nav = $curLinks . $nav;
+    $nav = $curLinks . lang_switch() . $nav;
     $flash = $f ? '<div class="flash ' . e($f[1]) . '">' . e($f[0]) . '</div>' : '';
-    echo '<!DOCTYPE html><html lang="fr"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">'
+    $html = '<!DOCTYPE html><html lang="fr"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">'
        . '<meta name="robots" content="noindex, nofollow"><title>' . e($title) . ' · StayInRiad</title>'
        . '<link rel="icon" href="/favicon.ico" sizes="48x48"><link rel="icon" href="/favicon.svg" type="image/svg+xml"><link rel="apple-touch-icon" href="/apple-touch-icon.png"><meta name="theme-color" content="#0f5a4a"><link rel="stylesheet" href="assets/app.css">' . (isset($_SESSION['cur']) ? '' : '<script src="assets/cur.js" defer></script>') . '</head><body>'
        . '<header><div class="wrap">' . logo_html() . '<nav>' . $nav . '</nav></div></header>'
        . '<main class="wrap">' . $flash . $body . '</main>'
        . '<footer class="wrap">' . pay_logos() . '© ' . date('Y') . ' stayinriad.com · <a href="mailto:contact@stayinriad.com">contact@stayinriad.com</a> · <a href="https://wa.me/212707596333" target="_blank" rel="noopener">WhatsApp +212 707-596333</a></footer>'
        . '</body></html>';
+    echo tr_html($html);
 }

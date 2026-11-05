@@ -25,7 +25,7 @@ function send_code(array $u, string $purpose): ?string {
     $code = str_pad((string)random_int(0, 999999), 6, '0', STR_PAD_LEFT);
     q('INSERT INTO auth_codes (user_id, purpose, code_hash, expires_at, created_at) VALUES (?,?,?,?,?)', [$u['id'], $purpose, code_hash($code, (int)$u['id'], $purpose), gmdate('Y-m-d H:i:s', time() + CODE_MINUTES * 60), now()]);
     $_SESSION['code_channel'] = 'email';
-    if (sms_enabled() && intl_phone((string)$u['phone']) && send_sms((string)$u['phone'], 'stayinriad.com : votre code ' . ($purpose === 'verify' ? 'de confirmation' : 'de connexion') . ' est ' . $code . '. Valable ' . CODE_MINUTES . ' min. Ne le communiquez à personne.')) {
+    if (sms_enabled() && intl_phone((string)$u['phone']) && send_sms((string)$u['phone'], (fn($t) => function_exists('tr') ? tr($t, $u['lang'] ?? 'fr') : $t)('stayinriad.com : votre code ' . ($purpose === 'verify' ? 'de confirmation' : 'de connexion') . ' est ' . $code . '. Valable ' . CODE_MINUTES . ' min. Ne le communiquez à personne.'))) {
         $_SESSION['code_channel'] = 'sms'; return null;
     }
     [$subject, $title, $intro] = $purpose === 'verify'

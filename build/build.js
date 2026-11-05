@@ -39,6 +39,7 @@ const ld=JSON.stringify([{"@context":"https://schema.org","@type":"Organization"
     const s=document.createElement('script');s.type='application/ld+json';s.textContent=ld;document.head.appendChild(s);
     document.getElementById('langNote').innerHTML='';
     const lg=document.querySelector('a.logo');if(lg)lg.setAttribute('href',m.path);
+    if(lang==='en'||lang==='es')document.querySelectorAll('a[href^="/app/register.php"]').forEach(x=>{if(!/lang=/.test(x.getAttribute('href')))x.setAttribute('href',x.getAttribute('href')+'&lang=en')});
   },{m,lang,alt,ld,SITE});
   let html='<!DOCTYPE html>\n'+(await p.evaluate(()=>document.documentElement.outerHTML));
   const dir=lang==='fr'?OUT:OUT+'/'+lang;fs.mkdirSync(dir,{recursive:true});fs.writeFileSync(dir+'/index.html',html);

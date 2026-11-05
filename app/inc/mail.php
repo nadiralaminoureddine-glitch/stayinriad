@@ -33,6 +33,7 @@ function send_mail(string $to, string $subject, string $html): bool {
     $from = $CONFIG['mail_from'] ?? 'contact@stayinriad.com';
     $mode = $CONFIG['mail_mode'] ?? 'mail';
     $ok = true;
+    if (lang_of_email($to) === 'en') { $subject = tr($subject, 'en'); $html = tr_html($html, 'en'); }
     if ($mode !== 'log') {
         $bnd = 'sir_' . bin2hex(random_bytes(12));
         $host = substr(strrchr($from, '@') ?: '@stayinriad.com', 1);

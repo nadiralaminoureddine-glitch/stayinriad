@@ -104,3 +104,4 @@ require __DIR__ . '/auth.php';
 require __DIR__ . '/mail.php';
 require __DIR__ . '/security.php';
 require __DIR__ . '/layout.php';
+require __DIR__ . '/i18n.php';
