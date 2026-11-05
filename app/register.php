@@ -1,6 +1,7 @@
 <?php
 declare(strict_types=1);
 require __DIR__ . '/inc/bootstrap.php';
+require __DIR__ . '/inc/import.php';
 
 if (current_user()) redirect('account.php');
 const CITIES = ['Marrakech','Fès','Essaouira','Chefchaouen','Meknès','Rabat','Tanger','Ouarzazate','Merzouga','Agadir','Taroudant','Autre'];
@@ -15,17 +16,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($p('website') !== '' || !$started || time() - $started < 4) { sleep(2); $err = 'Merci de réessayer dans quelques secondes.'; }
     elseif ($p('pass') !== $p('pass2')) $err = 'Les deux mots de passe ne sont pas identiques.';
     elseif (empty($_POST['cgu'])) $err = 'Merci d\'accepter les conditions pour créer votre compte.';
+    elseif ($type === 'riad' && $p('booking_url') !== '' && !booking_link($p('booking_url'))) $err = 'Ce lien ne ressemble pas à une page Booking. Ouvrez votre riad sur Booking.com et copiez l\'adresse de la page (elle contient « booking.com/hotel/ma/ »), ou laissez la case vide.';
     elseif ($type === 'riad' && ($p('riad_name') === '' || !in_array($p('city'), CITIES, true))) $err = 'Indiquez le nom et la ville de votre riad.';
     elseif (!intl_phone($p('phone'))) $err = 'Indiquez un numéro de téléphone valide, avec l\'indicatif du pays (ex. +212 6…, +33 6…).';
     else {
         db()->beginTransaction();
         [$id, $err] = create_user($type, $p('email'), (string)($_POST['pass'] ?? ''), $p('first'), $p('last'), (string)intl_phone($p('phone')), 'unverified');
+        $newRiad = 0;
         if ($id && $type === 'riad') {
             q('INSERT INTO riads (owner_id, name, city, rooms_count, status, created_at) VALUES (?,?,?,?,?,?)',
               [$id, mb_substr($p('riad_name'), 0, 120), $p('city'), max(0, min(200, (int)$p('rooms'))), 'brouillon', now()]);
+            $newRiad = (int)db()->lastInsertId();
         }
         if ($id) {
             db()->commit();
+            $link = $newRiad ? booking_link($p('booking_url')) : null;
+            if ($link) import_request($newRiad, $link); // fiche pré-remplie par notre équipe
             unset($_SESSION['reg_started']);
             $e = pend_code(q('SELECT * FROM users WHERE id = ?', [$id])->fetch(), 'verify');
             if ($e) flash($e, 'warn');
@@ -41,7 +47,9 @@ $v = fn($k, $d = '') => e($_POST[$k] ?? $d);
 $riadFields = $type === 'riad' ? '<h2>Votre riad</h2>
 <label>Nom du riad</label><input name="riad_name" required maxlength="120" value="' . $v('riad_name') . '">
 <div class="row"><div><label>Ville</label><select name="city" required>' . implode('', array_map(fn($c) => '<option' . (($_POST['city'] ?? '') === $c ? ' selected' : '') . '>' . e($c) . '</option>', CITIES)) . '</select></div>
-<div><label>Nombre de chambres</label><input type="number" name="rooms" min="1" max="200" value="' . $v('rooms') . '"></div></div><h2>Vos coordonnées</h2>' : '';
+<div><label>Nombre de chambres</label><input type="number" name="rooms" min="1" max="200" value="' . $v('rooms') . '"></div></div>
+<label>Lien de votre page Booking <span class="note">(facultatif)</span></label><input name="booking_url" inputmode="url" maxlength="400" placeholder="https://www.booking.com/hotel/ma/votre-riad.html" value="' . $v('booking_url') . '">
+<p class="note" style="margin:4px 0 0">⚡ Votre riad est sur Booking ? Collez le lien : <b>nous remplissons votre fiche pour vous</b> (description, chambres, photos). Il ne vous restera qu\'à indiquer vos prix.</p><h2>Vos coordonnées</h2>' : '';
 
 render_page('Créer un compte', '<div class="card narrow"><h1>' . ($type === 'riad' ? 'Inscrire mon riad' : 'Créer un compte') . '</h1>
 ' . (site_open() ? '<div class="tabs"><a href="register.php?type=traveler"' . ($type === 'traveler' ? ' class="on"' : '') . '>Voyageur</a><a href="register.php?type=riad"' . ($type === 'riad' ? ' class="on"' : '') . '>Propriétaire de riad</a></div>' : '<p class="note">Inscription des <b>propriétaires de riads</b>. Les comptes voyageurs ouvriront avec les réservations.</p>') . '

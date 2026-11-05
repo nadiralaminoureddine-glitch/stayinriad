@@ -20,10 +20,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $link = booking_link((string)($_POST['booking_url'] ?? ''));
         if (!$link) $err[] = 'Ce lien ne ressemble pas à une page Booking. Ouvrez votre riad sur Booking.com, copiez l\'adresse de la page (elle contient « booking.com/hotel/ma/ ») et collez-la ici.';
         else {
-            q('UPDATE riads SET booking_url = ?, import_requested = ?, updated_at = ? WHERE id = ?', [$link, now(), now(), $rid]);
-            $owner = q('SELECT first_name, last_name, email, phone FROM users WHERE id = ?', [(int)$r['owner_id']])->fetch();
-            send_mail(admin_email(), '[Import Booking] ' . $r['name'] . ' (' . $r['city'] . ') : fiche à pré-remplir', mail_layout('Un riad demande l\'import de sa fiche Booking', mail_rows(['Riad' => e($r['name']), 'Ville' => e($r['city']), 'Propriétaire' => e(trim(($owner['first_name'] ?? '') . ' ' . ($owner['last_name'] ?? ''))), 'Téléphone' => e($owner['phone'] ?? ''), 'Page Booking' => '<a href="' . e($link) . '">' . e($link) . '</a>']) . '<p>Ouvrez la page Booking, cliquez sur le favori « Importer dans StayInRiad », puis collez le résultat dans la page d\'import.</p>' . mail_button(base_url() . 'admin_import.php?id=' . $rid, 'Importer la fiche')));
-            log_action('import_demande', $r['name'] . ' · ' . $link);
+            import_request($rid, $link);
             flash('Merci ! Notre équipe pré-remplit votre fiche (description, chambres, photos) à partir de votre page Booking, en général sous 24 h. Vous recevrez un email : il vous restera à indiquer vos prix.');
             redirect('riad.php' . ($u['role'] === 'admin' ? '?id=' . $rid : ''));
         }

@@ -188,6 +188,15 @@ JS;
     return 'javascript:' . rawurlencode(preg_replace("/\n/", '', $js));
 }
 
+/** Enregistre la demande d'import Booking d'un riad et prévient l'admin par email. */
+function import_request(int $rid, string $link): void {
+    q('UPDATE riads SET booking_url = ?, import_requested = ?, updated_at = ? WHERE id = ?', [$link, now(), now(), $rid]);
+    $r = q('SELECT r.name, r.city, u.first_name, u.last_name, u.phone FROM riads r JOIN users u ON u.id = r.owner_id WHERE r.id = ?', [$rid])->fetch();
+    if (!$r) return;
+    send_mail(admin_email(), '[Import Booking] ' . $r['name'] . ' (' . $r['city'] . ') : fiche à pré-remplir', mail_layout('Un riad demande l\'import de sa fiche Booking', mail_rows(['Riad' => e($r['name']), 'Ville' => e($r['city']), 'Propriétaire' => e(trim($r['first_name'] . ' ' . $r['last_name'])), 'Téléphone' => e((string)$r['phone']), 'Page Booking' => '<a href="' . e($link) . '">' . e($link) . '</a>']) . '<p>Ouvrez la page d\'import, puis la page Booking du riad, et cliquez sur le favori « Importer dans StayInRiad » : l\'import se fait tout seul.</p>' . mail_button(base_url() . 'admin_import.php?id=' . $rid, 'Importer la fiche')));
+    log_action('import_demande', $r['name'] . ' · ' . $link);
+}
+
 /** Encadré « Votre riad est déjà sur Booking ? » de la fiche riad. */
 function import_card(array $r, array $u): string {
     $d = fn($t) => date('d/m/Y', strtotime($t . ' UTC'));
