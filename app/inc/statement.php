@@ -44,6 +44,63 @@ function statement_csv(array $rows, string $filename): void {
     fclose($o); exit;
 }
 
+/** Relevé au format Excel (.xlsx) mis en page aux couleurs de StayInRiad, avec le logo. */
+function statement_xlsx(array $rows, ?array $riad, string $m, string $filename): void {
+    require_once __DIR__ . '/xlsx.php';
+    $all = $riad === null;
+    $cols = [];
+    if ($all) $cols[] = ['Riad', 'txt', 22];
+    $cols = array_merge($cols, [['Réservé le', 'date', 12], ['N° réservation', 'txt', 19], ['Type', 'txt', 17], ['Client', 'txt', 22], ['Chambre', 'txt', 20],
+        ['Arrivée', 'date', 12], ['Départ', 'date', 12], ['Nuits', 'int', 8], ['Voyageurs', 'int', 10], ['Montant payé', 'eur', 15], ['Commission', 'pct', 12],
+        ['Commission StayInRiad', 'eur', 16], ['Net riad', 'eur', 15], ['Taux €/MAD', 'rate', 11], ['Net riad (MAD)', 'mad', 17], ['Versement', 'txt', 26]]);
+    $n = count($cols); $last = xlsx_col($n - 1); $t = statement_totals($rows);
+    $R = []; $merges = [];
+    // bandeau vert (logo par-dessus)
+    foreach ([1, 2] as $r) for ($c = 0; $c < $n; $c++) $R[$r][$c] = ['s' => 'band'];
+    $R[5][0] = ['v' => 'Relevé mensuel · ' . ($all ? 'tous les riads' : $riad['name']) . ' · ' . month_label($m), 's' => 'title']; $merges[] = "A5:{$last}5";
+    $R[6][0] = ['v' => 'Séjours terminés dans le mois (date de départ) et frais d\'annulation · généré le ' . date('d/m/Y à H:i'), 's' => 'sub']; $merges[] = "A6:{$last}6";
+    // chiffres clés (2 colonnes chacun)
+    $k = [['Réservations', $t['n'], 'ki'], ['Nuits', $t['nights'], 'ki'], ['Payé par les voyageurs', round($t['amount'], 2), 'ke'], ['Commission StayInRiad', round($t['commission'], 2), 'ke'],
+        [$all ? 'Net dû aux riads' : 'Net pour vous', round($t['net_mad'], 2), 'km'], ['Déjà versé', round($t['paid_mad'], 2), 'km'], ['Reste à verser', round($t['due_mad'], 2), 'km']];
+    foreach ($k as $i => [$lab, $val, $st]) {
+        $c = $i * 2; if ($c + 1 >= $n) break;
+        $R[8][$c] = ['v' => $lab, 's' => 'kl']; $R[8][$c + 1] = ['s' => 'kl']; $R[9][$c] = ['v' => $val, 's' => $st]; $R[9][$c + 1] = ['s' => $st];
+        $merges[] = xlsx_col($c) . '8:' . xlsx_col($c + 1) . '8'; $merges[] = xlsx_col($c) . '9:' . xlsx_col($c + 1) . '9';
+    }
+    $H = 11;
+    foreach ($cols as $c => $col) $R[$H][$c] = ['v' => $col[0], 's' => 'head'];
+    $r = $H;
+    foreach ($rows as $i => $b) {
+        $r++; $z = $i % 2 ? 'z' : '';
+        $vals = [];
+        if ($all) $vals[] = $b['riad_name'];
+        $conf = $b['status'] === 'confirmée';
+        $vals = array_merge($vals, [xlsx_date($b['created_at']), $b['ref'] . ($b['test'] ? ' (TEST)' : ''), $b['label'], trim($b['first_name'] . ' ' . $b['last_name']), $b['room_name'],
+            xlsx_date($b['check_in']), xlsx_date($b['check_out']), $conf ? (int)$b['nights'] : 0, (int)$b['guests'], round($b['amount'], 2), (float)$b['commission_rate'],
+            round((float)$b['commission'], 2), round((float)$b['net'], 2), (float)$b['eur_mad'], round((float)$b['net_mad'], 2),
+            $b['payout_at'] ? 'Versé le ' . date('d/m/Y', strtotime($b['payout_at'])) . ($b['payout_ref'] ? ' · ' . $b['payout_ref'] : '') : 'À venir']);
+        foreach ($cols as $c => $col) $R[$r][$c] = ['v' => $vals[$c], 's' => $col[1] . $z];
+    }
+    if (!$rows) { $r++; $R[$r][0] = ['v' => 'Aucun séjour terminé ni frais d\'annulation ce mois-ci.', 's' => 'txt']; $merges[] = "A{$r}:{$last}{$r}"; }
+    // ligne de total (formules)
+    $tr = $r + 1; $R[$tr][0] = ['v' => 'Total', 's' => 'totl'];
+    foreach ($cols as $c => $col) {
+        if ($c === 0) continue;
+        $L = xlsx_col($c); $sum = $rows ? ['f' => 'SUM(' . $L . ($H + 1) . ':' . $L . $r . ')'] : ['v' => 0];
+        $map = ['Nuits' => 'toti', 'Voyageurs' => 'toti', 'Montant payé' => 'tote', 'Commission StayInRiad' => 'tote', 'Net riad' => 'tote', 'Net riad (MAD)' => 'totm'];
+        $R[$tr][$c] = isset($map[$col[0]]) ? $sum + ['s' => $map[$col[0]]] : ['s' => 'totl'];
+    }
+    $R[$tr + 2][0] = ['v' => 'Montants en euros. Le net du riad est converti en dirhams au taux bloqué le jour de chaque réservation. Versement chaque lundi pour les séjours terminés la semaine précédente.', 's' => 'note'];
+    $R[$tr + 3][0] = ['v' => 'StayInRiad · stayinriad.com · contact@stayinriad.com · WhatsApp +212 707-596333', 's' => 'note'];
+    $bin = xlsx_build($R, array_column($cols, 2), ['merges' => $merges, 'heights' => [1 => 30, 2 => 30, 5 => 26, 8 => 30, 9 => 26, $H => 32], 'freeze' => $H,
+        'filter' => 'A' . $H . ':' . $last . max($H + 1, $r), 'logo' => dirname(__DIR__) . '/assets/logo-releve.png', 'logoSize' => [272, 60],
+        'sheet' => ucfirst(month_label($m)), 'title' => 'Relevé StayInRiad ' . month_label($m)]);
+    header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+    header('Content-Disposition: attachment; filename="' . $filename . '"');
+    header('Content-Length: ' . strlen($bin));
+    echo $bin; exit;
+}
+
 /** Le 1er du mois : chaque riad reçoit son relevé du mois précédent, l'admin le récapitulatif. Une seule fois par mois. */
 function send_monthly_statements(): array {
     if ((int)date('j') !== 1 || (int)date('G') < 8) return [];
