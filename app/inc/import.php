@@ -110,7 +110,7 @@ function import_apply(array $r, array $d, bool $withPhotos = true): array {
     if (mb_strlen(trim((string)$r['description'])) < 80 && mb_strlen($desc) >= 80) { $set[] = 'description = ?'; $vals[] = $desc; $done['fields'][] = 'description'; }
     if ($r['lat'] === null && preg_match('/^(-?\d+(?:\.\d+)?),\s*(-?\d+(?:\.\d+)?)$/', trim((string)($d['ll'] ?? '')), $m)) {
         $lat = round((float)$m[1], 6); $lng = round((float)$m[2], 6);
-        if ($lat >= 27 && $lat <= 36.5 && $lng >= -13.5 && $lng <= -0.9) { $set[] = 'lat = ?'; $set[] = 'lng = ?'; array_push($vals, $lat, $lng); $done['fields'][] = 'position GPS'; }
+        if ($lat >= 20.5 && $lat <= 36.5 && $lng >= -17.5 && $lng <= -0.9) { $set[] = 'lat = ?'; $set[] = 'lng = ?'; array_push($vals, $lat, $lng); $done['fields'][] = 'position GPS'; }
     }
     $amenOld = json_decode((string)($r['amenities'] ?? '[]'), true) ?: [];
     $amenNew = array_values(array_unique(array_merge($amenOld, array_intersect(import_amenities((string)($d['fac'] ?? '') . ' ' . $desc), AMENITIES))));

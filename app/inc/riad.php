@@ -3,7 +3,7 @@
 declare(strict_types=1);
 if (!defined('SIR_APP')) exit;
 
-const CITIES = ['Marrakech','Fès','Essaouira','Chefchaouen','Meknès','Rabat','Tanger','Ouarzazate','Merzouga','Agadir','Taroudant','Autre'];
+const CITIES = ['Marrakech','Fès','Essaouira','Chefchaouen','Meknès','Rabat','Tanger','Tétouan','Asilah','Casablanca','El Jadida','Oualidia','Safi','Agadir','Taghazout','Taroudant','Tiznit','Mirleft','Imlil','Ouarzazate','Aït Ben Haddou','Skoura','Tinghir','Merzouga','Rissani','Zagora','Ifrane','Moulay Idriss','Larache','Al Hoceïma','Dakhla','Autre'];
 const AMENITIES = ['Wi-Fi','Piscine','Hammam','Spa','Terrasse','Climatisation','Restaurant','Parking','Transfert aéroport','Petit-déjeuner'];
 const BANKS = ['Attijariwafa bank','Banque Populaire','Bank of Africa (BMCE)','CIH Bank','BMCI','Crédit du Maroc','Crédit Agricole du Maroc','Al Barid Bank','Société Générale Maroc / Saham Bank','CDG Capital','Autre'];
 const FORMS = ['SARL','SARL AU','SA','SNC','Auto-entrepreneur','Personne physique','Autre'];

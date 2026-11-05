@@ -56,7 +56,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if ($rib !== '' && !rib_ok($rib)) $err[] = 'RIB non enregistré : la clé RIB est incorrecte. Vérifiez les 24 chiffres sur votre attestation.';
         $lat = $p('lat') === '' ? null : (float)str_replace(',', '.', $p('lat'));
         $lng = $p('lng') === '' ? null : (float)str_replace(',', '.', $p('lng'));
-        if ($lat !== null && ($lat < 27 || $lat > 36.5 || $lng === null || $lng < -13.5 || $lng > -0.9)) { $err[] = 'Coordonnées GPS hors du Maroc : laissées vides.'; $lat = $lng = null; }
+        if ($lat !== null && ($lat < 20.5 || $lat > 36.5 || $lng === null || $lng < -17.5 || $lng > -0.9)) { $err[] = 'Coordonnées GPS hors du Maroc : laissées vides.'; $lat = $lng = null; }
 
         // RIB : tout changement repasse en vérification (protection contre la fraude)
         $holder = $p('bank_holder', 160); $bankName = in_array($p('bank_name'), BANKS, true) ? $p('bank_name') : '';

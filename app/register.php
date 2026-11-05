@@ -4,7 +4,7 @@ require __DIR__ . '/inc/bootstrap.php';
 require __DIR__ . '/inc/import.php';
 
 if (current_user()) redirect('account.php');
-const CITIES = ['Marrakech','Fès','Essaouira','Chefchaouen','Meknès','Rabat','Tanger','Ouarzazate','Merzouga','Agadir','Taroudant','Autre'];
+const CITIES = ['Marrakech','Fès','Essaouira','Chefchaouen','Meknès','Rabat','Tanger','Tétouan','Asilah','Casablanca','El Jadida','Oualidia','Safi','Agadir','Taghazout','Taroudant','Tiznit','Mirleft','Imlil','Ouarzazate','Aït Ben Haddou','Skoura','Tinghir','Merzouga','Rissani','Zagora','Ifrane','Moulay Idriss','Larache','Al Hoceïma','Dakhla','Autre'];
 
 $type = ($_GET['type'] ?? $_POST['type'] ?? 'traveler') === 'riad' ? 'riad' : 'traveler';
 if (!site_open()) $type = 'riad'; // tant que le site est fermé : inscriptions de riads uniquement

@@ -6,12 +6,40 @@ var EN = document.documentElement.lang === 'en';
   var lat = document.querySelector('input[name=lat]'), lng = document.querySelector('input[name=lng]');
   var city = document.querySelector('select[name=city]');
   var CENTERS = {
-    'Marrakech': [31.6295, -7.9811], 'Fès': [34.0617, -4.9773], 'Essaouira': [31.5125, -9.7700], 'Chefchaouen': [35.1688, -5.2636],
-    'Meknès': [33.8955, -5.5547], 'Rabat': [34.0251, -6.8361], 'Tanger': [35.7873, -5.8127], 'Ouarzazate': [30.9189, -6.8934],
-    'Merzouga': [31.0990, -4.0120], 'Agadir': [30.4202, -9.5982], 'Taroudant': [30.4703, -8.8770]
+    'Marrakech': [31.6295, -7.9811],
+    'Fès': [34.0331, -5.0003],
+    'Essaouira': [31.5085, -9.7595],
+    'Chefchaouen': [35.1688, -5.2684],
+    'Meknès': [33.8935, -5.5547],
+    'Rabat': [34.0209, -6.8416],
+    'Tanger': [35.7595, -5.834],
+    'Tétouan': [35.5785, -5.3684],
+    'Asilah': [35.465, -6.034],
+    'Casablanca': [33.5731, -7.5898],
+    'El Jadida': [33.2316, -8.5007],
+    'Oualidia': [32.733, -9.03],
+    'Safi': [32.2994, -9.2372],
+    'Agadir': [30.4278, -9.5981],
+    'Taghazout': [30.544, -9.709],
+    'Taroudant': [30.4703, -8.877],
+    'Tiznit': [29.6974, -9.7316],
+    'Mirleft': [29.583, -10.037],
+    'Imlil': [31.137, -7.919],
+    'Ouarzazate': [30.9335, -6.937],
+    'Aït Ben Haddou': [31.047, -7.13],
+    'Skoura': [31.06, -6.556],
+    'Tinghir': [31.5147, -5.5328],
+    'Merzouga': [31.0802, -4.0134],
+    'Rissani': [31.28, -4.26],
+    'Zagora': [30.3324, -5.8384],
+    'Ifrane': [33.5333, -5.1167],
+    'Moulay Idriss': [34.055, -5.522],
+    'Larache': [35.1932, -6.1557],
+    'Al Hoceïma': [35.2517, -3.9372],
+    'Dakhla': [23.6848, -15.958]
   };
   var num = function (v) { v = parseFloat(String(v || '').replace(',', '.')); return isFinite(v) ? v : null; };
-  var inMorocco = function (a, b) { return a !== null && b !== null && a > 27 && a < 36.5 && b > -13.5 && b < -0.9; };
+  var inMorocco = function (a, b) { return a !== null && b !== null && a > 20.5 && a < 36.5 && b > -17.5 && b < -0.9; };
   var start = function () {
     var a = num(lat.value), b = num(lng.value);
     if (inMorocco(a, b)) return [[a, b], 17];
