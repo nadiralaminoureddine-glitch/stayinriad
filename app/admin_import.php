@@ -48,8 +48,10 @@ render_page('Import Booking · ' . $r['name'], '<p><a href="admin_riad.php?id=' 
 
 <div class="card"><h2 style="margin-top:0">1. Une seule fois : installez le bouton d\'import</h2>
 <p>Depuis un ordinateur, <b>glissez ce bouton dans votre barre de favoris</b> :</p>
-<p><a class="btn" href="' . e(import_bookmarklet()) . '" title="Glissez-moi dans la barre de favoris">📥 Importer dans StayInRiad</a></p>
-<p class="note">Barre de favoris invisible ? Ctrl+Maj+B (Windows) ou Cmd+Maj+B (Mac).</p></div>
+<p><a class="btn" id="bmLink" draggable="true" href="' . e(import_bookmarklet()) . '" title="Glissez-moi dans la barre de favoris">📥 Importer dans StayInRiad</a></p>
+<div id="bmHelp" class="flash warn" hidden><b>Ce bouton ne se clique pas ici.</b> Maintenez le clic dessus et <b>faites-le glisser</b> jusqu\'à la barre de favoris (la barre juste sous l\'adresse du site), puis relâchez.</div>
+<p class="note">Barre de favoris invisible ? Ctrl+Maj+B (Windows) ou Cmd+Maj+B (Mac).</p>
+<details><summary class="note">Le glisser-déposer ne marche pas ?</summary><ol class="note"><li><button type="button" class="btn sm ghost" id="bmCopy">Copier le code du favori</button></li><li>Faites un clic droit sur la barre de favoris, puis <b>Ajouter une page…</b></li><li>Nom : <b>Importer dans StayInRiad</b>. Dans <b>URL</b>, collez le code (Ctrl+V), puis Enregistrer.</li></ol></details></div>
 
 <div class="card"><h2 style="margin-top:0">2. Sur la page Booking du riad</h2>
 <p>' . ($link ? '<a class="btn ghost" href="' . e($link) . '" target="_blank" rel="noopener">Ouvrir la page Booking</a>' : 'Ouvrez la page du riad sur booking.com') . ', attendez qu\'elle soit chargée, puis cliquez sur le favori <b>📥 Importer dans StayInRiad</b>. Un message confirme le nombre de chambres et de photos copiées.</p></div>
@@ -58,4 +60,4 @@ render_page('Import Booking · ' . $r['name'], '<p><a href="admin_riad.php?id=' 
 <form method="post">' . csrf_field() . '<textarea name="data" rows="5" required placeholder="Collez ici (Ctrl+V)" style="width:100%;border:1px solid #cdbfa9;border-radius:8px;padding:11px;font:13px/1.4 monospace"></textarea>
 <label class="chk"><input type="checkbox" name="notify" value="1" checked> Prévenir le riad par email (« votre fiche est pré-remplie, indiquez vos prix »)</label>
 <button class="btn" name="action" value="import">Importer dans la fiche</button></form>
-<p class="note">Le téléchargement des photos peut prendre une minute.</p></div>');
+<p class="note">Le téléchargement des photos peut prendre une minute.</p></div><script src="assets/admin-import.js" defer></script>');
