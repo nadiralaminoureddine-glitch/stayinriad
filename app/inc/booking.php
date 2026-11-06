@@ -10,8 +10,21 @@ const BOOKING_STATUS = ['bloquée' => ['Paiement en cours', 'warn'], 'confirmée
 function eur(float $v): string { return number_format($v, $v == floor($v) ? 0 : 2, ',', ' ') . ' €'; }
 function mad(float $v): string { return number_format($v, 0, ',', ' ') . ' MAD'; }
 /** Taux de change (modifiables par l'admin). 1 € = X MAD / X $. */
+/** Met à jour les taux EUR→MAD/USD automatiquement (une fois par jour, source : open.er-api.com). */
+function rates_refresh(): void {
+    static $done = false; if ($done) return; $done = true;
+    try { $at = q('SELECT v FROM settings WHERE k = ?', ['rate_at'])->fetchColumn(); } catch (Throwable $e) { return; }
+    if ($at && strtotime($at . ' UTC') > time() - 86400) return;
+    q('DELETE FROM settings WHERE k = ?', ['rate_at']); q('INSERT INTO settings (k, v) VALUES (?, ?)', ['rate_at', now()]);
+    $ctx = stream_context_create(['http' => ['timeout' => 3, 'ignore_errors' => true], 'ssl' => ['verify_peer' => true]]);
+    $j = json_decode((string)@file_get_contents('https://open.er-api.com/v6/latest/EUR', false, $ctx), true);
+    $m = (float)($j['rates']['MAD'] ?? 0); $d = (float)($j['rates']['USD'] ?? 0);
+    if ($m < 5 || $m > 20 || $d < 0.5 || $d > 2) return;
+    foreach (['rate_mad' => round($m, 4), 'rate_usd' => round($d, 4)] as $kk => $v) { q('DELETE FROM settings WHERE k = ?', [$kk]); q('INSERT INTO settings (k, v) VALUES (?, ?)', [$kk, (string)$v]); }
+}
 function rate(string $k): float {
     global $CONFIG; static $c = [];
+    if (!$c) { try { rates_refresh(); } catch (Throwable $e) {} }
     if (!isset($c[$k])) { try { $v = q('SELECT v FROM settings WHERE k = ?', ['rate_' . $k])->fetchColumn(); } catch (Throwable $e) { $v = false; }
         $c[$k] = $v !== false ? (float)$v : (float)($CONFIG['rate_' . $k] ?? ($k === 'mad' ? 10.75 : 1.08)); }
     return $c[$k];
