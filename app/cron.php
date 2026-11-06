@@ -11,6 +11,7 @@ require __DIR__ . '/inc/booking.php';
 $log = [];
 // 1) Paiements abandonnés : la chambre est libérée
 expire_holds();
+$log = array_merge($log, expire_requests()); // demandes sans réponse du riad
 
 // 1 bis) Calendriers Booking.com / Airbnb : relus toutes les 15 minutes
 $log = array_merge($log, ical_sync_due());

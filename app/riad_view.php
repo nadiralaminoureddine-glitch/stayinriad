@@ -27,7 +27,7 @@ $roomRows = implode('', array_map(function ($x) use ($r, $dated, $in, $out, $n, 
     $state = !$fits ? '<span class="note" style="color:var(--bad)">Jusqu\'à ' . (int)$x['capacity'] . ' personnes</span>'
            : ($dated ? ($free > 0 ? '<span class="note" style="color:var(--ok)">' . ($free <= 2 ? 'Plus que ' . $free . ' disponible' . ($free > 1 ? 's' : '') : 'Disponible') . '</span>' : '<span class="note" style="color:var(--bad)">Complet à ces dates</span>') : '<span class="note">Choisissez vos dates</span>');
     $noPrice = (float)$x['price_eur'] <= 0;
-    $btn = (!$noPrice && $dated && $fits && $free > 0) ? '<a class="btn sm" href="book.php?' . e(http_build_query(['room' => $x['id'], 'in' => $in, 'out' => $out, 'g' => $g])) . '">Réserver</a>' : '';
+    $btn = (!$noPrice && $dated && $fits && $free > 0) ? '<a class="btn sm" href="book.php?' . e(http_build_query(['room' => $x['id'], 'in' => $in, 'out' => $out, 'g' => $g])) . '">' . (riad_instant($r) ? 'Réserver' : 'Demander') . '</a>' : '';
     return '<div class="room"><div class="rthumb">' . ($ph ? '<img src="uploads/' . e($ph[0]) . '" alt="">' : '<div class="noimg">🛏️</div>') . '</div>
       <div style="flex:1;min-width:0"><b>' . e($x['name']) . '</b><div class="note">' . ($x['description'] !== '' ? e($x['description']) . ' · ' : '') . 'jusqu\'à ' . (int)$x['capacity'] . ' pers.</div>' . $state . '</div>
       <div style="text-align:right">' . ($noPrice ? '<span class="pill warn">Prix à indiquer</span>' : '<b>' . price((float)$x['price_eur']) . '</b><div class="note">/ nuit</div>') . ($dated && !$noPrice ? '<div class="note">' . price_stay((float)$x['price_eur'], $n) . ' au total</div>' : '') . $btn . '</div></div>';
@@ -37,7 +37,7 @@ render_page($r['name'], '<p><a href="riads.php?city=' . e(urlencode($r['city']))
 ' . ($r['status'] !== 'en ligne' ? '<div class="flash warn">Aperçu admin : ce riad n\'est pas en ligne.</div>' : '') . '
 <div class="pgal">' . ($photos ? implode('', array_map(fn($p, $i) => '<img src="uploads/' . e($p) . '" alt="" class="' . ($i === 0 ? 'big' : '') . '"' . ($i ? ' loading="lazy"' : '') . '>', array_slice($photos, 0, 5), array_keys(array_slice($photos, 0, 5)))) : '<div class="noimg big">🕌</div>') . '</div>
 <h1 style="margin-top:16px">' . e($r['name']) . ($r['stars'] ? ' <span style="color:var(--gold);font-size:18px">' . str_repeat('★', (int)$r['stars']) . '</span>' : '') . '</h1>
-<p class="note">📍 ' . e(($r['area'] ? $r['area'] . ', ' : '') . $r['city']) . '</p>
+<p class="note">📍 ' . e(($r['area'] ? $r['area'] . ', ' : '') . $r['city']) . ' &nbsp;' . instant_pill($r) . '</p>
 <div class="card"><p style="margin-top:0;white-space:pre-line">' . e($r['description']) . '</p>
 ' . ($amen ? '<p>' . implode(' · ', array_map('e', $amen)) . '</p>' : '') . '
 <p class="note">' . ($r['breakfast'] ? '☕ Petit-déjeuner inclus · ' : '') . ($r['free_cancel'] ? 'Annulation gratuite jusqu\'à 48 h avant l\'arrivée' : 'Tarif non remboursable') . ' · Taxe de séjour à régler sur place</p></div>

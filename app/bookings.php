@@ -25,6 +25,12 @@ if ($u['role'] === 'admin' && empty($_GET['id'])) {
     $title = 'Mes réservations'; $top = '';
 }
 $isRiad = $u['role'] === 'riad' || ($u['role'] === 'admin' && !empty($_GET['id']));
+// Demandes à confirmer (riad) / en attente (admin)
+$pendSql = "SELECT b.*, r.name AS riad_name FROM bookings b JOIN riads r ON r.id = b.riad_id WHERE b.status = 'demande' AND b.hold_until > ?" . ($isRiad ? ' AND b.riad_id = ' . (int)$r['id'] : '') . ' ORDER BY b.hold_until';
+$pend = ($isRiad || ($u['role'] === 'admin' && empty($_GET['id']))) ? q($pendSql, [now()])->fetchAll() : [];
+$pendCard = $pend ? '<div class="card" style="border:2px solid #f2b632"><h2 style="margin-top:0">⏳ ' . count($pend) . ' demande' . (count($pend) > 1 ? 's' : '') . ' à confirmer</h2>' . implode('', array_map(fn($b) =>
+    '<div class="line" style="align-items:center;gap:10px;flex-wrap:wrap"><span><b>' . e($b['room_name']) . '</b>' . ($isRiad ? '' : ' · ' . e($b['riad_name'])) . '<br><span class="note">' . e(stay_text($b)) . ' · ' . (int)$b['guests'] . ' pers. · ' . e($b['first_name']) . ' · reste ' . e(hours_left($b['hold_until'])) . '</span></span>'
+    . '<span><a class="btn sm" href="' . e(respond_url($b, 'accept')) . '">Répondre</a></span></div>', $pend)) . '</div>' : '';
 $admin = $u['role'] === 'admin' && empty($_GET['id']);
 $sum = fn($k) => array_sum(array_map(fn($b) => $b['status'] === 'confirmée' ? (float)$b[$k] : 0, $list));
 $base = 'bookings.php?' . ($q ? substr($q, 1) . '&' : '');
@@ -41,5 +47,5 @@ $rows = implode('', array_map(function ($b) use ($u, $isRiad, $admin) {
 $heads = '<th>N°</th>' . ($admin || $u['role'] === 'traveler' ? '<th>Riad</th>' : '') . '<th>Client</th><th>Séjour</th><th>Chambre</th>' . ($u['role'] === 'traveler' ? '<th>Total</th>' : '<th>Payé client</th><th>Commission</th><th>Net riad</th>') . '<th>Statut</th>' . ($u['role'] !== 'riad' ? '<th></th>' : '');
 $kpis = $u['role'] === 'traveler' ? '' : '<div class="kpis"><div class="kpi"><small>Réservations confirmées</small><b>' . count(array_filter($list, fn($b) => $b['status'] === 'confirmée')) . '</b></div><div class="kpi"><small>Payé par les clients</small><b>' . eur($sum('total')) . '</b></div>' . ($admin ? '<div class="kpi"><small>Commissions StayInRiad</small><b>' . eur($sum('commission')) . '</b></div>' : '') . '<div class="kpi"><small>Net ' . ($admin ? 'aux riads' : 'pour vous') . '</small><b>' . eur($sum('net')) . '</b></div></div>';
 
-render_page($title, $top . ($top === '' || $admin ? '<h1>' . e($title) . '</h1>' : '') . $tabs . $kpis . '<div class="card">' . ($list ? '<div class="scroll"><table><thead><tr>' . $heads . '</tr></thead><tbody>' . $rows . '</tbody></table></div>' : '<p class="note">Aucune réservation.</p>') . '</div>'
+render_page($title, $top . ($top === '' || $admin ? '<h1>' . e($title) . '</h1>' : '') . $pendCard . $tabs . $kpis . '<div class="card">' . ($list ? '<div class="scroll"><table><thead><tr>' . $heads . '</tr></thead><tbody>' . $rows . '</tbody></table></div>' : '<p class="note">Aucune réservation.</p>') . '</div>'
  . ($isRiad ? '<p class="note">Les montants nets sont versés en dirhams, au taux fixé le jour de la réservation. La taxe de séjour est payée sur place par le client, directement à vous.</p>' : ''));

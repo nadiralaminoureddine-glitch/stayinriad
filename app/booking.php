@@ -8,7 +8,7 @@ require __DIR__ . '/inc/booking.php';
 $b = q('SELECT * FROM bookings WHERE ref = ?', [(string)($_GET['ref'] ?? '')])->fetch();
 if (!$b || !hash_equals($b['token'], (string)($_GET['t'] ?? ''))) { http_response_code(404); render_page('Réservation', '<div class="card"><h1>Réservation introuvable</h1></div>'); exit; }
 $self = 'booking.php?ref=' . urlencode($b['ref']) . '&t=' . urlencode($b['token']);
-if ($b['status'] === 'bloquée' && $b['hold_until'] < now()) { q("UPDATE bookings SET status = 'expirée' WHERE id = ?", [$b['id']]); $b['status'] = 'expirée'; }
+if (in_array($b['status'], ['bloquée', 'demande'], true) && $b['hold_until'] < now()) { if ($b['status'] === 'demande') expire_requests();  q("UPDATE bookings SET status = 'expirée' WHERE id = ?", [$b['id']]); $b['status'] = 'expirée'; }
 $u = current_user(); $isAdmin = $u && $u['role'] === 'admin';
 $r = q('SELECT * FROM riads WHERE id = ?', [$b['riad_id']])->fetch();
 
@@ -47,9 +47,17 @@ if ($b['status'] === 'confirmée') {
     . ($canCancel ? '<div class="card"><h2 style="margin-top:0">Annuler la réservation</h2><p>' . e($why) . '</p>' . mail_rows_html($pen, $ref) . '
       <form method="post">' . csrf_field() . '<label class="chk"><input type="checkbox" required> Je confirme vouloir annuler cette réservation</label>' . ($isAdmin ? '<label class="chk"><input type="checkbox" name="full_refund" value="1"> Admin : rembourser intégralement (geste commercial, problème du riad…)</label>' : '') . '<button class="btn ghost" name="action" value="cancel">Annuler ma réservation</button></form></div>' : '')
     . $summary;
+} elseif ($b['status'] === 'demande') {
+    $body = '<div class="card" style="text-align:center"><div style="font-size:44px">⏳</div><h1>Demande envoyée</h1>
+    <p>Merci ' . e($b['first_name']) . ' ! <b>' . e($r['name']) . '</b> confirme la disponibilité <b>sous ' . e(hours_left($b['hold_until'])) . ' maximum</b>.</p>
+    <p><b>Aucun montant n\'est débité</b> pour l\'instant. Dès l\'accord du riad, vous recevez un email à ' . e($b['email']) . ' pour finaliser le paiement.</p>
+    <p style="font-size:18px">N° <b>' . e($b['ref']) . '</b></p><p class="note">Gardez ce lien pour suivre votre demande.</p></div>' . $summary;
+} elseif ($b['status'] === 'refusée') {
+    $body = '<div class="card"><h1>Chambre indisponible</h1><p>Désolé, le riad n\'a plus cette chambre de libre à ces dates. Aucun montant n\'a été débité.</p>
+    <a class="btn" href="riads.php?' . e(http_build_query(['city' => $r['city'], 'in' => $b['check_in'], 'out' => $b['check_out'], 'g' => $b['guests']])) . '">Voir les riads disponibles</a></div>' . $summary;
 } elseif ($b['status'] === 'bloquée') {
-    $mins = max(0, (int)ceil((strtotime($b['hold_until'] . ' UTC') - time()) / 60));
-    $pay = payment_available() ? '<p>Paiement sécurisé par carte bancaire.</p>' : '<div class="flash warn">Le paiement en ligne sera bientôt disponible. Votre chambre est bloquée encore <b>' . $mins . ' min</b>.</div>';
+    $mins = hours_left($b['hold_until']);
+    $pay = payment_available() ? '<p>Paiement sécurisé par carte bancaire.</p>' : '<div class="flash warn">Le paiement en ligne sera bientôt disponible. Votre chambre est bloquée encore <b>' . $mins . '</b>.</div>';
     if (test_payment_allowed()) $pay .= '<form method="post">' . csrf_field() . '<button class="btn" name="action" value="test_pay">🧪 Paiement de TEST (admin uniquement)</button></form><p class="note">Visible uniquement pour l\'administrateur, pour tester le parcours. Aucun argent n\'est débité.</p>';
     $body = '<h1>Paiement</h1><div class="bookgrid"><div class="card">' . pay_logos() . '<h2 style="margin-top:0">' . eur((float)$b['total']) . ' à payer</h2>' . (cur() !== 'EUR' ? '<p class="note">soit environ ' . price((float)$b['total']) . '</p>' : '') . '
     <p>Réservation <b>' . e($b['ref']) . '</b> au nom de ' . e($b['first_name'] . ' ' . $b['last_name']) . '.</p>' . $pay . '</div>' . $summary . '</div>';
@@ -58,7 +66,7 @@ if ($b['status'] === 'confirmée') {
       . ((float)$b['refund'] > 0 ? '<p class="note">Remboursement sur la carte utilisée : ' . ($b['refund_status'] === 'remboursé' ? '<b>effectué</b>' : 'en cours (5 à 10 jours ouvrés selon la banque)') . '.</p>' : '')
       . ($isAdmin && $b['refund_status'] === 'à rembourser' ? '<form method="post">' . csrf_field() . '<button class="btn sm" name="action" value="refunded">Admin : marquer comme remboursé</button></form>' : '') . '</div>' . $summary;
 } else {
-    $body = '<div class="card"><h1>Délai de paiement dépassé</h1><p>Le paiement n\'a pas été effectué dans les ' . HOLD_MINUTES . ' minutes : la chambre a été libérée. Aucun montant n\'a été débité.</p>
+    $body = '<div class="card"><h1>Délai dépassé</h1><p>La demande ou le paiement n\'a pas été finalisé à temps : la chambre a été libérée. Aucun montant n\'a été débité.</p>
     <a class="btn" href="riad_view.php?' . e(http_build_query(['id' => $r['id'], 'in' => $b['check_in'], 'out' => $b['check_out'], 'g' => $b['guests']])) . '">Réserver à nouveau</a></div>' . $summary;
 }
 render_page('Réservation ' . $b['ref'], $body);

@@ -22,8 +22,12 @@ if ($u['role'] === 'admin') {
         $miss = dossier_missing($r);
         require_once __DIR__ . '/inc/booking.php';
         [$sst] = riad_sync_summary($r);
-        $syncCard = in_array($sst, ['complet', 'aucun'], true) ? '' : '<div class="card" style="border-color:var(--terra)"><h2 style="margin-top:0">🔄 Déjà sur Booking.com ou Airbnb ?</h2><p>Reliez vos calendriers pour ne jamais vendre une chambre deux fois. Pour Booking.com, notre équipe s\'en occupe : il suffit de nous inviter. Pour Airbnb, on le fait avec vous en 5 minutes.</p><a class="btn" href="sync.php">Synchroniser Booking / Airbnb</a></div>';
-        $body = $hello . $syncCard . '<div class="card"><h2 style="margin-top:0">' . e($r['name']) . ' ' . status_pill($r['status']) . ' ' . sync_pill($r) . '</h2>'
+        $syncCard = in_array($sst, ['complet', 'aucun'], true) ? '' : '<div class="card"><h2 style="margin-top:0">⚡ Réservation immédiate <span class="pill info">facultatif</span></h2><p>Sans rien faire, vous recevez chaque demande de réservation par email et SMS, et vous l\'acceptez <b>d\'un clic</b>. Si vous synchronisez votre calendrier Booking, vos voyageurs réservent immédiatement et votre riad remonte dans les résultats.</p><a class="btn ghost" href="sync.php">Synchroniser mon calendrier</a></div>';
+        $pm = payout_missing($r);
+        $payCard = $pm && $r['status'] !== 'brouillon' ? '<div class="card"><h2 style="margin-top:0">💳 Avant votre premier virement</h2><p>Pour recevoir vos versements, complétez : ' . e(implode(', ', $pm)) . '.</p><a class="btn ghost" href="riad.php">Compléter</a></div>' : '';
+        $nReq = (int)q("SELECT COUNT(*) FROM bookings WHERE riad_id = ? AND status = 'demande' AND hold_until > ?", [$r['id'], now()])->fetchColumn();
+        $reqCard = $nReq ? '<div class="card" style="border:2px solid #f2b632"><h2 style="margin-top:0">⏳ ' . $nReq . ' demande' . ($nReq > 1 ? 's' : '') . ' de réservation à confirmer</h2><a class="btn" href="bookings.php">Répondre</a></div>' : '';
+        $body = $hello . $reqCard . $syncCard . $payCard . '<div class="card"><h2 style="margin-top:0">' . e($r['name']) . ' ' . status_pill($r['status']) . ' ' . sync_pill($r) . '</h2>'
           . ($r['status'] === 'refusé' && $r['admin_note'] ? '<div class="flash bad">✏️ À corriger : ' . e($r['admin_note']) . '</div>' : '')
           . ($r['status'] === 'en ligne' ? '<p>✅ Votre riad est en ligne.</p>' : ($r['status'] === 'soumis' ? '<p>⏳ Votre fiche est en cours de vérification par notre équipe.</p>' :
              ($miss ? '<p>Pour mettre votre riad en ligne, complétez :</p><ul>' . implode('', array_map(fn($m) => '<li>' . e($m) . '</li>', $miss)) . '</ul>' : '<p>Votre fiche est complète : envoyez-la pour validation depuis la page « Fiche du riad ».</p>')))

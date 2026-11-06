@@ -53,7 +53,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         case 'approve':
             @set_time_limit(300);
             $miss = dossier_missing($r);
-            if (!$miss && $r['bank_status'] !== 'vérifié' && holder_ok($r) && $r['bank_doc']) { q("UPDATE riads SET bank_status = 'vérifié' WHERE id = ?", [$rid]); $r['bank_status'] = 'vérifié'; }
+            if (!payout_missing($r) && $r['bank_status'] !== 'vérifié') { q("UPDATE riads SET bank_status = 'vérifié' WHERE id = ?", [$rid]); $r['bank_status'] = 'vérifié'; }
             if (!$miss) {
                 $skip = []; foreach (photo_duplicates($rid) as $d) { $skip[$d['a']['id']] = 1; $skip[$d['b']['id']] = 1; }
                 foreach (q("SELECT * FROM photos WHERE riad_id = ? AND status = 'en attente' ORDER BY sort, id", [$rid])->fetchAll() as $p) {
@@ -63,7 +63,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
             $pub = (int)q("SELECT COUNT(*) FROM photos WHERE riad_id = ? AND status = 'publiée'", [$rid])->fetchColumn();
             if ($miss) flash('Dossier incomplet : ' . implode(', ', $miss) . '.', 'bad');
-            elseif ($r['bank_status'] !== 'vérifié') flash('Vérifiez d\'abord le RIB.', 'bad');
             elseif ($pub < 3) flash('Validez au moins 3 photos avant la mise en ligne.', 'bad');
             elseif (photo_duplicates($rid)) flash('Une photo en double doit d\'abord être tranchée.', 'bad');
             else { q("UPDATE riads SET status = 'en ligne', approved_at = ?, admin_note = NULL WHERE id = ?", [now(), $rid]); flash($r['name'] . ' est en ligne. Le riad est prévenu par email.');

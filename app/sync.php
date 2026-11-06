@@ -97,18 +97,26 @@ $ask = '<div class="card"><h2 style="margin-top:0">Votre riad est-il aussi sur�
   <p class="note">Ni l\'un ni l\'autre ? Ne cochez rien et validez.</p>
   <button class="btn" name="action" value="channels">Valider</button></form></div>';
 
-// 2) Booking.com : on s'en occupe pour lui (il invite notre équipe comme utilisateur de son extranet)
+// 2) Booking.com : par défaut, simple échange de liens de calendrier (aucun accès au compte Booking du riad)
 $booking = !$isOn('booking') ? '' : '<div class="card"><h2 style="margin-top:0">Booking.com</h2>'
  . ($r['sync_booking_invite'] ? '<div class="flash ok">Invitation signalée ' . e($ago($r['sync_booking_invite'])) . ' : notre équipe relie vos chambres, en général sous 24 h.</div>' : '') . '
-<p><b>Le plus simple : laissez StayInRiad s\'en occuper.</b> Invitez notre équipe dans votre extranet Booking.com. Aucun mot de passe à nous donner, et vous pouvez nous retirer quand vous voulez.</p>
-<a class="btn" href="https://admin.booking.com/" target="_blank" rel="noopener">Synchroniser avec Booking.com ↗</a>
+<p><b>Aucun accès à votre compte Booking n\'est nécessaire.</b> On échange simplement des liens de calendrier, chambre par chambre (2 minutes par chambre). Vous gardez seul la gestion de votre compte.</p>
+<video controls playsinline preload="none" poster="/videos/synchro-booking-fr.jpg" style="width:100%;max-width:300px;aspect-ratio:9/16;border-radius:12px;background:#1a3480;display:block;margin:6px 0 14px"><source src="/videos/synchro-booking-fr.mp4" type="video/mp4"></video>
+<a class="btn ghost" href="https://admin.booking.com/" target="_blank" rel="noopener">Ouvrir l\'extranet Booking.com ↗</a>
 <ol style="line-height:1.7">
-<li>Dans l\'extranet, touchez l\'<b>icône du compte</b> (en haut à droite) → <b>Créer et gérer les utilisateurs</b> → <b>Ajouter un utilisateur</b>.</li>
-<li>Nom : <b>StayInRiad</b> · Email :' . $copy(SYNC_TEAM_EMAIL, 'cp-team') . '</li>
-<li>Droits : seulement <b>les tarifs et disponibilités</b> (pas les finances), puis <b>Envoyer l\'invitation</b>. Booking peut vous envoyer un code par SMS pour confirmer.</li>
+<li>Dans l\'extranet Booking : <b>Tarifs et disponibilités</b> → <b>Synchroniser les calendriers</b>, puis choisissez la chambre.</li>
+<li><b>Importer un calendrier</b> : collez le <b>lien StayInRiad</b> de la chambre (plus bas, bouton « Copier »). Nom du calendrier : StayInRiad.</li>
+<li><b>Exporter le calendrier</b> : copiez le lien que Booking vous donne et collez-le dans la case <b>Booking.com</b> de la chambre, plus bas, puis touchez <b>Relier</b>.</li>
 </ol>
-<form method="post">' . csrf_field() . '<button class="btn" name="action" value="booking_invited">C\'est fait, j\'ai invité StayInRiad</button></form>
-<details style="margin-top:10px"><summary>Je préfère le faire moi-même</summary><p class="note">Pour chaque chambre ci-dessous : extranet → <b>Tarifs et disponibilités</b> → <b>Synchroniser les calendriers</b>. « Importer » : collez le lien StayInRiad de la chambre. « Exporter » : copiez le lien Booking et collez-le dans la case Booking de la chambre.</p></details></div>';
+<p class="note">Une réservation faite d\'un côté bloque automatiquement les dates de l\'autre.</p>
+<details style="margin-top:10px"><summary>Vous préférez que notre équipe s\'en occupe ?</summary>
+<p class="note">Invitez StayInRiad comme utilisateur de votre extranet, avec seulement les droits <b>tarifs et disponibilités</b> (pas les finances). Vous pouvez nous retirer quand vous voulez.</p>
+<ol style="line-height:1.7">
+<li>Extranet → <b>icône du compte</b> (en haut à droite) → <b>Créer et gérer les utilisateurs</b> → <b>Ajouter un utilisateur</b>.</li>
+<li>Nom : <b>StayInRiad</b> · Email :' . $copy(SYNC_TEAM_EMAIL, 'cp-team') . '</li>
+<li>Droits : seulement <b>les tarifs et disponibilités</b>, puis <b>Envoyer l\'invitation</b>.</li>
+</ol>
+<form method="post">' . csrf_field() . '<button class="btn ghost" name="action" value="booking_invited">C\'est fait, j\'ai invité StayInRiad</button></form></details></div>';
 
 // 3) Airbnb : appel guidé (Airbnb ne permet de déléguer le calendrier qu'avec un « accès complet »)
 $airbnb = !$isOn('airbnb') ? '' : '<div class="card"><h2 style="margin-top:0">Airbnb</h2>'
@@ -145,7 +153,7 @@ $roomCards = !$chs ? '' : implode('', array_map(function ($x) use ($chs, $ago, $
     <form method="post">' . $hid . '<button class="btn sm ghost" name="action" value="newlink">Nouveau lien StayInRiad</button></form></div></div>';
 }, $rooms));
 
-render_page('Booking / Airbnb', '<h1>' . e($r['name']) . ' ' . status_pill($r['status']) . '</h1>' . riad_tabs('sync', $q)
+render_page('Booking / Airbnb', '<h1>' . e($r['name']) . ' ' . status_pill($r['status']) . '</h1>' . riad_tabs('sync', $q) . (riad_instant($r) ? '' : '<div class="flash info">⚡ <b>Facultatif.</b> Sans synchronisation, vous recevez chaque demande par email et SMS et vous l\'acceptez d\'un clic. Synchronisé, votre riad passe en « Réservation immédiate » et remonte dans les résultats.</div>')
  . $head . $ask . $booking . $airbnb
  . ($chs ? ($rooms ? '<h2>Vos chambres</h2>' . $roomCards : '<p class="note">Ajoutez d\'abord vos chambres dans « Chambres &amp; prix ».</p>') : '')
  . ($chs ? '<p class="note">StayInRiad relit vos calendriers Booking/Airbnb toutes les 15 minutes, et en direct juste avant chaque paiement. Booking et Airbnb relisent le nôtre à leur rythme (parfois plusieurs heures) : en cas de double réservation, écrivez-nous aussitôt à contact@stayinriad.com. Si un lien cesse de fonctionner, vous recevez un email.</p>' : '')

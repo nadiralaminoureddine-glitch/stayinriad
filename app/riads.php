@@ -15,6 +15,9 @@ $dated = $n > 0;
 
 $sql = "SELECT * FROM riads WHERE status = 'en ligne'" . ($city ? ' AND city = ?' : '') . ' ORDER BY commission DESC, (SELECT AVG(score) FROM reviews v WHERE v.riad_id = riads.id) DESC, name'; // classement : commission choisie, puis note des voyageurs
 $riads = q($sql, $city ? [$city] : [])->fetchAll();
+// Les riads à réservation immédiate (calendrier synchronisé) passent devant, sans changer l'ordre entre eux
+$inst = []; foreach ($riads as $x) $inst[$x['id']] = riad_instant($x);
+usort($riads, fn($a, $b) => $inst[$b['id']] <=> $inst[$a['id']]);
 $cards = [];
 foreach ($riads as $r) {
     $rooms = q('SELECT * FROM rooms WHERE riad_id = ? AND active = 1 AND price_eur > 0 AND capacity >= ? ORDER BY price_eur', [$r['id'], $g])->fetchAll();
@@ -26,7 +29,7 @@ foreach ($riads as $r) {
     $cards[] = '<a class="rcard" href="riad_view.php?' . e($qs) . '"><div class="rimg">' . ($ph ? '<img src="uploads/' . e($ph[0]) . '" alt="" loading="lazy">' : '<div class="noimg">🕌</div>') . '</div>
       <div class="rbody"><b>' . e($r['name']) . '</b><div class="note">📍 ' . e(($r['area'] ? $r['area'] . ', ' : '') . $r['city']) . ($r['stars'] ? ' · ' . str_repeat('★', (int)$r['stars']) : '') . '</div>
       <div class="rprice">' . ($dated ? '<b>' . price_stay($from, $n) . '</b> <span class="note">pour ' . $n . ' nuit' . ($n > 1 ? 's' : '') . '</span>' : '<span class="note">à partir de</span> <b>' . price($from) . '</b> <span class="note">/ nuit</span>') . '</div>
-      ' . ($r['free_cancel'] ? '<div class="note" style="color:var(--ok)">Annulation gratuite</div>' : '') . '</div></a>';
+      ' . ($r['free_cancel'] ? '<div class="note" style="color:var(--ok)">Annulation gratuite</div>' : '') . ($inst[$r['id']] ? '<div class="note" style="color:var(--terra);font-weight:700">⚡ Réservation immédiate</div>' : '') . '</div></a>';
 }
 
 $opts = '<option value="">Toutes les villes</option>' . implode('', array_map(fn($c) => '<option' . ($c === $city ? ' selected' : '') . '>' . e($c) . '</option>', array_diff(CITIES, ['Autre'])));

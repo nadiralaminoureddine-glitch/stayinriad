@@ -5,7 +5,9 @@ if (!defined('SIR_APP')) exit;
 
 const HOLD_MINUTES = 15;   // la chambre est bloquée pendant le paiement
 const MAX_NIGHTS = 30;
-const BOOKING_STATUS = ['bloquée' => ['Paiement en cours', 'warn'], 'confirmée' => ['Confirmée', 'ok'], 'annulée' => ['Annulée', 'bad'], 'expirée' => ['Expirée', 'info']];
+const REQUEST_HOURS = 6;      // délai de réponse du riad à une demande de réservation
+const ACCEPTED_PAY_HOURS = 24; // délai de paiement du voyageur après acceptation
+const BOOKING_STATUS = ['demande' => ['En attente du riad', 'warn'], 'bloquée' => ['Paiement en cours', 'warn'], 'confirmée' => ['Confirmée', 'ok'], 'refusée' => ['Refusée', 'bad'], 'annulée' => ['Annulée', 'bad'], 'expirée' => ['Expirée', 'info']];
 
 function eur(float $v): string { return number_format($v, $v == floor($v) ? 0 : 2, ',', ' ') . ' €'; }
 function mad(float $v): string { return number_format($v, 0, ',', ' ') . ' MAD'; }
@@ -70,7 +72,7 @@ function parse_stay(?string $in, ?string $out): array {
 }
 
 /** Les réservations qui occupent une chambre : confirmées, ou bloquées pour un paiement en cours. */
-function occupying_sql(): string { return "(status = 'confirmée' OR (status = 'bloquée' AND hold_until > ?))"; }
+function occupying_sql(): string { return "(status = 'confirmée' OR (status IN ('bloquée', 'demande') AND hold_until > ?))"; }
 
 /** Nombre de chambres encore libres pour toute la période [arrivée, départ[. */
 function room_free(array $room, string $in, string $out): int {
@@ -109,7 +111,7 @@ function new_ref(): string {
 }
 
 /** Bloque une chambre pendant le paiement. Retourne [réservation, erreur]. */
-function create_hold(array $riad, array $room, string $in, string $out, int $nights, int $guests, array $guest, ?int $userId): array {
+function create_hold(array $riad, array $room, string $in, string $out, int $nights, int $guests, array $guest, ?int $userId, bool $request = false): array {
     global $CONFIG;
     ical_sync_room((int)$room['id']); // relit Booking/Airbnb en direct juste avant le paiement
     $pdo = db(); $my = ($CONFIG['db']['driver'] ?? 'mysql') !== 'sqlite';
@@ -127,7 +129,7 @@ function create_hold(array $riad, array $room, string $in, string $out, int $nig
             VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)', [
             $ref, $token, $riad['id'], $room['id'], $userId, $guest['first'], $guest['last'], $guest['email'], $guest['phone'], $guest['country'], $guest['request'],
             $in, $out, $nights, $guests, $room['name'], $price, $sub, $rate, $com, $net, $sub, $fx, round($net * $fx, 2),
-            'bloquée', gmdate('Y-m-d H:i:s', time() + HOLD_MINUTES * 60), now()]);
+            $request ? 'demande' : 'bloquée', gmdate('Y-m-d H:i:s', time() + ($request ? REQUEST_HOURS * 3600 : HOLD_MINUTES * 60)), now()]);
         $pdo->commit();
         return [q('SELECT * FROM bookings WHERE ref = ?', [$ref])->fetch(), null];
     } catch (Throwable $e) {
@@ -255,6 +257,93 @@ function police_decrypt(string $blob): array {
     $raw = base64_decode($blob, true); if ($raw === false || strlen($raw) < 29) return [];
     $p = openssl_decrypt(substr($raw, 28), 'aes-256-gcm', police_key(), OPENSSL_RAW_DATA, substr($raw, 0, 12), substr($raw, 12, 16));
     return $p === false ? [] : (json_decode($p, true) ?: []);
+}
+
+// =====================================================================
+//  Demandes de réservation : le riad confirme d'un clic (pas de synchro obligatoire)
+// =====================================================================
+/** Réservation immédiate : le calendrier du riad est fiable (synchronisé, ou riad absent de Booking/Airbnb). */
+function riad_instant(array $r): bool { [$s] = riad_sync_summary($r); return in_array($s, ['complet', 'aucun'], true); }
+function instant_pill(array $r): string {
+    return riad_instant($r) ? '<span class="pill ok">⚡ Réservation immédiate</span>' : '<span class="pill info">Confirmation du riad sous ' . REQUEST_HOURS . ' h</span>';
+}
+/** Jeton du lien Accepter / Refuser envoyé au riad. */
+function riad_key(array $b): string { return substr(hash_hmac('sha256', 'riad|' . $b['ref'] . '|' . $b['token'], app_key()), 0, 32); }
+function respond_url(array $b, string $a = ''): string { return base_url() . 'respond.php?ref=' . urlencode($b['ref']) . '&k=' . riad_key($b) . ($a ? '&a=' . $a : ''); }
+function hours_left(?string $until): string {
+    $m = max(0, (int)ceil((strtotime((string)$until . ' UTC') - time()) / 60));
+    return $m >= 90 ? (int)round($m / 60) . ' h' : $m . ' min';
+}
+function stay_text(array $b): string { return fr_date($b['check_in']) . ' → ' . fr_date($b['check_out']) . ' (' . (int)$b['nights'] . ' nuit' . ($b['nights'] > 1 ? 's' : '') . ')'; }
+function riad_owner(int $riadId): array {
+    return q('SELECT r.*, u.email AS owner_email, u.first_name AS owner_first, u.phone AS owner_phone FROM riads r JOIN users u ON u.id = r.owner_id WHERE r.id = ?', [$riadId])->fetch() ?: [];
+}
+/** Lien WhatsApp (wa.me) avec message pré-rempli. */
+function wa_link(string $phone, string $text): string { return 'https://wa.me/' . ltrim((string)intl_phone($phone), '+') . '?text=' . rawurlencode($text); }
+function request_wa_text(array $b, array $r): string {
+    return "Bonjour, nouvelle demande de réservation StayInRiad pour {$r['name']} :\n{$b['room_name']}, " . stay_text($b) . ', ' . (int)$b['guests'] . " pers.\nVotre revenu net : " . mad((float)$b['net_mad'])
+        . "\n\nAccepter : " . respond_url($b, 'accept') . "\nRefuser : " . respond_url($b, 'refuse') . "\n\nSans réponse sous " . REQUEST_HOURS . " h, la demande est annulée.\nL'équipe StayInRiad";
+}
+
+function notify_request(array $b): void {
+    $r = riad_owner((int)$b['riad_id']); if (!$r) return;
+    $rows = mail_rows(['N°' => e($b['ref']), 'Client' => e($b['first_name'] . ' ' . $b['last_name']) . ' (' . e($b['country']) . ')', 'Chambre' => e($b['room_name']), 'Séjour' => e(stay_text($b)),
+        'Voyageurs' => (int)$b['guests'], 'Demande' => e($b['request'] ?: '—'), 'Votre revenu net' => e(mad((float)$b['net_mad'])) . ' · ' . e(eur((float)$b['net']))]);
+    // Riad : email avec les deux boutons
+    send_mail($r['owner_email'], 'Demande de réservation à confirmer · ' . $b['room_name'] . ' · ' . fr_date($b['check_in']), mail_layout('Nouvelle demande de réservation',
+        '<p>Bonjour ' . e($r['owner_first']) . ',</p><p>Un voyageur souhaite réserver chez <b>' . e($r['name']) . '</b>. La chambre est-elle libre ? Répondez d\'un clic, <b>avant ' . REQUEST_HOURS . ' h</b>.</p>' . $rows
+        . mail_button(respond_url($b, 'accept'), '✓ Accepter la réservation')
+        . '<p style="text-align:center;font-size:14px"><a href="' . e(respond_url($b, 'refuse')) . '" style="color:#a33">Refuser (chambre déjà prise)</a></p>'
+        . '<p style="font-size:14px">Si vous acceptez, pensez à <b>fermer ces dates sur Booking</b> (ou dans votre channel manager), comme pour un client qui vous appelle. Sans réponse, la demande est annulée automatiquement et le voyageur n\'est pas débité.</p>'));
+    // Riad : SMS si disponible
+    send_sms((string)$r['owner_phone'], 'StayInRiad : demande de réservation ' . $b['room_name'] . ', ' . fr_date($b['check_in']) . ', ' . (int)$b['nights'] . ' nuit(s). Accepter ou refuser : ' . respond_url($b));
+    // Voyageur
+    send_mail($b['email'], 'Demande envoyée à ' . $r['name'] . ' · ' . $b['ref'], mail_layout('Votre demande est envoyée',
+        '<p>Bonjour ' . e($b['first_name']) . ',</p><p>Votre demande est transmise à <b>' . e($r['name']) . '</b>. Le riad confirme la disponibilité <b>sous ' . REQUEST_HOURS . ' h maximum</b>.</p>'
+        . '<p><b>Aucun montant n\'est débité</b> tant que le riad n\'a pas accepté. Dès son accord, vous recevez un email pour finaliser le paiement.</p>'
+        . mail_rows(['N° de demande' => e($b['ref']), 'Riad' => e($r['name']), 'Chambre' => e($b['room_name']), 'Séjour' => e(stay_text($b)), 'Total' => e(eur((float)$b['total']))])
+        . mail_button(booking_url($b), 'Suivre ma demande')));
+    // Équipe : pour relancer le riad sur WhatsApp en un clic
+    send_mail(admin_email(), '[Demande à confirmer] ' . $r['name'] . ' · ' . $b['ref'], mail_layout('Demande à faire confirmer par le riad', $rows
+        . '<p>Le riad a reçu l\'email' . (sms_enabled() ? ' et le SMS' : '') . '. Pour qu\'il réponde vite, envoyez-lui aussi le message WhatsApp pré-rempli :</p>'
+        . ($r['owner_phone'] ? mail_button(wa_link((string)$r['owner_phone'], request_wa_text($b, $r)), 'Envoyer sur WhatsApp') : '<p>Pas de téléphone pour ce riad.</p>')));
+}
+
+/** Le riad accepte : le voyageur a ACCEPTED_PAY_HOURS h pour payer. */
+function accept_request(array $b): ?string {
+    if ($b['status'] === 'bloquée' || $b['status'] === 'confirmée') return null;
+    if ($b['status'] !== 'demande' || $b['hold_until'] < now()) return 'Cette demande a expiré : le voyageur a été prévenu.';
+    q("UPDATE bookings SET status = 'bloquée', hold_until = ? WHERE id = ?", [gmdate('Y-m-d H:i:s', time() + ACCEPTED_PAY_HOURS * 3600), $b['id']]);
+    $b = q('SELECT * FROM bookings WHERE id = ?', [$b['id']])->fetch(); $r = riad_owner((int)$b['riad_id']);
+    send_mail($b['email'], 'Bonne nouvelle : ' . $r['name'] . ' accepte votre demande', mail_layout('Votre demande est acceptée 🎉',
+        '<p>Bonjour ' . e($b['first_name']) . ',</p><p><b>' . e($r['name']) . '</b> confirme que la chambre est disponible. Finalisez votre réservation par le paiement : la chambre vous est réservée pendant <b>' . ACCEPTED_PAY_HOURS . ' h</b>.</p>'
+        . mail_rows(['N°' => e($b['ref']), 'Chambre' => e($b['room_name']), 'Séjour' => e(stay_text($b)), 'Total' => e(eur((float)$b['total']))]) . mail_button(booking_url($b), 'Payer et confirmer')));
+    return null;
+}
+/** Le riad refuse (chambre déjà prise ailleurs). */
+function refuse_request(array $b): ?string {
+    if ($b['status'] === 'refusée') return null;
+    if ($b['status'] !== 'demande') return 'Cette demande n\'est plus en attente.';
+    q("UPDATE bookings SET status = 'refusée', hold_until = NULL, cancelled_at = ? WHERE id = ?", [now(), $b['id']]);
+    $r = riad_owner((int)$b['riad_id']);
+    send_mail($b['email'], 'Votre demande chez ' . $r['name'], mail_layout('Chambre indisponible',
+        '<p>Bonjour ' . e($b['first_name']) . ',</p><p>Désolé, <b>' . e($r['name']) . '</b> n\'a plus cette chambre de libre du ' . e(stay_text($b)) . '. <b>Aucun montant n\'a été débité.</b></p><p>D\'autres riads sont disponibles à vos dates :</p>'
+        . mail_button(base_url() . 'riads.php?' . http_build_query(['city' => $r['city'], 'in' => $b['check_in'], 'out' => $b['check_out'], 'g' => $b['guests']]), 'Voir les riads disponibles')));
+    return null;
+}
+/** Demandes sans réponse : annulées, le voyageur et le riad sont prévenus. */
+function expire_requests(): array {
+    $log = [];
+    foreach (q("SELECT * FROM bookings WHERE status = 'demande' AND hold_until < ?", [now()])->fetchAll() as $b) {
+        q("UPDATE bookings SET status = 'expirée' WHERE id = ? AND status = 'demande'", [$b['id']]);
+        $r = riad_owner((int)$b['riad_id']);
+        send_mail($b['email'], 'Votre demande chez ' . $r['name'], mail_layout('Pas de réponse du riad',
+            '<p>Bonjour ' . e($b['first_name']) . ',</p><p><b>' . e($r['name']) . '</b> n\'a pas pu confirmer votre demande à temps. Elle est annulée et <b>aucun montant n\'a été débité</b>.</p>'
+            . mail_button(base_url() . 'riads.php?' . http_build_query(['city' => $r['city'], 'in' => $b['check_in'], 'out' => $b['check_out'], 'g' => $b['guests']]), 'Voir les riads disponibles')));
+        send_mail($r['owner_email'], 'Demande expirée ' . $b['ref'], mail_layout('Demande expirée', '<p>Bonjour ' . e($r['owner_first']) . ',</p><p>La demande de ' . e($b['first_name']) . ' (' . e(stay_text($b)) . ') n\'a pas reçu de réponse et a été annulée. Pour ne plus manquer de réservations, répondez dès que vous recevez une demande, ou synchronisez votre calendrier : vos voyageurs pourront alors réserver immédiatement.</p>' . mail_button(base_url() . 'sync.php', 'Synchroniser mon calendrier')));
+        $log[] = 'demande expirée ' . $b['ref'];
+    }
+    return $log;
 }
 
 require_once __DIR__ . '/ical.php';

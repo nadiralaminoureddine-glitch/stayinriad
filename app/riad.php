@@ -123,7 +123,8 @@ render_page('Fiche du riad', '<h1>' . e($r['name']) . ' ' . status_pill($r['stat
 <div class="row"><div><label>Latitude GPS (facultatif)</label><input name="lat" inputmode="decimal" placeholder="31.6295" value="' . $v('lat') . '"></div><div><label>Longitude GPS (facultatif)</label><input name="lng" inputmode="decimal" placeholder="-7.9811" value="' . $v('lng') . '"></div></div>
 <p class="note">Rempli automatiquement par la carte. Astuce : dans Google Maps, un appui long sur votre riad affiche aussi ses coordonnées.</p></div>
 
-<div class="card"><h2 style="margin-top:0">Société</h2>
+<div class="card"><h2 style="margin-top:0">Société <span class="pill info">avant le 1er virement</span></h2>
+<p class="note">Pas obligatoire pour être en ligne. Ces informations et votre RIB sont nécessaires seulement pour recevoir vos virements : vous pouvez les compléter plus tard.</p>
 <div class="row"><div><label>Raison sociale</label><input name="co_legal" maxlength="160" placeholder="ex. SARL Dar Yasmina" value="' . $v('co_legal') . '"></div><div><label>Forme juridique</label>' . $sel(FORMS, (string)$r['co_form'], 'co_form') . '</div></div>
 <div class="row"><div><label>ICE (15 chiffres)</label><input name="co_ice" inputmode="numeric" maxlength="20" value="' . $v('co_ice') . '"></div><div><label>Registre de commerce (n° et ville)</label><input name="co_rc" maxlength="60" value="' . $v('co_rc') . '"></div></div>
 <div class="row"><div><label>Identifiant fiscal (IF)</label><input name="co_if" inputmode="numeric" maxlength="30" value="' . $v('co_if') . '"></div><div><label>Autorisation d\'exploitation touristique <span class="note">(facultatif)</span></label><input name="co_license" maxlength="80" value="' . $v('co_license') . '"></div></div>

@@ -17,6 +17,7 @@ if ($err) { flash($err, 'bad'); redirect('riad_view.php?id=' . (int)$r['id']); }
 if (room_free($room, $in, $out) < 1) { flash('Cette chambre n\'est plus disponible à ces dates.', 'warn'); redirect('riad_view.php?' . http_build_query(['id' => $r['id'], 'in' => $in, 'out' => $out, 'g' => $g])); }
 
 $u = current_user();
+$instant = riad_instant($r);
 $total = (float)$room['price_eur'] * $n;
 $fe = null;
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -28,7 +29,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     elseif ($guest['phone'] === '') $fe = 'Indiquez un numéro de téléphone (le riad peut avoir besoin de vous joindre).';
     elseif (empty($_POST['cgv'])) $fe = 'Merci d\'accepter les conditions de réservation.';
     else {
-        [$b, $fe] = create_hold($r, $room, $in, $out, $n, $g, $guest, $u ? (int)$u['id'] : null);
+        [$b, $fe] = create_hold($r, $room, $in, $out, $n, $g, $guest, $u ? (int)$u['id'] : null, !$instant);
+        if ($b && !$instant) { try { notify_request($b); } catch (Throwable $e) { error_log('[StayInRiad] demande : ' . $e->getMessage()); } }
         if ($b) redirect('booking.php?ref=' . urlencode($b['ref']) . '&t=' . urlencode($b['token']));
     }
 }
@@ -47,8 +49,10 @@ render_page('Réserver', '<p><a href="riad_view.php?' . e(http_build_query(['id'
 <label>Demande particulière (facultatif)</label><input name="request" maxlength="500" placeholder="Heure d\'arrivée, lit bébé…" value="' . $v('request') . '">
 <label class="chk"><input type="checkbox" name="cgv" value="1"' . (!empty($_POST['cgv']) ? ' checked' : '') . '> J\'accepte les conditions de réservation et d\'annulation du riad et les <a href="/conditions/" target="_blank" rel="noopener">conditions générales d\'utilisation</a>.</label>
 ' . ($fe ? '<div class="err">' . e($fe) . '</div>' : '') . '
-<button class="btn full">Continuer vers le paiement</button>
-<p class="note">La chambre est bloquée pour vous pendant ' . HOLD_MINUTES . ' minutes le temps du paiement.</p></form>
+' . ($instant ? '<button class="btn full">Continuer vers le paiement</button>
+<p class="note">⚡ Réservation immédiate. La chambre est bloquée pour vous pendant ' . HOLD_MINUTES . ' minutes le temps du paiement.</p>'
+ : '<button class="btn full">Envoyer ma demande</button>
+<p class="note">Le riad confirme la disponibilité <b>sous ' . REQUEST_HOURS . ' h maximum</b>. <b>Aucun débit</b> avant son accord : vous payez ensuite en ligne pour finaliser.</p>') . '</form>
 <div class="card summary">' . ($ph ? '<img src="uploads/' . e($ph[0]) . '" alt="">' : '') . '
 <b style="font-size:18px">' . e($r['name']) . '</b><div class="note">📍 ' . e($r['city']) . '</div>
 <p><b>' . e($room['name']) . '</b><br><span class="note">' . e($room['description']) . '</span></p>

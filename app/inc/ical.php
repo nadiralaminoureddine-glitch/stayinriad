@@ -239,5 +239,5 @@ function riad_sync_summary(array $r): array {
 }
 function sync_pill(array $r): string {
     [$s] = riad_sync_summary($r);
-    return match ($s) { 'complet' => '<span class="pill ok">Booking/Airbnb synchronisé</span>', 'aucun' => '<span class="pill info">Pas sur Booking/Airbnb</span>', 'à faire' => '<span class="pill warn">Synchro Booking/Airbnb à terminer</span>', default => '<span class="pill warn">Synchro Booking/Airbnb : à renseigner</span>' };
+    return match ($s) { 'complet' => '<span class="pill ok">Booking/Airbnb synchronisé</span>', 'aucun' => '<span class="pill info">Pas sur Booking/Airbnb</span>', 'à faire' => '<span class="pill info">Réservation sur demande · synchro facultative à terminer</span>', default => '<span class="pill info">Réservation sur demande</span>' };
 }

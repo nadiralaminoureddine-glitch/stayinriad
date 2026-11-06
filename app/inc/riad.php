@@ -33,11 +33,20 @@ function norm_name(string $s): string {
 }
 function holder_ok(array $r): bool { return $r['co_legal'] !== '' && $r['bank_holder'] !== '' && norm_name($r['co_legal']) === norm_name($r['bank_holder']); }
 
-/** Liste de ce qui manque avant de pouvoir envoyer la fiche. */
+/** Ce qui manque pour mettre la fiche en ligne (la société et le RIB ne sont demandés qu'avant le premier virement). */
 function dossier_missing(array $r): array {
     $m = [];
     if (mb_strlen(trim((string)$r['description'])) < 80) $m[] = 'une description d\'au moins 80 caractères';
     if (trim((string)$r['address']) === '') $m[] = 'l\'adresse du riad';
+    $rooms = (int)q('SELECT COUNT(*) FROM rooms WHERE riad_id = ? AND active = 1 AND price_eur > 0', [$r['id']])->fetchColumn();
+    if ($rooms < 1) $m[] = 'au moins une chambre avec un prix';
+    $ph = (int)q("SELECT COUNT(*) FROM photos WHERE riad_id = ? AND status <> 'refusée'", [$r['id']])->fetchColumn();
+    if ($ph < 3) $m[] = 'au moins 3 photos';
+    return $m;
+}
+/** Ce qui manque avant le premier virement : société et RIB. */
+function payout_missing(array $r): array {
+    $m = [];
     if ($r['co_legal'] === '') $m[] = 'la raison sociale';
     if (strlen(digits((string)$r['co_ice'])) !== 15) $m[] = 'l\'ICE (15 chiffres)';
     if ($r['co_rc'] === '') $m[] = 'le registre de commerce';
@@ -45,10 +54,6 @@ function dossier_missing(array $r): array {
     if (!rib_ok((string)$r['bank_rib'])) $m[] = 'un RIB valide (24 chiffres)';
     elseif (!holder_ok($r)) $m[] = 'un RIB au nom de la société (' . $r['co_legal'] . ')';
     if ($r['bank_doc'] === '') $m[] = 'l\'attestation de RIB';
-    $rooms = (int)q('SELECT COUNT(*) FROM rooms WHERE riad_id = ? AND active = 1 AND price_eur > 0', [$r['id']])->fetchColumn();
-    if ($rooms < 1) $m[] = 'au moins une chambre avec un prix';
-    $ph = (int)q("SELECT COUNT(*) FROM photos WHERE riad_id = ? AND status <> 'refusée'", [$r['id']])->fetchColumn();
-    if ($ph < 3) $m[] = 'au moins 3 photos';
     return $m;
 }
 function status_pill(string $s): string { [$l, $c] = RIAD_STATUS[$s] ?? [$s, 'info']; return '<span class="pill ' . $c . '">' . e($l) . '</span>'; }

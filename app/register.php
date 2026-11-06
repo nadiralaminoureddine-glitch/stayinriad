@@ -44,12 +44,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 $_SESSION['reg_started'] = $_SESSION['reg_started'] ?? time();
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') $_SESSION['reg_started'] = time();
 $v = fn($k, $d = '') => e($_POST[$k] ?? $d);
-$riadFields = $type === 'riad' ? '<h2>Votre riad</h2>
+$riadFields = $type === 'riad' ? '<h2>Votre riad</h2><div style="background:#eef2fb;border:1.5px solid var(--terra);border-radius:12px;padding:12px 14px;margin:6px 0 14px"><label style="margin-top:0">⚡ Votre riad est sur Booking ? Collez le lien de sa page</label><input name="booking_url" inputmode="url" maxlength="400" placeholder="https://www.booking.com/hotel/ma/votre-riad.html" value="' . $v('booking_url') . '">
+<p class="note" style="margin:6px 0 0"><b>Nous créons votre fiche pour vous</b> : description, chambres et photos. Il ne vous restera qu\'à indiquer vos prix. Pas sur Booking ? Laissez vide.</p></div>
 <label>Nom du riad</label><input name="riad_name" required maxlength="120" value="' . $v('riad_name') . '">
 <div class="row"><div><label>Ville</label><select name="city" required>' . implode('', array_map(fn($c) => '<option' . (($_POST['city'] ?? '') === $c ? ' selected' : '') . '>' . e($c) . '</option>', CITIES)) . '</select></div>
 <div><label>Nombre de chambres</label><input type="number" name="rooms" min="1" max="200" value="' . $v('rooms') . '"></div></div>
-<label>Lien de votre page Booking <span class="note">(facultatif)</span></label><input name="booking_url" inputmode="url" maxlength="400" placeholder="https://www.booking.com/hotel/ma/votre-riad.html" value="' . $v('booking_url') . '">
-<p class="note" style="margin:4px 0 0">⚡ Votre riad est sur Booking ? Collez le lien : <b>nous remplissons votre fiche pour vous</b> (description, chambres, photos). Il ne vous restera qu\'à indiquer vos prix.</p><h2>Vos coordonnées</h2>' : '';
+<h2>Vos coordonnées</h2>' : '';
 
 render_page('Créer un compte', '<div class="card narrow"><h1>' . ($type === 'riad' ? 'Inscrire mon riad' : 'Créer un compte') . '</h1>
 ' . (site_open() ? '<div class="tabs"><a href="register.php?type=traveler"' . ($type === 'traveler' ? ' class="on"' : '') . '>Voyageur</a><a href="register.php?type=riad"' . ($type === 'riad' ? ' class="on"' : '') . '>Propriétaire de riad</a></div>' : '<p class="note">Inscription des <b>propriétaires de riads</b>. Les comptes voyageurs ouvriront avec les réservations.</p>') . ($type === 'riad' && launch_offer_text() ? '<p class="flash offer" style="margin:8px 0 0">' . e(launch_offer_text()) . '</p>' : '') . '
