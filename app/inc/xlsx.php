@@ -27,13 +27,13 @@ function xlsx_cell(string $ref, $c): string {
 
 function xlsx_styles(): string {
     $fonts = ['<font><sz val="11"/><color rgb="FF1F1A17"/><name val="Calibri"/></font>', '<font><b/><sz val="11"/><color rgb="FFFFFFFF"/><name val="Calibri"/></font>',
-        '<font><b/><sz val="18"/><color rgb="FF0F5A4A"/><name val="Calibri"/></font>', '<font><sz val="10"/><color rgb="FF6B625A"/><name val="Calibri"/></font>',
-        '<font><b/><sz val="11"/><color rgb="FF1F1A17"/><name val="Calibri"/></font>', '<font><b/><sz val="14"/><color rgb="FF0F5A4A"/><name val="Calibri"/></font>',
+        '<font><b/><sz val="18"/><color rgb="FF2647A8"/><name val="Calibri"/></font>', '<font><sz val="10"/><color rgb="FF6B625A"/><name val="Calibri"/></font>',
+        '<font><b/><sz val="11"/><color rgb="FF1F1A17"/><name val="Calibri"/></font>', '<font><b/><sz val="14"/><color rgb="FF2647A8"/><name val="Calibri"/></font>',
         '<font><i/><sz val="9"/><color rgb="FF6B625A"/><name val="Calibri"/></font>'];
     $fill = fn($rgb) => '<fill><patternFill patternType="solid"><fgColor rgb="FF' . $rgb . '"/><bgColor indexed="64"/></patternFill></fill>';
-    $fills = ['<fill><patternFill patternType="none"/></fill>', '<fill><patternFill patternType="gray125"/></fill>', $fill('0F5A4A'), $fill('F7EFE3'), $fill('FBF7F0')];
+    $fills = ['<fill><patternFill patternType="none"/></fill>', '<fill><patternFill patternType="gray125"/></fill>', $fill('2647A8'), $fill('F7EFE3'), $fill('FBF7F0')];
     $borders = ['<border><left/><right/><top/><bottom/><diagonal/></border>', '<border><left/><right/><top/><bottom style="thin"><color rgb="FFE8DCC8"/></bottom><diagonal/></border>',
-        '<border><left/><right/><top style="medium"><color rgb="FF0F5A4A"/></top><bottom style="medium"><color rgb="FF0F5A4A"/></bottom><diagonal/></border>'];
+        '<border><left/><right/><top style="medium"><color rgb="FF2647A8"/></top><bottom style="medium"><color rgb="FF2647A8"/></bottom><diagonal/></border>'];
     $fmts = ['<numFmt numFmtId="164" formatCode="#,##0.00\ &quot;€&quot;"/>', '<numFmt numFmtId="165" formatCode="#,##0.00\ &quot;MAD&quot;"/>',
         '<numFmt numFmtId="166" formatCode="dd/mm/yyyy"/>', '<numFmt numFmtId="167" formatCode="0.00\ &quot;%&quot;"/>', '<numFmt numFmtId="168" formatCode="0.0000"/>'];
     // [numFmt, font, fill, border, align]

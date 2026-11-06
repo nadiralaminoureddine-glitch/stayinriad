@@ -193,7 +193,7 @@ function notify_confirmed(array $b): void {
                    'Voyageurs' => (int)$b['guests'] . ' personne(s)', 'Montant payé' => e(eur((float)$b['total'])), 'Taxe de séjour' => 'à régler sur place, au riad']) .
         '<p style="font-size:14px">' . e(cancel_policy_text($r)) . '</p>' .
         '<p><b>Fiche de police :</b> la loi marocaine demande une fiche pour chaque voyageur. Remplissez-la en ligne avant votre arrivée, cela vous fera gagner du temps à l\'accueil.</p>' .
-        mail_button(booking_url($b, 'police.php'), 'Remplir la fiche de police') . '<p style="font-size:14px">Retrouvez ou annulez votre réservation : <a href="' . e(booking_url($b)) . '" style="color:#0f5a4a">voir ma réservation</a>.</p>'));
+        mail_button(booking_url($b, 'police.php'), 'Remplir la fiche de police') . '<p style="font-size:14px">Retrouvez ou annulez votre réservation : <a href="' . e(booking_url($b)) . '" style="color:#2647a8">voir ma réservation</a>.</p>'));
     // Riad
     send_mail($r['owner_email'], 'Nouvelle réservation ' . $b['ref'] . ' · ' . $b['first_name'] . ' ' . $b['last_name'], mail_layout('Nouvelle réservation', $test .
         '<p>Bonjour ' . e($r['owner_first']) . ',</p><p>Vous avez une nouvelle réservation sur StayInRiad. La chambre est déjà bloquée sur votre calendrier StayInRiad : pensez à la fermer sur vos autres sites (Booking, Airbnb…) si ce n\'est pas automatique.</p>' .

@@ -31,7 +31,7 @@ function send_code(array $u, string $purpose): ?string {
     [$subject, $title, $intro] = $purpose === 'verify'
         ? ['Votre code de confirmation StayInRiad : ' . $code, 'Confirmez votre adresse email', 'Bienvenue sur StayInRiad ! Pour activer votre compte, saisissez ce code :']
         : ['Votre code de connexion StayInRiad : ' . $code, 'Code de connexion', 'Une connexion à votre compte StayInRiad est en cours. Saisissez ce code pour la confirmer :'];
-    send_mail($u['email'], $subject, mail_layout($title, '<p>Bonjour ' . e($u['first_name']) . ',</p><p>' . $intro . '</p><p style="font-size:34px;letter-spacing:8px;font-weight:bold;color:#0f5a4a;background:#f7efe3;border-radius:10px;padding:14px;text-align:center">' . $code . '</p><p style="font-size:13px;color:#6b625a">Ce code est valable ' . CODE_MINUTES . ' minutes. Si vous n\'êtes pas à l\'origine de cette demande, ignorez cet email' . ($purpose === 'login' ? ' et changez votre mot de passe : quelqu\'un connaît peut-être votre mot de passe actuel.' : '.') . '</p>'));
+    send_mail($u['email'], $subject, mail_layout($title, '<p>Bonjour ' . e($u['first_name']) . ',</p><p>' . $intro . '</p><p style="font-size:34px;letter-spacing:8px;font-weight:bold;color:#2647a8;background:#f7efe3;border-radius:10px;padding:14px;text-align:center">' . $code . '</p><p style="font-size:13px;color:#6b625a">Ce code est valable ' . CODE_MINUTES . ' minutes. Si vous n\'êtes pas à l\'origine de cette demande, ignorez cet email' . ($purpose === 'login' ? ' et changez votre mot de passe : quelqu\'un connaît peut-être votre mot de passe actuel.' : '.') . '</p>'));
     return null;
 }
 /** Vérifie un code. Retourne null si correct, sinon une erreur. */

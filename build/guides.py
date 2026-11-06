@@ -125,7 +125,7 @@ L = {
 }
 SLUG = {'fr': 'riads-{c}', 'en': 'riads-{c}'}
 
-CSS = """:root{--g:#0f5a4a;--gd:#0a3f34;--gold:#d9a441;--terra:#2647a8;--ink:#1f1a17;--muted:#6b625a;--line:#e3d7c5;--sand:#f7efe3}
+CSS = """:root{--g:#2647a8;--gd:#1a3480;--gold:#d9a441;--terra:#2647a8;--ink:#1f1a17;--muted:#6b625a;--line:#e3d7c5;--sand:#f7efe3}
 *{box-sizing:border-box}body{margin:0;font-family:Inter,system-ui,-apple-system,"Segoe UI",sans-serif;color:var(--ink);background:#fbf8f3;line-height:1.6}
 a{color:var(--g)}header{background:#fff;color:var(--ink);border-bottom:1px solid var(--line)}.hw{max-width:860px;margin:0 auto;padding:14px 20px;display:flex;justify-content:space-between;align-items:center;gap:12px}
 .logo{display:flex;align-items:center;gap:10px;color:var(--gd);text-decoration:none;font-family:Fraunces,Georgia,serif;font-weight:700;font-size:22px}.logo b{color:var(--gold);font-weight:700}
@@ -145,7 +145,7 @@ details{background:#fff;border:1px solid var(--line);border-radius:12px;padding:
 footer{border-top:1px solid var(--line);text-align:center;color:var(--muted);font-size:13px;padding:22px}
 @media(max-width:640px){h1{font-size:32px}.steps{grid-template-columns:1fr}.hl a:not(.btn){display:none}}"""
 
-STAR = '<svg width="30" height="30" viewBox="0 0 40 40" aria-hidden="true"><rect x="8" y="8" width="24" height="24" fill="#d9a441"/><rect x="8" y="8" width="24" height="24" fill="#d9a441" transform="rotate(45 20 20)"/><rect x="13" y="13" width="14" height="14" fill="#0f5a4a"/><rect x="13" y="13" width="14" height="14" fill="#0f5a4a" transform="rotate(45 20 20)"/><circle cx="20" cy="20" r="3" fill="#d9a441"/></svg>'
+STAR = '<svg width="30" height="30" viewBox="0 0 40 40" aria-hidden="true"><rect x="8" y="8" width="24" height="24" fill="#d9a441"/><rect x="8" y="8" width="24" height="24" fill="#d9a441" transform="rotate(45 20 20)"/><rect x="13" y="13" width="14" height="14" fill="#2647a8"/><rect x="13" y="13" width="14" height="14" fill="#2647a8" transform="rotate(45 20 20)"/><circle cx="20" cy="20" r="3" fill="#d9a441"/></svg>'
 
 def page(lang, slug_fr, slug_en, title, desc, body, ld, crumb):
     html = _page(lang, slug_fr, slug_en, title, desc, body, ld, crumb)
@@ -165,7 +165,7 @@ def _page(lang, slug_fr, slug_en, title, desc, body, ld, crumb):
 <html lang="{lang}"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>{e(title)}</title><meta name="description" content="{e(desc)}"><link rel="canonical" href="{url}">{alt}
 <meta property="og:type" content="article"><meta property="og:title" content="{e(title)}"><meta property="og:description" content="{e(desc)}"><meta property="og:url" content="{url}"><meta property="og:image" content="{SITE}/partage.jpg"><meta property="og:locale" content="{'fr_FR' if lang=='fr' else 'en_GB'}"><meta name="twitter:card" content="summary_large_image">
-<link rel="icon" href="/favicon.ico" sizes="48x48"><link rel="icon" href="/favicon.svg" type="image/svg+xml"><link rel="apple-touch-icon" href="/apple-touch-icon.png"><meta name="theme-color" content="#0f5a4a">
+<link rel="icon" href="/favicon.ico" sizes="48x48"><link rel="icon" href="/favicon.svg" type="image/svg+xml"><link rel="apple-touch-icon" href="/apple-touch-icon.png"><meta name="theme-color" content="#2647a8">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,700&amp;family=Inter:wght@400;600;700&amp;display=swap" rel="stylesheet">
 <style>{CSS}</style>
 <script type="application/ld+json">{json.dumps([bc]+ld, ensure_ascii=False)}</script></head><body>
@@ -232,7 +232,7 @@ for lang, d in OWN.items():
     body = f'''<section class="hero"><div class="w"><div class="crumb"><a href="{t['home']}">{t['crumb_home']}</a> › {e(d['h1'])}</div><h1>{e(d['h1'])}</h1><p class="lead">{e(d['lead'])}</p><a class="btn" href="{REG}">{d['cta']}</a></div></section>
 <main><h2>{d['why']}</h2><div class="areas">{''.join(f'<div class="area"><b>{e(a)}</b>{e(b)}</div>' for a,b in d['items'])}</div>
 <h2>{d['how']}</h2><div class="steps">{''.join(f'<div><b>{e(a)}</b>{e(b)}</div>' for a,b in d['steps'])}</div>
-<h2>{d['vh']}</h2><video controls playsinline preload="none" poster="{d['poster']}" style="width:100%;max-width:320px;aspect-ratio:9/16;border-radius:14px;background:#0a3f34;display:block"><source src="{d['video']}" type="video/mp4"></video>
+<h2>{d['vh']}</h2><video controls playsinline preload="none" poster="{d['poster']}" style="width:100%;max-width:320px;aspect-ratio:9/16;border-radius:14px;background:#1a3480;display:block"><source src="{d['video']}" type="video/mp4"></video>
 <div class="cta"><h2>{e(d['cta'])}</h2><p>{e(t['owner_p'])}</p><a class="btn" href="{REG}">{d['cta']}</a></div>
 <h2>{t['faq']}</h2>{''.join(f'<details><summary>{e(q)}</summary><p>{e(a)}</p></details>' for q,a in d['faq'])}
 <h2>{t['guides']}</h2><div class="others">{''.join(f'<a href="{t["path"].format(slug="riads-"+k)}">{e(CITIES[k][lang]["h1"])}</a>' for k in CITIES)}</div></main>'''
