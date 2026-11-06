@@ -51,7 +51,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             q('UPDATE riads SET commission = ? WHERE id = ?', [$c, $rid]); flash('Commission enregistrée : ' . $c . ' %.');
             break;
         case 'approve':
+            @set_time_limit(300);
             $miss = dossier_missing($r);
+            if (!$miss && $r['bank_status'] !== 'vérifié' && holder_ok($r) && $r['bank_doc']) { q("UPDATE riads SET bank_status = 'vérifié' WHERE id = ?", [$rid]); $r['bank_status'] = 'vérifié'; }
+            if (!$miss) {
+                $skip = []; foreach (photo_duplicates($rid) as $d) { $skip[$d['a']['id']] = 1; $skip[$d['b']['id']] = 1; }
+                foreach (q("SELECT * FROM photos WHERE riad_id = ? AND status = 'en attente' ORDER BY sort, id", [$rid])->fetchAll() as $p) {
+                    if (isset($skip[$p['id']])) continue;
+                    q("UPDATE photos SET status = 'publiée', public_file = ? WHERE id = ?", [publish_photo($p['file']), (int)$p['id']]);
+                }
+            }
             $pub = (int)q("SELECT COUNT(*) FROM photos WHERE riad_id = ? AND status = 'publiée'", [$rid])->fetchColumn();
             if ($miss) flash('Dossier incomplet : ' . implode(', ', $miss) . '.', 'bad');
             elseif ($r['bank_status'] !== 'vérifié') flash('Vérifiez d\'abord le RIB.', 'bad');
@@ -65,6 +74,28 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             q("UPDATE riads SET status = 'refusé', admin_note = ? WHERE id = ?", [$note ?: 'Merci de compléter ou corriger votre fiche.', $rid]); flash('Fiche renvoyée au riad pour correction. Le riad est prévenu par email.');
             send_mail($r['email'], 'Votre fiche StayInRiad est à compléter', mail_layout('Encore un petit effort', '<p>Bonjour ' . e($r['first_name']) . ',</p><p>Notre équipe a relu la fiche de <b>' . e($r['name']) . '</b>. Avant la mise en ligne, merci de corriger :</p><p style="background:#fdf0dc;padding:12px;border-radius:8px">' . e($note ?: 'Merci de compléter ou corriger votre fiche.') . '</p>' . mail_button(base_url() . 'riad.php', 'Modifier ma fiche') . '<p style="font-size:14px">Besoin d\'aide ? Répondez simplement à cet email.</p>'));
             break;
+        case 'delete':
+            $nb = (int)q('SELECT COUNT(*) FROM bookings WHERE riad_id = ?', [$rid])->fetchColumn() + (int)q('SELECT COUNT(*) FROM payouts WHERE riad_id = ?', [$rid])->fetchColumn();
+            if ($nb) { flash('Impossible de supprimer : ce riad a déjà des réservations ou des versements. Utilisez « Retirer du site ».', 'bad'); break; }
+            if (($_POST['confirm'] ?? '') !== 'oui') redirect($back . '&del=1');
+            $roomIds = array_map('intval', array_column(q('SELECT id FROM rooms WHERE riad_id = ?', [$rid])->fetchAll(), 'id'));
+            foreach ($roomIds as $ro) { q('DELETE FROM ext_blocks WHERE room_id = ?', [$ro]); q('DELETE FROM ical_feeds WHERE room_id = ?', [$ro]); q('DELETE FROM closed_days WHERE room_id = ?', [$ro]); }
+            foreach (q('SELECT file, public_file FROM photos WHERE riad_id = ?', [$rid])->fetchAll() as $p) {
+                if ($p['file']) @unlink(private_dir() . '/' . basename($p['file']));
+                if ($p['public_file']) @unlink(__DIR__ . '/uploads/' . basename($p['public_file']));
+            }
+            if ($r['bank_doc']) @unlink(private_dir() . '/' . basename((string)$r['bank_doc']));
+            q('DELETE FROM photos WHERE riad_id = ?', [$rid]);
+            q('DELETE FROM reviews WHERE riad_id = ?', [$rid]);
+            q('DELETE FROM rooms WHERE riad_id = ?', [$rid]);
+            q('DELETE FROM riads WHERE id = ?', [$rid]);
+            $oid = (int)$r['owner_id'];
+            $owner = q('SELECT role FROM users WHERE id = ?', [$oid])->fetch();
+            if ($owner && $owner['role'] === 'riad' && !(int)q('SELECT COUNT(*) FROM riads WHERE owner_id = ?', [$oid])->fetchColumn() && !(int)q('SELECT COUNT(*) FROM bookings WHERE user_id = ?', [$oid])->fetchColumn()) {
+                q('DELETE FROM auth_codes WHERE user_id = ?', [$oid]); q('DELETE FROM users WHERE id = ?', [$oid]);
+            }
+            flash($r['name'] . ' a été supprimé, avec ses chambres, ses photos et le compte du propriétaire.');
+            redirect('admin.php');
         case 'offline':
             q("UPDATE riads SET status = 'brouillon' WHERE id = ?", [$rid]); flash('Riad retiré du site.');
             break;
@@ -93,11 +124,12 @@ $photoGrid = $photos ? '<div class="gallery">' . implode('', array_map(function 
 $dupHtml = $dups ? '<div class="card" style="border-color:var(--bad)"><h2 style="margin-top:0">⚠️ Photos en double avec un autre riad</h2>' . implode('', array_map(fn($d) => '<div class="row" style="margin-bottom:10px"><div><img src="file.php?photo=' . (int)$d['a']['id'] . '" style="width:100%;border-radius:8px"><div class="note">' . e($d['a']['riad_name']) . '</div></div><div><img src="file.php?photo=' . (int)$d['b']['id'] . '" style="width:100%;border-radius:8px"><div class="note">' . e($d['b']['riad_name']) . '</div></div></div><p>Ressemblance <b>' . $d['sim'] . ' %</b>. Vérifiez qui est le vrai propriétaire des photos (contrat, RIB, appel vidéo).</p>' . $btn('dup_ok', 'Pas de fraude (même propriétaire, photo autorisée)', 'ghost', '<input type="hidden" name="pair" value="' . e($d['pair']) . '">'), $dups)) . '</div>' : '';
 
 render_page($r['name'], '<p><a href="admin.php">← Tous les riads</a></p><h1>' . e($r['name']) . ' ' . status_pill($r['status']) . '</h1>
+' . (isset($_GET['del']) ? '<div class="card" style="border-color:var(--bad)"><h2 style="margin-top:0;color:var(--bad)">Supprimer ' . e($r['name']) . ' ?</h2><p>La fiche, les chambres, les photos et le compte du propriétaire seront <b>définitivement supprimés</b>. Cette action est irréversible.</p><form method="post" class="inline">' . csrf_field() . '<input type="hidden" name="confirm" value="oui"><button class="btn" style="background:var(--bad)" name="action" value="delete">Oui, supprimer définitivement</button></form> <a class="btn ghost" href="' . e($back) . '">Annuler</a></div>' : '') . '
 <div class="card"><h2 style="margin-top:0">Décision</h2>' .
 ($miss ? '<p>Dossier incomplet :</p><ul>' . implode('', array_map(fn($m) => '<li>' . e($m) . '</li>', $miss)) . '</ul>' : '<p>✅ Dossier complet.</p>') . '
 <p>RIB : ' . bank_pill($r) . ' · Photos publiées : <b>' . count(array_filter($photos, fn($p) => $p['status'] === 'publiée')) . '</b> / ' . count($photos) . '</p>
 <p>Import Booking : ' . ($r['import_done'] ? '<span class="pill ok">fait le ' . e(date('d/m/Y', strtotime($r['import_done'] . ' UTC'))) . '</span>' : ($r['import_requested'] ? '<span class="pill warn">demandé par le riad</span>' : '<span class="note">non demandé</span>')) . ' <a class="btn sm ghost" href="admin_import.php?id=' . $rid . '">Pré-remplir depuis Booking</a></p>
-' . ($r['status'] === 'en ligne' ? $btn('offline', 'Retirer du site', 'ghost') : $btn('approve', 'Mettre en ligne')) . '
+' . ($r['status'] === 'en ligne' ? $btn('offline', 'Retirer du site', 'ghost') : $btn('approve', '✓ Approuver le riad')) . ' ' . $btn('delete', '🗑 Supprimer le riad', 'ghost') . '
 <form method="post" style="margin-top:12px">' . csrf_field() . '<label>Message au riad (si la fiche est à corriger)</label><input name="note" maxlength="500" placeholder="ex. Merci d\'ajouter des photos des chambres"><button class="btn sm ghost" name="action" value="refuse">Renvoyer pour correction</button></form>
 <form method="post" style="margin-top:12px">' . csrf_field() . '<label>Commission (%)</label><div style="display:flex;gap:8px;align-items:center"><input name="commission" inputmode="decimal" style="max-width:110px" value="' . e(rtrim(rtrim(number_format((float)$r['commission'], 2, '.', ''), '0'), '.')) . '"><button class="btn sm" name="action" value="commission" style="margin-top:0">Enregistrer</button></div></form></div>
 ' . $dupHtml . '
