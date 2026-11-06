@@ -41,7 +41,6 @@ function dossier_missing(array $r): array {
     if ($r['co_legal'] === '') $m[] = 'la raison sociale';
     if (strlen(digits((string)$r['co_ice'])) !== 15) $m[] = 'l\'ICE (15 chiffres)';
     if ($r['co_rc'] === '') $m[] = 'le registre de commerce';
-    if ($r['co_license'] === '') $m[] = 'l\'autorisation d\'exploitation touristique';
     if ($r['co_rep'] === '') $m[] = 'le nom du représentant légal';
     if (!rib_ok((string)$r['bank_rib'])) $m[] = 'un RIB valide (24 chiffres)';
     elseif (!holder_ok($r)) $m[] = 'un RIB au nom de la société (' . $r['co_legal'] . ')';

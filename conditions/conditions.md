@@ -22,7 +22,7 @@ StayInRiad met en relation les Voyageurs et les Riads partenaires. **Le contrat 
 StayInRiad :
 
 - publie les informations fournies par les Riads partenaires (description, photos, équipements, prix, conditions) ;
-- vérifie chaque riad avant sa mise en ligne (société, autorisation d'exploitation, compte bancaire au nom de la société, vérification sur place ou en vidéo) ;
+- vérifie chaque riad avant sa mise en ligne (société, compte bancaire au nom de la société, vérification sur place ou en vidéo) ;
 - encaisse le paiement du Voyageur **au nom et pour le compte du Riad partenaire**, puis le reverse au riad après le séjour, déduction faite de sa commission.
 
 Les Riads partenaires sont responsables de l'exactitude de leurs informations. StayInRiad corrige ou retire toute annonce inexacte dès qu'il en a connaissance.

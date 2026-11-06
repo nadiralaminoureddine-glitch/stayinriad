@@ -126,7 +126,7 @@ render_page('Fiche du riad', '<h1>' . e($r['name']) . ' ' . status_pill($r['stat
 <div class="card"><h2 style="margin-top:0">Société</h2>
 <div class="row"><div><label>Raison sociale</label><input name="co_legal" maxlength="160" placeholder="ex. SARL Dar Yasmina" value="' . $v('co_legal') . '"></div><div><label>Forme juridique</label>' . $sel(FORMS, (string)$r['co_form'], 'co_form') . '</div></div>
 <div class="row"><div><label>ICE (15 chiffres)</label><input name="co_ice" inputmode="numeric" maxlength="20" value="' . $v('co_ice') . '"></div><div><label>Registre de commerce (n° et ville)</label><input name="co_rc" maxlength="60" value="' . $v('co_rc') . '"></div></div>
-<div class="row"><div><label>Identifiant fiscal (IF)</label><input name="co_if" inputmode="numeric" maxlength="30" value="' . $v('co_if') . '"></div><div><label>Autorisation d\'exploitation touristique</label><input name="co_license" maxlength="80" value="' . $v('co_license') . '"></div></div>
+<div class="row"><div><label>Identifiant fiscal (IF)</label><input name="co_if" inputmode="numeric" maxlength="30" value="' . $v('co_if') . '"></div><div><label>Autorisation d\'exploitation touristique <span class="note">(facultatif)</span></label><input name="co_license" maxlength="80" value="' . $v('co_license') . '"></div></div>
 <label>Adresse du siège</label><input name="co_address" maxlength="255" value="' . $v('co_address') . '">
 <div class="row"><div><label>Représentant légal</label><input name="co_rep" maxlength="120" value="' . $v('co_rep') . '"></div><div><label>Fonction</label><input name="co_rep_role" maxlength="60" placeholder="ex. Gérant" value="' . $v('co_rep_role') . '"></div></div></div>
 
