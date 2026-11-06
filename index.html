@@ -26,7 +26,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=Inter:wght@400;500;600;700&family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
-:root{--terra:#b5472b;--terra-d:#8e3420;--green:#0f5a4a;--green-d:#0a3f34;--sand:#f7efe3;--sand-d:#eadcc6;--ink:#1f1a17;--muted:#6b625a;--line:#e3d7c5;--gold:#d9a441;--ok:#1d7a46;--bad:#b3261e}
+:root{--terra:#2647a8;--terra-d:#1a3480;--green:#0f5a4a;--green-d:#0a3f34;--sand:#f7efe3;--sand-d:#eadcc6;--ink:#1f1a17;--muted:#6b625a;--line:#e3d7c5;--gold:#d9a441;--ok:#1d7a46;--bad:#b3261e}
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:Inter,system-ui,sans-serif;color:var(--ink);background-color:#fbf8f3;background-image:var(--zelSand);background-size:72px;line-height:1.5}
 button,input,select,textarea{font:inherit}
@@ -115,6 +115,17 @@ html[dir=rtl] .pattern{right:auto;left:10px}
 .mapbox .leaflet-popup-content a{color:var(--green);font-weight:700}.mapbox .pin-riad{background:var(--terra);color:#fff;border-radius:999px;padding:3px 8px;font-weight:700;font-size:12px;white-space:nowrap;box-shadow:0 2px 6px rgba(0,0,0,.3);border:2px solid #fff}
 .mapbox .rpop img{width:100%;height:110px;object-fit:cover;border-radius:8px;margin-bottom:6px}
 .soons{display:flex;flex-wrap:wrap;gap:8px;margin-top:18px}.soons .soon{margin-top:0}.soon.offer{background:#fff;color:var(--terra)}
+/* Accueil : fond blanc + boutons bleu Majorelle */
+header{background-color:#fff;background-image:var(--zelSand);color:var(--ink);border-bottom:1px solid var(--line)}
+header .hero h1{color:var(--green-d)}
+header .badge100{background:var(--sand);border-color:var(--line);color:var(--ink)}
+header .trust{color:var(--muted)}
+header .btn.light{background:#fff;color:var(--green);border:1px solid var(--green)}
+header .soon.offer{background:var(--sand);border:1px solid var(--line)}
+header .nav select{color:var(--ink);border-color:var(--line);background:#fff}
+header .nav select:hover,header .nav select:focus{background:var(--sand)}
+header .nav a.solid{background:var(--green);color:#fff;border-color:var(--green)}
+header .srch{box-shadow:0 10px 30px rgba(31,26,23,.10);border:1px solid var(--line)}
 </style>
 <link rel="stylesheet" href="/app/assets/leaflet/leaflet.css">
 </head>

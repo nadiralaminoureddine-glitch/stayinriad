@@ -25,7 +25,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&amp;family=Inter:wght@400;500;600;700&amp;family=Cairo:wght@400;600;700&amp;display=swap" rel="stylesheet">
 <style>
-:root{--terra:#b5472b;--terra-d:#8e3420;--green:#0f5a4a;--green-d:#0a3f34;--sand:#f7efe3;--sand-d:#eadcc6;--ink:#1f1a17;--muted:#6b625a;--line:#e3d7c5;--gold:#d9a441;--ok:#1d7a46;--bad:#b3261e}
+:root{--terra:#2647a8;--terra-d:#1a3480;--green:#0f5a4a;--green-d:#0a3f34;--sand:#f7efe3;--sand-d:#eadcc6;--ink:#1f1a17;--muted:#6b625a;--line:#e3d7c5;--gold:#d9a441;--ok:#1d7a46;--bad:#b3261e}
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:Inter,system-ui,sans-serif;color:var(--ink);background-color:#fbf8f3;background-image:var(--zelSand);background-size:72px;line-height:1.5}
 button,input,select,textarea{font:inherit}
@@ -114,6 +114,17 @@ html[dir=rtl] .pattern{right:auto;left:10px}
 .mapbox .leaflet-popup-content a{color:var(--green);font-weight:700}.mapbox .pin-riad{background:var(--terra);color:#fff;border-radius:999px;padding:3px 8px;font-weight:700;font-size:12px;white-space:nowrap;box-shadow:0 2px 6px rgba(0,0,0,.3);border:2px solid #fff}
 .mapbox .rpop img{width:100%;height:110px;object-fit:cover;border-radius:8px;margin-bottom:6px}
 .soons{display:flex;flex-wrap:wrap;gap:8px;margin-top:18px}.soons .soon{margin-top:0}.soon.offer{background:#fff;color:var(--terra)}
+/* Accueil : fond blanc + boutons bleu Majorelle */
+header{background-color:#fff;background-image:var(--zelSand);color:var(--ink);border-bottom:1px solid var(--line)}
+header .hero h1{color:var(--green-d)}
+header .badge100{background:var(--sand);border-color:var(--line);color:var(--ink)}
+header .trust{color:var(--muted)}
+header .btn.light{background:#fff;color:var(--green);border:1px solid var(--green)}
+header .soon.offer{background:var(--sand);border:1px solid var(--line)}
+header .nav select{color:var(--ink);border-color:var(--line);background:#fff}
+header .nav select:hover,header .nav select:focus{background:var(--sand)}
+header .nav a.solid{background:var(--green);color:#fff;border-color:var(--green)}
+header .srch{box-shadow:0 10px 30px rgba(31,26,23,.10);border:1px solid var(--line)}
 </style>
 <link rel="stylesheet" href="/app/assets/leaflet/leaflet.css">
 <link rel="canonical" href="https://stayinriad.com/en/"><link rel="alternate" hreflang="fr" href="https://stayinriad.com/">
@@ -137,8 +148,8 @@ html[dir=rtl] .pattern{right:auto;left:10px}
       <div class="soons"><div class="soon" data-i18n="soon">✦ Riad sign-ups now open · bookings coming soon</div><div class="soon offer" data-i18n="offer">🎁 Launch offer: 3 months commission-free</div></div>
       <form class="srch" id="srch" action="/app/riads.php" method="get" role="search">
         <label class="dest"><span data-i18n="sr_dest">Destination</span><select name="city" id="srCity"><option value="">All cities in Morocco</option><option value="Marrakech">Marrakech</option><option value="Fès">Fez</option><option value="Essaouira">Essaouira</option><option value="Chefchaouen">Chefchaouen</option><option value="Meknès">Meknès</option><option value="Rabat">Rabat</option><option value="Tanger">Tangier</option><option value="Tétouan">Tetouan</option><option value="Asilah">Asilah</option><option value="Casablanca">Casablanca</option><option value="El Jadida">El Jadida</option><option value="Oualidia">Oualidia</option><option value="Safi">Safi</option><option value="Agadir">Agadir</option><option value="Taghazout">Taghazout</option><option value="Taroudant">Taroudant</option><option value="Tiznit">Tiznit</option><option value="Mirleft">Mirleft</option><option value="Imlil">Imlil</option><option value="Ouarzazate">Ouarzazate</option><option value="Aït Ben Haddou">Ait Benhaddou</option><option value="Skoura">Skoura</option><option value="Tinghir">Tinghir</option><option value="Merzouga">Merzouga</option><option value="Rissani">Rissani</option><option value="Zagora">Zagora</option><option value="Ifrane">Ifrane</option><option value="Moulay Idriss">Moulay Idriss</option><option value="Larache">Larache</option><option value="Al Hoceïma">Al Hoceima</option><option value="Dakhla">Dakhla</option></select></label>
-        <label><span data-i18n="sr_in">Check-in</span><input type="date" name="in" id="srIn" min="2026-11-05"></label>
-        <label><span data-i18n="sr_out">Check-out</span><input type="date" name="out" id="srOut" min="2026-11-06"></label>
+        <label><span data-i18n="sr_in">Check-in</span><input type="date" name="in" id="srIn" min="2026-11-06"></label>
+        <label><span data-i18n="sr_out">Check-out</span><input type="date" name="out" id="srOut" min="2026-11-07"></label>
         <label><span data-i18n="sr_g">Guests</span><select name="g" id="srG"><option>1</option><option selected="">2</option><option>3</option><option>4</option><option>5</option><option>6</option><option>7</option><option>8</option></select></label>
         <input type="hidden" name="lang" id="srLang" value="en">
         <button class="btn terra" data-i18n="sr_btn">🔍 Search</button>
