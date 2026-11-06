@@ -186,13 +186,6 @@ header .srch{box-shadow:0 10px 30px rgba(31,26,23,.10);border:1px solid var(--li
     </div>
   </section>
 
-  <div class="kicker"><span data-i18n="trav_k"></span></div>
-  <section style="padding-top:18px">
-    <h2 data-i18n="dest_h"></h2><p class="sub" data-i18n="dest_sub"></p>
-    <div class="cities" id="cities"></div>
-    <p class="seo" data-i18n="seo_p" data-html></p>
-  </section>
-
   <section id="carte">
     <h2 data-i18n="map_h"></h2><p class="sub" data-i18n="map_sub"></p>
     <div class="mapbox" id="riadMap" aria-label="Carte"></div>
@@ -346,7 +339,7 @@ function setLang(l,manual){LANG=T[l]?l:"fr";if(manual){try{localStorage.setItem(
   document.documentElement.lang=LANG;document.documentElement.dir=LANG==="ar"?"rtl":"ltr";$("langSel").value=LANG;
   document.querySelectorAll("[data-i18n]").forEach(e=>{if("html" in e.dataset)e.innerHTML="<span>"+t(e.dataset.i18n)+"</span>";else e.textContent=t(e.dataset.i18n);});
   const GUIDE={"Marrakech":"marrakech","Fès":"fes","Essaouira":"essaouira","Chefchaouen":"chefchaouen"},gp=(LANG==="en"||LANG==="es")?"/en/riads-":"/riads-";
-  $("cities").innerHTML=CITIES.map((c,i)=>GUIDE[c]?`<a class="city" href="${gp}${GUIDE[c]}/">${patio(i)}<b>${cityName(c)}</b><span class="cg">${t("guide_lbl")} →</span></a>`:`<div class="city">${patio(i)}<b>${cityName(c)}</b></div>`).join("");
+  if($("cities"))$("cities").innerHTML=CITIES.map((c,i)=>GUIDE[c]?`<a class="city" href="${gp}${GUIDE[c]}/">${patio(i)}<b>${cityName(c)}</b><span class="cg">${t("guide_lbl")} →</span></a>`:`<div class="city">${patio(i)}<b>${cityName(c)}</b></div>`).join("");
   $("ftContact").innerHTML=[CONFIG.email?`✉️ <a href="mailto:${CONFIG.email}" dir="ltr">${CONFIG.email}</a>`:"",CONFIG.whatsapp?`💬 <a href="https://wa.me/${CONFIG.whatsapp}" target="_blank" rel="noopener" dir="ltr">${CONFIG.phone||"+"+CONFIG.whatsapp} (WhatsApp)</a>`:""].filter(Boolean).join("<br>")||t("no_contact");
   const vl=(LANG==="en"||LANG==="es")?"en":"fr",vs=$("tutoSrc");if(vs&&vs.getAttribute("src")!==`/videos/tuto-${vl}.mp4`){vs.setAttribute("src",`/videos/tuto-${vl}.mp4`);$("tuto").setAttribute("poster",`/videos/tuto-${vl}.jpg`);$("tuto").load();}
   const en=(LANG==="en"||LANG==="es");$("ftOwner").href=en?"/en/list-your-riad/":"/inscrire-mon-riad/";$("ftGuides").innerHTML=Object.keys(GUIDE).map(c=>`<a href="${gp}${GUIDE[c]}/">${cityName(c)}</a>`).join(" · ");
