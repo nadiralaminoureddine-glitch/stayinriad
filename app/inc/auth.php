@@ -108,21 +108,22 @@ function set_site_open(bool $open): void {
     if ($open && !q("SELECT v FROM settings WHERE k = 'opened_at'")->fetchColumn()) q("INSERT INTO settings (k, v) VALUES ('opened_at', ?)", [now()]); // départ de l'offre de lancement
 }
 
-// ---------------------------------------------------------------- offre de lancement : 0 % de commission les 3 premiers mois
+// ---------------------------------------------------------------- offre de lancement : 0 % de commission pendant 3 mois, à compter de la 1re réservation du riad
 const LAUNCH_FREE_MONTHS = 3;
-/** Date (UTC) de fin de l'offre, ou null si les réservations ne sont pas encore ouvertes. */
-function launch_free_until(): ?string {
-    try { $o = q("SELECT v FROM settings WHERE k = 'opened_at'")->fetchColumn(); } catch (Throwable $e) { $o = false; }
-    return $o ? gmdate('Y-m-d H:i:s', strtotime($o . ' UTC +' . LAUNCH_FREE_MONTHS . ' months')) : null;
+/** Date (UTC) de fin de l'offre pour un riad, ou null si le riad n'a encore reçu aucune réservation payée. */
+function launch_free_until(?array $riad = null): ?string {
+    if (!$riad || empty($riad['id'])) return null;
+    try { $f = q("SELECT MIN(paid_at) FROM bookings WHERE riad_id = ? AND paid_at IS NOT NULL", [(int)$riad['id']])->fetchColumn(); } catch (Throwable $e) { $f = false; }
+    return $f ? gmdate('Y-m-d H:i:s', strtotime($f . ' UTC +' . LAUNCH_FREE_MONTHS . ' months')) : null;
 }
-/** L'offre s'applique-t-elle maintenant ? (avant l'ouverture : oui, elle commencera avec les réservations) */
-function launch_free_now(): bool { $u = launch_free_until(); return $u === null || now() < $u; }
+/** L'offre s'applique-t-elle maintenant à ce riad ? (pas encore de réservation : oui, elle commencera avec la première) */
+function launch_free_now(?array $riad = null): bool { $u = launch_free_until($riad); return $u === null || now() < $u; }
 /** Commission réellement prélevée sur une réservation faite maintenant. */
-function commission_now(array $riad): float { return launch_free_now() ? 0.0 : (float)$riad['commission']; }
-/** Phrase d'explication de l'offre. */
-function launch_offer_text(): string {
-    $u = launch_free_until();
-    return $u === null ? '🎁 Offre de lancement : 0 % de commission pendant les 3 premiers mois après l\'ouverture des réservations.'
+function commission_now(array $riad): float { return launch_free_now($riad) ? 0.0 : (float)$riad['commission']; }
+/** Phrase d'explication de l'offre (générale, ou pour un riad précis). */
+function launch_offer_text(?array $riad = null): string {
+    $u = launch_free_until($riad);
+    return $u === null ? '🎁 Offre de lancement : 0 % de commission pendant 3 mois, à compter de votre première réservation.'
         : (now() < $u ? '🎁 Offre de lancement : 0 % de commission sur toutes les réservations jusqu\'au ' . date('d/m/Y', strtotime($u . ' UTC')) . '.' : '');
 }
 /** Pages voyageurs : réservées à l'admin tant que le site est fermé. */
