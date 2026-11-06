@@ -21,6 +21,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         case 'photo_ok':
             if ($ph) { $pub = publish_photo($ph['file']); q("UPDATE photos SET status = 'publiée', public_file = ? WHERE id = ?", [$pub, $pid]); flash('Photo validée et publiée avec le logo.'); }
             break;
+        case 'photo_all':
+            @set_time_limit(300);
+            $skip = []; foreach (photo_duplicates($rid) as $d) { $skip[$d['a']['id']] = 1; $skip[$d['b']['id']] = 1; }
+            $n = 0;
+            foreach (q("SELECT * FROM photos WHERE riad_id = ? AND status = 'en attente' ORDER BY sort, id", [$rid])->fetchAll() as $p) {
+                if (isset($skip[$p['id']])) continue;
+                $pub = publish_photo($p['file']); q("UPDATE photos SET status = 'publiée', public_file = ? WHERE id = ?", [$pub, (int)$p['id']]); $n++;
+            }
+            flash($n . ' photo' . ($n > 1 ? 's validées et publiées' : ' validée et publiée') . ' avec le logo.' . ($skip ? ' Les photos en double restent à trancher.' : ''));
+            break;
         case 'photo_no':
             if ($ph) { q("UPDATE photos SET status = 'refusée' WHERE id = ?", [$pid]); flash('Photo refusée.'); }
             break;
@@ -66,6 +76,7 @@ $rooms = q('SELECT * FROM rooms WHERE riad_id = ? AND active = 1 ORDER BY id', [
 $photos = q('SELECT * FROM photos WHERE riad_id = ? ORDER BY sort, id', [$rid])->fetchAll();
 $dups = photo_duplicates($rid);
 $dupIds = []; foreach ($dups as $d) { $dupIds[$d['a']['id']] = 1; $dupIds[$d['b']['id']] = 1; }
+$pending = count(array_filter($photos, fn($p) => $p['status'] === 'en attente' && !isset($dupIds[$p['id']])));
 $miss = dossier_missing($r);
 $amen = json_decode((string)($r['amenities'] ?? '[]'), true) ?: [];
 $btn = fn($act, $label, $cls = '', $extra = '') => '<form method="post" class="inline">' . csrf_field() . $extra . '<button class="btn sm ' . $cls . '" name="action" value="' . $act . '">' . $label . '</button></form>';
@@ -90,7 +101,7 @@ render_page($r['name'], '<p><a href="admin.php">← Tous les riads</a></p><h1>' 
 <form method="post" style="margin-top:12px">' . csrf_field() . '<label>Message au riad (si la fiche est à corriger)</label><input name="note" maxlength="500" placeholder="ex. Merci d\'ajouter des photos des chambres"><button class="btn sm ghost" name="action" value="refuse">Renvoyer pour correction</button></form>
 <form method="post" style="margin-top:12px">' . csrf_field() . '<label>Commission (%)</label><div style="display:flex;gap:8px;align-items:center"><input name="commission" inputmode="decimal" style="max-width:110px" value="' . e(rtrim(rtrim(number_format((float)$r['commission'], 2, '.', ''), '0'), '.')) . '"><button class="btn sm" name="action" value="commission" style="margin-top:0">Enregistrer</button></div></form></div>
 ' . $dupHtml . '
-<div class="card"><h2 style="margin-top:0">Photos</h2>' . $photoGrid . '</div>
+<div class="card"><h2 style="margin-top:0">Photos</h2>' . ($pending ? '<div style="margin-bottom:14px">' . $btn('photo_all', '✓ Valider toutes les photos (' . $pending . ')') . ' <span class="note">Les photos en double restent à trancher une par une.</span></div>' : '') . $photoGrid . '</div>
 <div class="card"><h2 style="margin-top:0">Compte bancaire</h2><div class="scroll"><table>' .
  $line('Titulaire', e($r['bank_holder']) . (holder_ok($r) ? ' <span class="pill ok">= société</span>' : ($r['bank_holder'] ? ' <span class="pill bad">≠ ' . e($r['co_legal'] ?: 'société') . '</span>' : ''))) .
  $line('Banque', e($r['bank_name'])) . $line('RIB', $r['bank_rib'] ? '<span style="font-family:monospace">' . e(trim(chunk_split($r['bank_rib'], 4, ' '))) . '</span> ' . (rib_ok($r['bank_rib']) ? '<span class="pill ok">clé OK</span>' : '<span class="pill bad">clé fausse</span>') : '') .
