@@ -10,13 +10,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['site_open'])) {
     flash($_POST['site_open'] === '1' ? 'Le site est OUVERT : les voyageurs peuvent chercher et réserver.' : 'Le site est FERMÉ : seuls vous et les riads utilisez l\'app.');
     redirect('admin.php');
 }
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['rate_mad'])) {
-    $m = round((float)str_replace(',', '.', (string)$_POST['rate_mad']), 4); $d = round((float)str_replace(',', '.', (string)$_POST['rate_usd']), 4);
-    if ($m < 5 || $m > 20 || $d < 0.5 || $d > 2) flash('Taux invalides.', 'bad');
-    else { foreach (['rate_mad' => $m, 'rate_usd' => $d] as $k => $v) { q('DELETE FROM settings WHERE k = ?', [$k]); q('INSERT INTO settings (k, v) VALUES (?, ?)', [$k, (string)$v]); } log_action('taux', "1 € = $m MAD / $d $"); flash('Taux de change enregistrés.'); }
-    redirect('admin.php');
-}
-$rateBox = '<div class="card"><h2 style="margin-top:0">💱 Taux de change</h2><p class="note">Les prix sont saisis en euros par les riads. Ces taux servent à afficher les prix en dirhams et en dollars, et à calculer le versement en dirhams des riads (le taux est fixé au moment de chaque réservation). Mettez-les à jour régulièrement.</p><form method="post" style="display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end">' . csrf_field() . '<div><label>1 € = … MAD</label><input name="rate_mad" inputmode="decimal" style="max-width:130px" value="' . e((string)rate('mad')) . '"></div><div><label>1 € = … $</label><input name="rate_usd" inputmode="decimal" style="max-width:130px" value="' . e((string)rate('usd')) . '"></div><button class="btn sm" style="margin-bottom:2px">Enregistrer</button></form></div>';
 $openBox = '<div class="card" style="border-color:' . (site_open() ? 'var(--ok)' : 'var(--gold)') . '"><h2 style="margin-top:0">' . (site_open() ? '🟢 Site ouvert aux voyageurs' : '🔒 Site fermé (pré-lancement)') . '</h2><p class="note">' . (site_open() ? 'Tout le monde peut chercher des riads, créer un compte voyageur et réserver.' : 'Les visiteurs ne voient pas les riads et ne peuvent pas réserver. Seuls les riads peuvent s\'inscrire. Vous, en admin, voyez tout pour tester.') . '</p><form method="post">' . csrf_field() . '<button class="btn ' . (site_open() ? 'ghost' : '') . '" name="site_open" value="' . (site_open() ? '0' : '1') . '">' . (site_open() ? 'Fermer le site' : 'Ouvrir le site aux voyageurs') . '</button></form></div>';
 
 $riads = q("SELECT r.*, u.first_name, u.last_name, u.email, u.phone FROM riads r JOIN users u ON u.id = r.owner_id ORDER BY CASE r.status WHEN 'soumis' THEN 0 WHEN 'refusé' THEN 1 WHEN 'brouillon' THEN 2 ELSE 3 END, r.id DESC")->fetchAll();
