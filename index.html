@@ -335,7 +335,7 @@ let RIADS=null;
 function drawMap(){const m=window.__map;if(!m)return;if(window.__layer)window.__layer.remove();const L=window.L,g=L.layerGroup().addTo(m);window.__layer=g;const ln=(LANG==="en"||LANG==="es")?"&lang=en":"";
   const withRiads=new Set((RIADS||[]).map(r=>r.city));
   ALL_CITIES.forEach(([c,a,b])=>{if(withRiads.has(c))return;L.circleMarker([a,b],{radius:7,color:"#fff",weight:2,fillColor:"#2647a8",fillOpacity:.95}).addTo(g).bindTooltip(cityName(c)).bindPopup(`<b>${cityName(c)}</b><a href="/app/riads.php?city=${encodeURIComponent(c)}${ln}">${t("map_see")}</a>`);});
-  (RIADS||[]).forEach(r=>{const ic=L.divIcon({className:"",html:`<span class="pin-riad">${Math.round(r.from)} €</span>`,iconSize:null});L.marker([r.lat,r.lng],{icon:ic}).addTo(g).bindPopup(`<div class="rpop">${r.photo?`<img src="${r.photo}" alt="">`:""}<b>${r.name.replace(/</g,"&lt;")}</b><span>📍 ${cityName(r.city)}</span><br><span>${t("map_from")} <b style="display:inline">${Math.round(r.from)} €</b> ${t("map_night")}</span><br><a href="${r.url}${ln}">${t("map_one")}</a></div>`);});}
+  (RIADS||[]).forEach(r=>{const ic=L.divIcon({className:"",html:`<span class="pin-riad">${Math.round(r.from)} €</span>`,iconSize:null});L.marker([r.lat,r.lng],{icon:ic}).addTo(g).bindPopup(`<div class="rpop">${r.photo?`<img src=${JSON.stringify(r.photo)} alt="">`:""}<b>${r.name.replace(/</g,"&lt;")}</b><span>📍 ${cityName(r.city)}</span><br><span>${t("map_from")} <b style="display:inline">${Math.round(r.from)} €</b> ${t("map_night")}</span><br><a href=${JSON.stringify(r.url+ln)}>${t("map_one")}</a></div>`);});}
 function initMap(){if(window.__map||!window.L||!$("riadMap"))return;const L=window.L;const m=L.map("riadMap",{scrollWheelZoom:false,zoomSnap:.5}).setView([31.4,-7.2],5.5);window.__map=m;
   L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png",{maxZoom:18,attribution:'&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'}).addTo(m);m.attributionControl.setPrefix('<a href="https://leafletjs.com">Leaflet</a>');
   m.fitBounds([[27.5,-13.2],[35.95,-1.5]],{padding:[10,10]});drawMap();
@@ -353,10 +353,10 @@ function setLang(l,manual){LANG=T[l]?l:"fr";if(manual){try{localStorage.setItem(
   document.documentElement.lang=LANG;document.documentElement.dir=LANG==="ar"?"rtl":"ltr";$("langSel").value=LANG;
   document.querySelectorAll("[data-i18n]").forEach(e=>{if("html" in e.dataset)e.innerHTML="<span>"+t(e.dataset.i18n)+"</span>";else e.textContent=t(e.dataset.i18n);});
   const GUIDE={"Marrakech":"marrakech","Fès":"fes","Essaouira":"essaouira","Chefchaouen":"chefchaouen"},gp=(LANG==="en"||LANG==="es")?"/en/riads-":"/riads-";
-  if($("cities"))$("cities").innerHTML=CITIES.map((c,i)=>GUIDE[c]?`<a class="city" href="${gp}${GUIDE[c]}/">${patio(i)}<b>${cityName(c)}</b><span class="cg">${t("guide_lbl")} →</span></a>`:`<div class="city">${patio(i)}<b>${cityName(c)}</b></div>`).join("");
+  if($("cities"))$("cities").innerHTML=CITIES.map((c,i)=>GUIDE[c]?`<a class="city" href=${JSON.stringify(gp+GUIDE[c]+"/")}>${patio(i)}<b>${cityName(c)}</b><span class="cg">${t("guide_lbl")} →</span></a>`:`<div class="city">${patio(i)}<b>${cityName(c)}</b></div>`).join("");
   $("ftContact").innerHTML=[CONFIG.email?`✉️ <a href="mailto:${CONFIG.email}" dir="ltr">${CONFIG.email}</a>`:"",CONFIG.whatsapp?`💬 <a href="https://wa.me/${CONFIG.whatsapp}" target="_blank" rel="noopener" dir="ltr">${CONFIG.phone||"+"+CONFIG.whatsapp} (WhatsApp)</a>`:""].filter(Boolean).join("<br>")||t("no_contact");
   const vl=(LANG==="en"||LANG==="es")?"en":"fr",vs=$("tutoSrc");if(vs&&vs.getAttribute("src")!==`/videos/tuto-${vl}.mp4`){vs.setAttribute("src",`/videos/tuto-${vl}.mp4`);$("tuto").setAttribute("poster",`/videos/tuto-${vl}.jpg`);$("tuto").load();}
-  const en=(LANG==="en"||LANG==="es");$("ftOwner").href=en?"/en/list-your-riad/":"/inscrire-mon-riad/";$("ftGuides").innerHTML=Object.keys(GUIDE).map(c=>`<a href="${gp}${GUIDE[c]}/">${cityName(c)}</a>`).join(" · ");
+  const en=(LANG==="en"||LANG==="es");$("ftOwner").href=en?"/en/list-your-riad/":"/inscrire-mon-riad/";$("ftGuides").innerHTML=Object.keys(GUIDE).map(c=>`<a href=${JSON.stringify(gp+GUIDE[c]+"/")}>${cityName(c)}</a>`).join(" · ");
   renderSearch();
   if(!document.documentElement.dataset.page)document.title="StayInRiad — "+t("badge");}
 const LANG_PATH={fr:"/",en:"/en/",es:"/es/",ar:"/ar/"};
