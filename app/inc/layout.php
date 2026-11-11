@@ -23,7 +23,7 @@ function render_page(string $title, string $body): void {
     if ($u) {
         $nav = '<span class="who">' . e($u['first_name']) . ' · ' . e(ROLES[$u['role']] ?? '') . '</span>'
              . (site_open() || $u['role'] === 'admin' ? '<a href="riads.php">Les riads</a>' : '')
-             . ($u['role'] === 'admin' ? '<a href="admin.php">Comptes</a><a href="bookings.php">Réservations</a><a href="payouts.php">Versements</a>' : '')
+             . ($u['role'] === 'admin' ? '<a href="admin.php">Comptes</a><a href="bookings.php">Réservations</a><a href="payouts.php">Versements</a><a href="admin_stats.php">Visites</a>' : '')
              . '<a href="account.php">Mon espace</a>'
              . '<form method="post" action="logout.php" class="inline">' . csrf_field() . '<button class="link">Déconnexion</button></form>';
     } else {
@@ -36,7 +36,7 @@ function render_page(string $title, string $body): void {
     $flash = $f ? '<div class="flash ' . e($f[1]) . '">' . e($f[0]) . '</div>' : '';
     $html = '<!DOCTYPE html><html lang="fr"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">'
        . '<meta name="robots" content="noindex, nofollow"><title>' . e($title) . ' · StayInRiad</title>'
-       . '<link rel="icon" href="/favicon.ico" sizes="48x48"><link rel="icon" href="/favicon.svg" type="image/svg+xml"><link rel="apple-touch-icon" href="/apple-touch-icon.png"><meta name="theme-color" content="#2647a8"><link rel="stylesheet" href="assets/app.css">' . (isset($_SESSION['cur']) ? '' : '<script src="assets/cur.js" defer></script>') . '</head><body>'
+       . '<link rel="icon" href="/favicon.ico" sizes="48x48"><link rel="icon" href="/favicon.svg" type="image/svg+xml"><link rel="apple-touch-icon" href="/apple-touch-icon.png"><meta name="theme-color" content="#2647a8"><link rel="stylesheet" href="assets/app.css">' . ($u && $u['role'] === 'admin' ? '<script src="assets/t.js" data-nt="1" defer></script>' : (!$u ? '<script src="assets/t.js" defer></script>' : '')) . (isset($_SESSION['cur']) ? '' : '<script src="assets/cur.js" defer></script>') . '</head><body>'
        . '<header><div class="wrap">' . logo_html() . '<nav>' . $nav . '</nav></div></header>'
        . '<main class="wrap">' . $flash . $body . '</main>'
        . '<footer class="wrap">' . pay_logos() . '© ' . date('Y') . ' stayinriad.com · <a href="mailto:contact@stayinriad.com">contact@stayinriad.com</a> · <a href="https://wa.me/212707596333" target="_blank" rel="noopener">WhatsApp +212 707-596333</a></footer>'

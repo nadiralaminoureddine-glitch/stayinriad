@@ -3,7 +3,7 @@
 declare(strict_types=1);
 if (!defined('SIR_APP')) exit;
 
-const SCHEMA_VERSION = 9;
+const SCHEMA_VERSION = 10;
 
 function run_migrations(): void {
     global $CONFIG;
@@ -110,6 +110,12 @@ function run_migrations(): void {
     }
     if ($v < 9) {
         try { db()->exec("ALTER TABLE users ADD COLUMN lang VARCHAR(5) NOT NULL DEFAULT 'fr'"); } catch (PDOException $e) {}
+    }
+    if ($v < 10) {
+        db()->exec("CREATE TABLE IF NOT EXISTS visits (id $id, at DATETIME NOT NULL, day DATE NOT NULL, vid CHAR(16) NOT NULL,
+            ev VARCHAR(10) NOT NULL, path VARCHAR(190) NOT NULL, src VARCHAR(30) NOT NULL DEFAULT '', country VARCHAR(2) NOT NULL DEFAULT '',
+            dev VARCHAR(12) NOT NULL DEFAULT '', lang VARCHAR(5) NOT NULL DEFAULT '', extra VARCHAR(120) NOT NULL DEFAULT '')$tail");
+        try { db()->exec("CREATE INDEX idx_visits_day ON visits (day, vid)"); } catch (PDOException $e) {}
     }
     q("DELETE FROM settings WHERE k = 'schema_version'");
     q("INSERT INTO settings (k, v) VALUES ('schema_version', ?)", [(string)SCHEMA_VERSION]);

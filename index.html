@@ -143,7 +143,7 @@ footer a{color:var(--terra)}
 .mapbox .leaflet-popup-content a{color:var(--terra)}
 </style>
 <link rel="stylesheet" href="/app/assets/leaflet/leaflet.css">
-</head>
+<script src="/app/assets/t.js" defer></script></head>
 <body>
 <header>
   <div class="wrap">
@@ -370,7 +370,7 @@ $("tForm").onsubmit=e=>{e.preventDefault();const m=$("tEmail").value.trim();if(!
 /* ==== Démarrage ==== */
 $("yr").textContent=new Date().getFullYear();
 const D=detect();const BOT=/bot|crawl|spider|slurp|facebookexternalhit|whatsapp|preview/i.test(navigator.userAgent||"")||navigator.webdriver;
-if(IS_ROOT&&!BOT&&D.l!=="fr"&&LANG_PATH[D.l]){try{sessionStorage.setItem("sir_auto","1");}catch(x){}location.replace(LANG_PATH[D.l]);}
+if(IS_ROOT&&!BOT&&D.l!=="fr"&&LANG_PATH[D.l]){try{sessionStorage.setItem("sir_auto","1");sessionStorage.setItem("sir_ref",JSON.stringify([document.referrer,location.search]));}catch(x){}location.replace(LANG_PATH[D.l]);}
 else{setLang(PAGE_LANG||D.l,false);
 let AUTO=false;try{AUTO=sessionStorage.getItem("sir_auto")==="1";sessionStorage.removeItem("sir_auto");}catch(x){}
 if(PAGE_LANG?AUTO:D.auto)$("langNote").innerHTML=`🌐 ${t("lang_auto")} · <a href="#" style="color:var(--gold)" onclick="$('langSel').focus();if($('langSel').showPicker)$('langSel').showPicker();return false">${t("lang_change")}</a>`;}

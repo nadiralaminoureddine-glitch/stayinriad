@@ -42,7 +42,8 @@ session_set_cookie_params([
     'httponly' => true, 'samesite' => 'Lax',
 ]);
 ini_set('session.use_strict_mode', '1');
-if (!SIR_CLI) session_start(); else $_SESSION = [];
+// le compteur de visites (t.php) ne crée pas de session pour les visiteurs anonymes
+if (!SIR_CLI && (!defined('SIR_BEACON') || isset($_COOKIE['sir_sess']))) session_start(); else $_SESSION = [];
 // expiration après 2 h d'inactivité
 if (isset($_SESSION['last']) && time() - $_SESSION['last'] > 7200) { $_SESSION = []; session_regenerate_id(true); }
 $_SESSION['last'] = time();
@@ -90,7 +91,7 @@ function csrf_check(): void {
         }
     }
 }
-csrf_check();
+if (!defined('SIR_BEACON')) csrf_check();
 // Devise d'affichage : choix du visiteur (gardé 1 an), sinon détectée selon le pays (voir assets/cur.js)
 if (!SIR_CLI && isset($_GET['cur']) && in_array($_GET['cur'], ['EUR', 'MAD', 'USD'], true)) {
     $_SESSION['cur'] = $_GET['cur'];

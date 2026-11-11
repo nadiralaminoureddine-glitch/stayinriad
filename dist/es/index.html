@@ -142,7 +142,7 @@ footer a{color:var(--terra)}
 .mapbox .leaflet-popup-content a{color:var(--terra)}
 </style>
 <link rel="stylesheet" href="/app/assets/leaflet/leaflet.css">
-<link rel="canonical" href="https://stayinriad.com/es/"><link rel="alternate" hreflang="fr" href="https://stayinriad.com/">
+<script src="/app/assets/t.js" defer=""></script><link rel="canonical" href="https://stayinriad.com/es/"><link rel="alternate" hreflang="fr" href="https://stayinriad.com/">
 <link rel="alternate" hreflang="en" href="https://stayinriad.com/en/">
 <link rel="alternate" hreflang="es" href="https://stayinriad.com/es/">
 <link rel="alternate" hreflang="ar" href="https://stayinriad.com/ar/">
@@ -163,8 +163,8 @@ footer a{color:var(--terra)}
       <div class="soons"><div class="soon" data-i18n="soon">✦ Inscripciones de riads abiertas · reservas muy pronto</div><div class="soon offer" data-i18n="offer">🎁 Oferta de lanzamiento: 3 meses sin comisión, desde su primera reserva</div></div>
       <form class="srch" id="srch" action="/app/riads.php" method="get" role="search">
         <label class="dest"><span data-i18n="sr_dest">Destino</span><select name="city" id="srCity"><option value="">Todas las ciudades de Marruecos</option><option value="Marrakech">Marrakech</option><option value="Fès">Fez</option><option value="Essaouira">Essaouira</option><option value="Chefchaouen">Chefchaouen</option><option value="Meknès">Meknès</option><option value="Rabat">Rabat</option><option value="Tanger">Tánger</option><option value="Tétouan">Tetuán</option><option value="Asilah">Asilah</option><option value="Casablanca">Casablanca</option><option value="El Jadida">El Jadida</option><option value="Oualidia">Oualidia</option><option value="Safi">Safi</option><option value="Agadir">Agadir</option><option value="Taghazout">Taghazout</option><option value="Taroudant">Taroudant</option><option value="Tiznit">Tiznit</option><option value="Mirleft">Mirleft</option><option value="Imlil">Imlil</option><option value="Ouarzazate">Ouarzazate</option><option value="Aït Ben Haddou">Ait Ben Haddou</option><option value="Skoura">Skoura</option><option value="Tinghir">Tinghir</option><option value="Merzouga">Merzouga</option><option value="Rissani">Rissani</option><option value="Zagora">Zagora</option><option value="Ifrane">Ifrane</option><option value="Moulay Idriss">Moulay Idriss</option><option value="Larache">Larache</option><option value="Al Hoceïma">Alhucemas</option><option value="Dakhla">Dakhla</option></select></label>
-        <label><span data-i18n="sr_in">Llegada</span><input type="date" name="in" id="srIn" min="2026-11-06"></label>
-        <label><span data-i18n="sr_out">Salida</span><input type="date" name="out" id="srOut" min="2026-11-07"></label>
+        <label><span data-i18n="sr_in">Llegada</span><input type="date" name="in" id="srIn" min="2026-11-11"></label>
+        <label><span data-i18n="sr_out">Salida</span><input type="date" name="out" id="srOut" min="2026-11-12"></label>
         <label><span data-i18n="sr_g">Personas</span><select name="g" id="srG"><option>1</option><option selected="">2</option><option>3</option><option>4</option><option>5</option><option>6</option><option>7</option><option>8</option></select></label>
         <input type="hidden" name="lang" id="srLang" value="en">
         <button class="btn terra" data-i18n="sr_btn">🔍 Buscar</button>
@@ -338,7 +338,7 @@ let RIADS=null;
 function drawMap(){const m=window.__map;if(!m)return;if(window.__layer)window.__layer.remove();const L=window.L,g=L.layerGroup().addTo(m);window.__layer=g;const ln=(LANG==="en"||LANG==="es")?"&lang=en":"";
   const withRiads=new Set((RIADS||[]).map(r=>r.city));
   ALL_CITIES.forEach(([c,a,b])=>{if(withRiads.has(c))return;L.circleMarker([a,b],{radius:7,color:"#fff",weight:2,fillColor:"#2647a8",fillOpacity:.95}).addTo(g).bindTooltip(cityName(c)).bindPopup(`<b>${cityName(c)}</b><a href="/app/riads.php?city=${encodeURIComponent(c)}${ln}">${t("map_see")}</a>`);});
-  (RIADS||[]).forEach(r=>{const ic=L.divIcon({className:"",html:`<span class="pin-riad">${Math.round(r.from)} €</span>`,iconSize:null});L.marker([r.lat,r.lng],{icon:ic}).addTo(g).bindPopup(`<div class="rpop">${r.photo?`<img src="${r.photo}" alt="">`:""}<b>${r.name.replace(/</g,"&lt;")}</b><span>📍 ${cityName(r.city)}</span><br><span>${t("map_from")} <b style="display:inline">${Math.round(r.from)} €</b> ${t("map_night")}</span><br><a href="${r.url}${ln}">${t("map_one")}</a></div>`);});}
+  (RIADS||[]).forEach(r=>{const ic=L.divIcon({className:"",html:`<span class="pin-riad">${Math.round(r.from)} €</span>`,iconSize:null});L.marker([r.lat,r.lng],{icon:ic}).addTo(g).bindPopup(`<div class="rpop">${r.photo?`<img src=${JSON.stringify(r.photo)} alt="">`:""}<b>${r.name.replace(/</g,"&lt;")}</b><span>📍 ${cityName(r.city)}</span><br><span>${t("map_from")} <b style="display:inline">${Math.round(r.from)} €</b> ${t("map_night")}</span><br><a href=${JSON.stringify(r.url+ln)}>${t("map_one")}</a></div>`);});}
 function initMap(){if(window.__map||!window.L||!$("riadMap"))return;const L=window.L;const m=L.map("riadMap",{scrollWheelZoom:false,zoomSnap:.5}).setView([31.4,-7.2],5.5);window.__map=m;
   L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png",{maxZoom:18,attribution:'&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'}).addTo(m);m.attributionControl.setPrefix('<a href="https://leafletjs.com">Leaflet</a>');
   m.fitBounds([[27.5,-13.2],[35.95,-1.5]],{padding:[10,10]});drawMap();
@@ -356,10 +356,10 @@ function setLang(l,manual){LANG=T[l]?l:"fr";if(manual){try{localStorage.setItem(
   document.documentElement.lang=LANG;document.documentElement.dir=LANG==="ar"?"rtl":"ltr";$("langSel").value=LANG;
   document.querySelectorAll("[data-i18n]").forEach(e=>{if("html" in e.dataset)e.innerHTML="<span>"+t(e.dataset.i18n)+"</span>";else e.textContent=t(e.dataset.i18n);});
   const GUIDE={"Marrakech":"marrakech","Fès":"fes","Essaouira":"essaouira","Chefchaouen":"chefchaouen"},gp=(LANG==="en"||LANG==="es")?"/en/riads-":"/riads-";
-  if($("cities"))$("cities").innerHTML=CITIES.map((c,i)=>GUIDE[c]?`<a class="city" href="${gp}${GUIDE[c]}/">${patio(i)}<b>${cityName(c)}</b><span class="cg">${t("guide_lbl")} →</span></a>`:`<div class="city">${patio(i)}<b>${cityName(c)}</b></div>`).join("");
+  if($("cities"))$("cities").innerHTML=CITIES.map((c,i)=>GUIDE[c]?`<a class="city" href=${JSON.stringify(gp+GUIDE[c]+"/")}>${patio(i)}<b>${cityName(c)}</b><span class="cg">${t("guide_lbl")} →</span></a>`:`<div class="city">${patio(i)}<b>${cityName(c)}</b></div>`).join("");
   $("ftContact").innerHTML=[CONFIG.email?`✉️ <a href="mailto:${CONFIG.email}" dir="ltr">${CONFIG.email}</a>`:"",CONFIG.whatsapp?`💬 <a href="https://wa.me/${CONFIG.whatsapp}" target="_blank" rel="noopener" dir="ltr">${CONFIG.phone||"+"+CONFIG.whatsapp} (WhatsApp)</a>`:""].filter(Boolean).join("<br>")||t("no_contact");
   const vl=(LANG==="en"||LANG==="es")?"en":"fr",vs=$("tutoSrc");if(vs&&vs.getAttribute("src")!==`/videos/tuto-${vl}.mp4`){vs.setAttribute("src",`/videos/tuto-${vl}.mp4`);$("tuto").setAttribute("poster",`/videos/tuto-${vl}.jpg`);$("tuto").load();}
-  const en=(LANG==="en"||LANG==="es");$("ftOwner").href=en?"/en/list-your-riad/":"/inscrire-mon-riad/";$("ftGuides").innerHTML=Object.keys(GUIDE).map(c=>`<a href="${gp}${GUIDE[c]}/">${cityName(c)}</a>`).join(" · ");
+  const en=(LANG==="en"||LANG==="es");$("ftOwner").href=en?"/en/list-your-riad/":"/inscrire-mon-riad/";$("ftGuides").innerHTML=Object.keys(GUIDE).map(c=>`<a href=${JSON.stringify(gp+GUIDE[c]+"/")}>${cityName(c)}</a>`).join(" · ");
   renderSearch();
   if(!document.documentElement.dataset.page)document.title="StayInRiad — "+t("badge");}
 const LANG_PATH={fr:"/",en:"/en/",es:"/es/",ar:"/ar/"};
@@ -373,7 +373,7 @@ $("tForm").onsubmit=e=>{e.preventDefault();const m=$("tEmail").value.trim();if(!
 /* ==== Démarrage ==== */
 $("yr").textContent=new Date().getFullYear();
 const D=detect();const BOT=/bot|crawl|spider|slurp|facebookexternalhit|whatsapp|preview/i.test(navigator.userAgent||"")||navigator.webdriver;
-if(IS_ROOT&&!BOT&&D.l!=="fr"&&LANG_PATH[D.l]){try{sessionStorage.setItem("sir_auto","1");}catch(x){}location.replace(LANG_PATH[D.l]);}
+if(IS_ROOT&&!BOT&&D.l!=="fr"&&LANG_PATH[D.l]){try{sessionStorage.setItem("sir_auto","1");sessionStorage.setItem("sir_ref",JSON.stringify([document.referrer,location.search]));}catch(x){}location.replace(LANG_PATH[D.l]);}
 else{setLang(PAGE_LANG||D.l,false);
 let AUTO=false;try{AUTO=sessionStorage.getItem("sir_auto")==="1";sessionStorage.removeItem("sir_auto");}catch(x){}
 if(PAGE_LANG?AUTO:D.auto)$("langNote").innerHTML=`🌐 ${t("lang_auto")} · <a href="#" style="color:var(--gold)" onclick="$('langSel').focus();if($('langSel').showPicker)$('langSel').showPicker();return false">${t("lang_change")}</a>`;}
