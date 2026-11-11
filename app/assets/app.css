@@ -118,3 +118,46 @@ details summary{cursor:pointer;color:var(--ink);font-weight:600}
 
 .btn:hover{background:var(--terra-d)}.btn.ghost:hover{background:var(--sand)}
 .flash.offer{background:#f2b632;color:#1f1a17;border:1px solid #f2b632;font-weight:600}
+
+/* ===== Raffinement « luxe discret » (même esprit que la page d'accueil) ===== */
+:root{--ivory:#faf7f2;--line:#e8e0d4;--brass:#a8844f;--ink:#1c1916;--muted:#6f665d;--ease:cubic-bezier(.22,.61,.36,1)}
+body{background:var(--ivory);-webkit-font-smoothing:antialiased}
+header{background:rgba(255,255,255,.92);position:sticky;top:0;z-index:40;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom-color:var(--line)}
+.logo{font-weight:400;letter-spacing:-.01em}
+nav{gap:18px;font-size:13.5px}nav a:hover,nav .link:hover{text-decoration:none;color:var(--terra)}
+h1{font-weight:400;color:var(--ink);letter-spacing:-.015em;font-size:clamp(28px,3.4vw,38px);line-height:1.15}
+h2{font-family:Georgia,"Times New Roman",serif;font-weight:400;font-size:22px;letter-spacing:-.01em}
+.card{border-color:var(--line);border-radius:6px;box-shadow:0 1px 0 rgba(28,25,22,.02)}
+input,select,textarea{border-color:#ddd2c2;border-radius:6px;transition:border-color .25s,box-shadow .25s}
+input:focus,select:focus,textarea:focus{outline:0;border-color:var(--terra);box-shadow:0 0 0 3px rgba(38,71,168,.12)}
+label{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:600}
+.btn{border-radius:999px;padding:13px 24px;letter-spacing:.02em;transition:background .3s var(--ease),transform .3s var(--ease)}
+.btn:hover{transform:translateY(-1px)}
+.btn.ghost{color:var(--ink);border-color:var(--ink);background:transparent}.btn.ghost:hover{background:var(--ink);color:#fff}
+/* pages voyageurs : liste des riads, fiche riad, réservation */
+.pg-riads main,.pg-riad_view main,.pg-book main{padding-top:40px}
+.pg-riads .wrap,.pg-riad_view .wrap{max-width:1180px}
+.rgrid{grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:28px}
+.rcard{background:transparent;border:0;border-radius:0;overflow:visible}
+.rcard:hover{box-shadow:none}
+.rimg{aspect-ratio:4/5;border-radius:4px;overflow:hidden;background:#e6d6bd}
+.rimg img{width:100%;height:100%;object-fit:cover;display:block;transition:transform 1.4s var(--ease)}
+.rcard:hover .rimg img{transform:scale(1.045)}
+.rbody{padding:16px 2px 0}
+.rbody b{font-family:Georgia,"Times New Roman",serif;font-weight:400;font-size:21px;letter-spacing:-.01em;display:block;margin-bottom:4px}
+.pgal{border-radius:4px;grid-auto-rows:clamp(150px,19vw,240px);gap:6px}
+.pgal img{transition:transform 1.4s var(--ease)}.pgal a:hover img,.pgal figure:hover img,.pgal img:hover{transform:scale(1.03)}
+.pg-riad_view h1{font-size:clamp(32px,4vw,48px);margin-top:28px}
+.rthumb{border-radius:4px;width:112px;height:84px}
+.room{padding:18px 0;border-bottom-color:var(--line)}
+.room b{font-family:Georgia,"Times New Roman",serif;font-weight:400;font-size:18px}
+.search{gap:0;align-items:stretch}
+.card.search{border-radius:999px;padding:8px 8px 8px 22px;box-shadow:0 18px 50px -22px rgba(28,25,22,.25)}
+.card.search>div{padding:4px 16px;border-inline-end:1px solid var(--line);display:flex;flex-direction:column;justify-content:center}
+.card.search>div:last-child{border-inline-end:0;padding-inline-end:0}
+.card.search label{margin:0 0 2px;font-size:10.5px;letter-spacing:.16em;color:var(--brass)}
+.card.search input,.card.search select{border:0;padding:0;height:30px;background:transparent;box-shadow:none;font-size:15px;color:var(--ink);font-weight:500}
+.card.search .btn{min-height:54px;margin:0}
+@media (max-width:760px){.card.search{border-radius:18px;padding:10px}.card.search>div{border-inline-end:0;border-bottom:1px solid var(--line);padding:10px 8px}.card.search>div:last-child{border-bottom:0;padding:10px 0 0}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+.card.search .btn{white-space:nowrap}.pg-riads main{padding-bottom:72px}

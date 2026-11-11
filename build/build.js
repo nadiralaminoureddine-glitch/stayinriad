@@ -24,6 +24,7 @@ const ld=JSON.stringify([{"@context":"https://schema.org","@type":"Organization"
   const tf='/tmp/build_'+lang+'.html';fs.writeFileSync(tf,tmp);
   const p=await b.newPage({userAgent:'Mozilla/5.0 (compatible; StayInRiadBuild/1.0; bot)'});
   await p.route('**/*',r=>/fonts\.(googleapis|gstatic)/.test(r.request().url())?r.abort():r.continue());
+  await p.route(/\/images\//,r=>r.fulfill({path:ROOT+'/images/'+decodeURIComponent(r.request().url().split('/images/')[1])}));
   await p.goto('file://'+tf);await p.waitForTimeout(500);
   await p.evaluate(({m,lang,alt,ld,SITE})=>{
     document.title=m.title;
@@ -54,6 +55,7 @@ const ld=JSON.stringify([{"@context":"https://schema.org","@type":"Organization"
  for(const f of ['partage.jpg','apple-touch-icon.png','.htaccess','favicon.ico','favicon.svg','favicon-32.png','icon-192.png','icon-512.png','site.webmanifest'])fs.copyFileSync(ROOT+'/'+f,OUT+'/'+f);
  fs.cpSync(ROOT+'/conditions',OUT+'/conditions',{recursive:true,filter:f=>!f.endsWith('.md')});
  fs.cpSync(ROOT+'/videos',OUT+'/videos',{recursive:true});
+ fs.cpSync(ROOT+'/images',OUT+'/images',{recursive:true});
  fs.cpSync(ROOT+'/guides',OUT,{recursive:true,filter:f=>!f.endsWith('pairs.json')});
  console.log('ok');
 })();
